@@ -1,13 +1,6 @@
 #ifndef __SCREEN_H_INCLUDED__
 #define __SCREEN_H_INCLUDED__
 
-#define CONTROL_GUI_NEXT 0
-#define CONTROL_GUI_PREV 1
-#define CONTROL_GUI_UP 2
-#define CONTROL_GUI_DOWN 3
-#define CONTROL_GUI_LEFT 4
-#define CONTROL_GUI_RIGHT 5
-
 class ScreenManager;
 class Element;
 
@@ -18,19 +11,30 @@ class Screen {
 	protected:
 		Element *selectedElement;
 		std::list<Element *> elements;
+		bool elementSelectedWithMouse;
 		Element *firstNext,*firstPrev,*firstLeft,*firstRight,*firstUp,*firstDown;
 	public:
 		ScreenManager *manager;
 		
 		Screen();
-		~Screen();
-		
+		virtual ~Screen();
+
+		// Misc
+		/**
+		 * Adds an element to the screen
+		 */
 		void addElement(Element *e);
-		
+		/**
+		 * Renders the GUI screen
+		 */
+		virtual void render(double time, double fps, glm::mat4 matrix);
+		void selectElement(Element *element, bool mouseSelection);
+
+		// Events
 		/**
 		 * On control boolean update
 		 */
-		virtual bool onControlEvent(int control, bool state);
+		virtual bool onControlEvent(int control, int action);
 		/**
 		 * On control delta update
 		 */
@@ -38,12 +42,7 @@ class Screen {
 		/**
 		 * Called by the screen manager whenever the screen resizes
 		 */
-		virtual void onResize();
-		/**
-		 * Renders the GUI screen
-		 */
-		virtual void render(double time, double fps, glm::mat4 matrix);
-		
+		virtual void onScreenResize();
 };
 
 #endif

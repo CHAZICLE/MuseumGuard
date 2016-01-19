@@ -1,5 +1,6 @@
 #include "gui/Screen.hpp"
 #include <glm/glm.hpp>
+#include <iostream>
 
 #include "ScreenManager.hpp"
 
@@ -15,7 +16,8 @@ void ScreenManager::openRootScreen(Screen *screen)
 {
 	while(!this->screens.empty())
 	{
-		delete this->screens.front();
+		Screen *screen = this->screens.front();
+		delete screen;
 		this->screens.pop_front();
 	}
 	screen->manager = this;
@@ -44,19 +46,21 @@ Screen *ScreenManager::closeScreen(Screen *screen)
 	this->screens.pop_front();
 	return s;
 }
-bool ScreenManager::onControlEvent(int control, bool state)
+bool ScreenManager::onControlEvent(int control, int action)
 {
-	for(std::list<Screen *>::iterator it = this->screens.end(); it!=this->screens.begin(); ++it)
+	for(std::list<Screen *>::reverse_iterator it = this->screens.rbegin(); it!=this->screens.rend(); it++)
 	{
 		Screen *screen = *it;
-		if(screen->onControlEvent(control, state))
+		if(screen->onControlEvent(control, action))
+		{
 			return true;
+		}
 	}
 	return false;
 }
 bool ScreenManager::onControlEvent(int control, double x, double y, double dx, double dy)
 {
-	for(std::list<Screen *>::iterator it = this->screens.end(); it!=this->screens.begin(); ++it)
+	for(std::list<Screen *>::reverse_iterator it = this->screens.rbegin(); it!=this->screens.rend(); it++)
 	{
 		Screen *screen = *it;
 		if(screen->onControlEvent(control, x, y, dx, dy))
@@ -64,12 +68,12 @@ bool ScreenManager::onControlEvent(int control, double x, double y, double dx, d
 	}
 	return false;
 }
-void ScreenManager::onResize()
+void ScreenManager::onScreenResize()
 {
 	for(std::list<Screen *>::iterator it = this->screens.begin(); it!=this->screens.end(); ++it)
 	{
 		Screen *screen = *it;
-		screen->onResize();
+		screen->onScreenResize();
 	}
 }
 void ScreenManager::render(double time, double fps, glm::mat4 matrix)
@@ -79,4 +83,12 @@ void ScreenManager::render(double time, double fps, glm::mat4 matrix)
 		Screen *screen = *it;
 		screen->render(time, fps, matrix);
 	}
+}
+double ScreenManager::getWidth()
+{
+	return this->width;
+}
+double ScreenManager::getHeight()
+{
+	return this->height;
 }

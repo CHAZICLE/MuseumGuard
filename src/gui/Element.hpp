@@ -6,11 +6,13 @@ class Screen;
 #include <glm/glm.hpp>
 
 class Element {
+	private:
 	protected:
 		float x, y, width, height;
 	public:
 		Screen *screen;
 		Element *next,*prev,*left,*right,*up,*down;
+		bool selected;
 		
 		Element();
 		~Element();
@@ -24,11 +26,21 @@ class Element {
 		void setWidth(float width);
 		void setHeight(float height);
 		void setSize(float x, float y, float width, float height);
+		bool isInside(float x, float y);
+		
+		/**
+		 * Renders the GUI screen
+		 */
+		virtual void render(double time, double fps, glm::mat4 matrix);
+		/**
+		 * Called by resize methods
+		 */
+		virtual void onElementResize();
 		
 		/**
 		 * On control boolean update
 		 */
-		virtual bool onControlEvent(int control, bool state);
+		virtual bool onControlEvent(int control, int action);
 		/**
 		 * On control delta update
 		 */
@@ -36,11 +48,7 @@ class Element {
 		/**
 		 * Called by the screen manager whenever the screen resizes
 		 */
-		virtual void onResize();
-		/**
-		 * Renders the GUI screen
-		 */
-		virtual void render(double time, double fps, glm::mat4 matrix);
+		virtual void onScreenResize();
 };
 
 #endif

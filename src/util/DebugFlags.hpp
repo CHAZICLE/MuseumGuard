@@ -1,0 +1,6 @@
+#ifndef __DEBUGFLAGS_H_INCLUDED__
+#define __DEBUGFLAGS_H_INCLUDED__
+
+#define ENABLE_DEBUG_PATHRENDER
+
+#endif
