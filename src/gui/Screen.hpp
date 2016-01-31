@@ -1,11 +1,12 @@
 #ifndef __SCREEN_H_INCLUDED__
 #define __SCREEN_H_INCLUDED__
 
-class ScreenManager;
-class Element;
-
-#include <glm/glm.hpp>
+#include <glm/detail/type_mat.hpp>
 #include <list>
+
+#include "Element.hpp"
+
+class ScreenManager;
 
 class Screen {
 	protected:
@@ -27,7 +28,7 @@ class Screen {
 		/**
 		 * Renders the GUI screen
 		 */
-		virtual void render(double time, double fps, glm::mat4 matrix);
+		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
 		void selectElement(Element *element, bool mouseSelection);
 
 		// Events
@@ -43,6 +44,8 @@ class Screen {
 		 * Called by the screen manager whenever the screen resizes
 		 */
 		virtual void onScreenResize();
+
+		virtual bool supportsCursor();
 };
 
 #endif

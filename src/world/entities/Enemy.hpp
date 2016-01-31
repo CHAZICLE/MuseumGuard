@@ -1,10 +1,14 @@
 #ifndef __ENEMY_H_INCLUDED__
 #define __ENEMY_H_INCLUDED__
 
-class Enemy {
-	public:
-		Enemy();
-		~Enemy();
-};
+#include "world/Entity.hpp"
+
+namespace entities {
+	class Enemy : public Entity {
+		public:
+			Enemy();
+			~Enemy();
+	};
+}
 
 #endif

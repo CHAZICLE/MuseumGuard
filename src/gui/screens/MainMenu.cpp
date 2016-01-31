@@ -18,7 +18,7 @@ MainMenu::~MainMenu()
 bool MainMenu::onControlEvent(int control, int action)
 {
 	std::cout << control << ", " << action << std::endl;
-	if(action==CONTROL_ACTION_PRESS && control==CONTROL_GUI_SELECT)
+	if((action&CONTROL_MOUSEBUTTONACTION_PRESS) && control==CONTROL_GUI_SELECT)
 	{
 		this->manager->openRootScreen(new PathTest());
 	}

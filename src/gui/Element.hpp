@@ -1,5 +1,11 @@
 #ifndef __ELEMENT_H_INCLUDED__
 #define __ELEMENT_H_INCLUDED__
+namespace render {
+class RenderManager;
+} /* namespace render */
+namespace util {
+class DeltaTime;
+} /* namespace util */
 
 class Screen;
 
@@ -15,7 +21,7 @@ class Element {
 		bool selected;
 		
 		Element();
-		~Element();
+		virtual ~Element();
 		
 		float getX();
 		float getY();
@@ -31,7 +37,7 @@ class Element {
 		/**
 		 * Renders the GUI screen
 		 */
-		virtual void render(double time, double fps, glm::mat4 matrix);
+		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
 		/**
 		 * Called by resize methods
 		 */

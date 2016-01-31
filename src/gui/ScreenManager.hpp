@@ -14,7 +14,7 @@ class ScreenManager {
 		double height;
 	public:
 		ScreenManager();
-		~ScreenManager();
+		virtual ~ScreenManager();
 
 		// GUI Controls
 		/**

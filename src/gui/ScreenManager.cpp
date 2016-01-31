@@ -6,7 +6,8 @@
 
 ScreenManager::ScreenManager()
 {
-	
+	this->width = 0;
+	this->height = 0;
 }
 ScreenManager::~ScreenManager()
 {

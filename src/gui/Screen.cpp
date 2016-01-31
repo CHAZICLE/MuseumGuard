@@ -8,14 +8,14 @@
 Screen::Screen()
 {
 	this->selectedElement = 0;
-	this->firstNext = NULL;
-	this->firstPrev = NULL;
-	this->firstLeft = NULL;
-	this->firstRight = NULL;
-	this->firstUp = NULL;
-	this->firstDown = NULL;
-	this->manager = 0;
 	this->elementSelectedWithMouse = false;
+	this->firstNext = 0;
+	this->firstPrev = 0;
+	this->firstLeft = 0;
+	this->firstRight = 0;
+	this->firstUp = 0;
+	this->firstDown = 0;
+	this->manager = 0;
 }
 Screen::~Screen()
 {
@@ -26,12 +26,12 @@ void Screen::addElement(Element *e)
 	this->elements.push_back(e);
 	e->screen = this;
 }
-void Screen::render(double time, double fps, glm::mat4 matrix)
+void Screen::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {
 	for(std::list<Element *>::iterator it = this->elements.begin(); it!=this->elements.end(); ++it)
 	{
 		Element *e = *it;
-		e->render(time, fps, matrix);
+		e->render(deltaTime, manager);
 	}
 }
 void Screen::selectElement(Element *element, bool mouseSelection)
@@ -53,32 +53,32 @@ bool Screen::onControlEvent(int control, int action)
 	{
 		if(this->selectedElement!=0)
 		{
-			if(control&CONTROL_GUI_NEXT && this->selectedElement->next!=0)
+			if((control&CONTROL_GUI_NEXT) && this->selectedElement->next!=0)
 			{
 				this->selectElement(this->selectedElement->next, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_PREV && this->selectedElement->prev!=0)
+			if((control&CONTROL_GUI_PREV) && this->selectedElement->prev!=0)
 			{
 				this->selectElement(this->selectedElement->prev, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_LEFT && this->selectedElement->left!=0)
+			if((control&CONTROL_GUI_LEFT) && this->selectedElement->left!=0)
 			{
 				this->selectElement(this->selectedElement->left, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_RIGHT && this->selectedElement->right!=0)
+			if((control&CONTROL_GUI_RIGHT) && this->selectedElement->right!=0)
 			{
 				this->selectElement(this->selectedElement->right, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_UP && this->selectedElement->up!=0)
+			if((control&CONTROL_GUI_UP) && this->selectedElement->up!=0)
 			{
 				this->selectElement(this->selectedElement->up, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_DOWN && this->selectedElement->down!=0)
+			if((control&CONTROL_GUI_DOWN) && this->selectedElement->down!=0)
 			{
 				this->selectElement(this->selectedElement->down, false);
 				return true;
@@ -86,32 +86,32 @@ bool Screen::onControlEvent(int control, int action)
 		}
 		else
 		{
-			if(control&CONTROL_GUI_NEXT && this->firstNext!=0)
+			if((control&CONTROL_GUI_NEXT) && this->firstNext!=0)
 			{
 				this->selectElement(this->firstNext, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_PREV && this->firstPrev!=0)
+			if((control&CONTROL_GUI_PREV) && this->firstPrev!=0)
 			{
 				this->selectElement(this->firstPrev, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_LEFT && this->firstLeft!=0)
+			if((control&CONTROL_GUI_LEFT) && this->firstLeft!=0)
 			{
 				this->selectElement(this->firstLeft, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_RIGHT && this->firstRight!=0)
+			if((control&CONTROL_GUI_RIGHT) && this->firstRight!=0)
 			{
 				this->selectElement(this->firstRight, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_UP && this->firstUp!=0)
+			if((control&CONTROL_GUI_UP) && this->firstUp!=0)
 			{
 				this->selectElement(this->firstUp, false);
 				return true;
 			}
-			if(control&CONTROL_GUI_DOWN && this->firstDown!=0)
+			if((control&CONTROL_GUI_DOWN) && this->firstDown!=0)
 			{
 				this->selectElement(this->firstDown, false);
 				return true;
@@ -156,4 +156,8 @@ void Screen::onScreenResize()
 		Element *e = *it;
 		e->onScreenResize();
 	}
+}
+
+bool Screen::supportsCursor() {
+	return true;
 }

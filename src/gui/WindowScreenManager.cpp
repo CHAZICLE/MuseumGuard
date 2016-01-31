@@ -13,8 +13,19 @@
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
 WindowScreenManager::WindowScreenManager() : ScreenManager()
 {
-	WindowScreenManager::eventHandler = this;
+	this->lastWindowWidthPx = 0;
+	this->lastWindowHeightPx = 0;
+	this->windowWidthPx = 0;
+	this->windowHeightPx = 0;
+	this->monitorWidthPx = 0;
+	this->monitorHeightPx = 0;
+	this->modeWidthPx = 0;
+	this->modeHeightPx = 0;
 	this->scale = 1;
+	this->lastX = 0;
+	this->lastY = 0;
+
+	WindowScreenManager::eventHandler = this;
 	//glfwSetErrorCallback(WindowScreenManager::onError);
 	// Initialise and create window
 	if(!glfwInit())
@@ -113,13 +124,13 @@ void WindowScreenManager::onKeyEvent(GLFWwindow *window, int key, int scancode, 
 	switch(action)
 	{
 		case GLFW_PRESS:
-			action = CONTROL_ACTION_PRESS;
+			action = CONTROL_KEYACTION_PRESS;
 			break;
 		case GLFW_RELEASE:
-			action = CONTROL_ACTION_RELEASE;;
+			action = CONTROL_KEYACTION_RELEASE;
 			break;
 		case GLFW_REPEAT:
-			action = CONTROL_ACTION_REPEAT;
+			action = CONTROL_KEYACTION_REPEAT;
 			break;
 	}
 	WindowScreenManager::eventHandler->onControlEvent(key, action);
@@ -138,18 +149,20 @@ void WindowScreenManager::onMouseButtonEvent(GLFWwindow* window, int button, int
 	switch(action)
 	{
 		case GLFW_PRESS:
-			action = CONTROL_ACTION_PRESS;
+			action = CONTROL_MOUSEBUTTONACTION_PRESS;
 			break;
 		case GLFW_RELEASE:
-			action = CONTROL_ACTION_RELEASE;;
+			action = CONTROL_MOUSEBUTTONACTION_RELEASE;;
 			break;
 		case GLFW_REPEAT:
-			action = CONTROL_ACTION_REPEAT;
+			action = CONTROL_MOUSEBUTTONACTION_REPEAT;
 			break;
 	}
 	WindowScreenManager::eventHandler->onControlEvent(button, action);
 }
 void WindowScreenManager::onScrollEvent(GLFWwindow* window, double dx, double dy)
 {
-	
+	dx = dx*WindowScreenManager::eventHandler->monitorWidthPx/WindowScreenManager::eventHandler->modeWidthPx/WindowScreenManager::eventHandler->scale;
+	dy = -dy*WindowScreenManager::eventHandler->monitorHeightPx/WindowScreenManager::eventHandler->modeHeightPx/WindowScreenManager::eventHandler->scale;
+	WindowScreenManager::eventHandler->onControlEvent(CONTROL_ACTION_SCROLL, 0, 0, dx, dy);
 }

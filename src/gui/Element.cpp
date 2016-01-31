@@ -1,13 +1,27 @@
-#include "util/gl.h"
-#include "render/BasicShapes.hpp"
-#include "render/shaders/ShaderUtils.hpp"
-#include <iostream>
-
 #include "Element.hpp"
+
+#include <GL/gl.h>
+#include <GL/glext.h>
+
+#include "../render/BasicShapes.hpp"
+
+namespace render {
+class RenderManager;
+} /* namespace render */
 
 Element::Element()
 {
+	this->x = 0;
+	this->y = 0;
+	this->width = 0;
+	this->height = 0;
 	this->screen = 0;
+	this->next = 0;
+	this->prev = 0;
+	this->left = 0;
+	this->right = 0;
+	this->up = 0;
+	this->down = 0;
 	this->selected = false;
 }
 Element::~Element()
@@ -65,10 +79,10 @@ bool Element::isInside(float x, float y)
 		&& this->getY()<=y
 		&& this->getY()+this->getHeight()>=y;
 }
-void Element::render(double time, double fps, glm::mat4 matrix)
+void Element::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {
 	glUseProgram(shaders::program_solidcolor);
-	glUniformMatrix4fv(shaders::program_solidcolor_MVP, 1, GL_FALSE, &matrix[0][0]);
+	manager->setMVPMatrix(shaders::program_solidcolor_MVP);
 	
 	BasicShapes::renderUnitSquare(shaders::program_solidcolor_vertexPosition);
 }

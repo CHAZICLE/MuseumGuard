@@ -13,7 +13,7 @@ class WindowScreenManager : public ScreenManager {
 		double lastX,lastY;
 	public:
 		WindowScreenManager();
-		~WindowScreenManager();
+		virtual ~WindowScreenManager();
 		static WindowScreenManager *eventHandler;
 		static void onError(int error, const char *msg);
 		static void onKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mode);

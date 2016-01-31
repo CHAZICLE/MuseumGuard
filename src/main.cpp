@@ -1,6 +1,6 @@
 #include "main.hpp"
 
-#include "gui/WindowScreenManager.hpp"
+#include "gui//WindowScreenManager.hpp"
 
 int main(int argc, char *argv[])
 {
