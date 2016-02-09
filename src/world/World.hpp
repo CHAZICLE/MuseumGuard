@@ -1,7 +1,7 @@
 #ifndef __WORLD_H_INCLUDED__
 #define __WORLD_H_INCLUDED__
 
-#include <glm/detail/type_vec.hpp>
+#include <glm/vec3.hpp>
 
 namespace entities {
 class Enemy;

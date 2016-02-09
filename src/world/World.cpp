@@ -1,17 +1,9 @@
-#include "World.hpp"
-
-#include <glm/detail/func_geometric.inl>
-#include <glm/detail/type_mat4x4.hpp>
-#include <glm/detail/type_vec3.hpp>
-#include <glm/detail/type_vec3.inl>
-#include <glm/gtc/matrix_transform.inl>
-#include <GLFW/glfw3.h>
-#include <cmath>
-
 #include "entities/Enemy.hpp"
 #include "entities/Player.hpp"
+#include "util/gl.h"
+#include <glm/gtc/matrix_transform.hpp>
 
-class GLFWwindow;
+#include "World.hpp"
 
 using namespace entities;
 

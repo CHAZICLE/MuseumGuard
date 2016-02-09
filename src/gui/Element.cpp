@@ -1,13 +1,9 @@
+#include "util/gl.h"
+#include "render/BasicShapes.hpp"
+#include "render/shaders/ShaderUtils.hpp"
+#include "render/RenderManager.hpp"
+
 #include "Element.hpp"
-
-#include <GL/gl.h>
-#include <GL/glext.h>
-
-#include "../render/BasicShapes.hpp"
-
-namespace render {
-class RenderManager;
-} /* namespace render */
 
 Element::Element()
 {
@@ -44,27 +40,27 @@ float Element::getHeight()
 {
 	return this->height;
 }
-void Element::setX(float x)
+Element *Element::setX(float x)
 {
 	this->x = x;
 	this->onElementResize();
 }
-void Element::setY(float y)
+Element *Element::setY(float y)
 {
 	this->y = y;
 	this->onElementResize();
 }
-void Element::setWidth(float width)
+Element *Element::setWidth(float width)
 {
 	this->width = width;
 	this->onElementResize();
 }
-void Element::setHeight(float height)
+Element *Element::setHeight(float height)
 {
 	this->height = height;
 	this->onElementResize();
 }
-void Element::setSize(float x, float y, float width, float height)
+Element *Element::setSize(float x, float y, float width, float height)
 {
 	this->x = x;
 	this->y = y;

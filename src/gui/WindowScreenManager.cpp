@@ -7,6 +7,8 @@
 #include "util/Console.hpp"
 #include "render/BasicShapes.hpp"
 #include "input/Controls.hpp"
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
 
 #include "WindowScreenManager.hpp"
 
@@ -21,7 +23,7 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->monitorHeightPx = 0;
 	this->modeWidthPx = 0;
 	this->modeHeightPx = 0;
-	this->scale = 1;
+	this->scale = 2;
 	this->lastX = 0;
 	this->lastY = 0;
 
@@ -81,10 +83,11 @@ WindowScreenManager::~WindowScreenManager()
 }
 void WindowScreenManager::run()
 {
-	double time, fps, scale=1.f;
+	render::RenderManager renderManager;
+	util::DeltaTime deltaTime(true, 60);
 	while(!glfwWindowShouldClose(this->window))
 	{
-		// Get screen dimentions
+		// Get screen dimensions
 		glfwGetFramebufferSize(this->window, &windowWidthPx, &windowHeightPx);
 		if(windowWidthPx!=this->lastWindowWidthPx || windowHeightPx!=this->lastWindowHeightPx)
 		{
@@ -100,24 +103,28 @@ void WindowScreenManager::run()
 				this->modeHeightPx = mode->height;
 				this->width = windowWidthPx*monitorWidthPx/modeWidthPx/scale;
 				this->height = windowHeightPx*monitorHeightPx/modeHeightPx/scale;
+				renderManager.P = glm::ortho(0.f, (float)this->width, 0.f, (float)this->height, 0.f, 1.f);
+				renderManager.markPDirty();
 				this->onScreenResize();
+
 			}
 		}
 		
 		// Calculate FPS
-		fps = time;
-		time = glfwGetTime();
-		fps = 1/(time-fps);
+		deltaTime.postTime(glfwGetTime());
 		
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		glm::mat4 pMatrix = glm::ortho(0.f, (float)getWidth(), 0.f, (float)getHeight(), 0.f, 1.f);
-		this->render(time, fps, pMatrix);
+		this->render(&deltaTime, &renderManager);
 		
 		// Update frame buffer
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
 	}
+}
+void WindowScreenManager::close()
+{
+	glfwSetWindowShouldClose(this->window, GL_TRUE);
 }
 void WindowScreenManager::onKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mode)
 {

@@ -34,6 +34,15 @@ void BasicShapes::init()
 		0,	1,	1,//9
 		1,	1,	1,//10
 		1,	0,	1,//11
+		/*
+		 * 9  10
+		 * 8  11
+		 * |  |
+		 * 5  6
+		 * 4  7
+		 *
+		 *
+		 */
 		
 	};
 	
@@ -47,6 +56,29 @@ void BasicShapes::init()
 	};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitSquareIndexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitSquareIndicies), unitSquareIndicies, GL_STATIC_DRAW);
+	
+	GLubyte unitCubeIndicies[] = {
+		// Closest face
+		4,5,6,
+		4,6,7,
+		// Right side
+		7,6,10,
+		7,10,11,
+		// Back
+		11,10,9,
+		11,9,8,
+		// Left side
+		8,9,5,
+		8,5,4,
+		// top
+		5,9,10,
+		5,10,6,
+		// bottom
+		8,4,7,
+		8,7,11
+	};
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitCubeIndexBufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitCubeIndicies), unitCubeIndicies, GL_STATIC_DRAW);
 }
 void BasicShapes::renderUnitSquare(GLuint vertexPositionPointer)
 {
@@ -54,6 +86,13 @@ void BasicShapes::renderUnitSquare(GLuint vertexPositionPointer)
 	bindUnitMesh(vertexPositionPointer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, unitSquareIndexBufferID);
 	glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_BYTE, (void  *)0);
+}
+void BasicShapes::renderUnitCube(GLuint vertexPositionPointer)
+{
+	glEnableVertexAttribArray(vertexPositionPointer);
+	bindUnitMesh(vertexPositionPointer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, unitCubeIndexBufferID);
+	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (void  *)0);
 }
 void BasicShapes::bindUnitMesh(GLuint vertexPositionPointer)
 {

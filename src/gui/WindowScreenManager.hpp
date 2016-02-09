@@ -15,6 +15,7 @@ class WindowScreenManager : public ScreenManager {
 		WindowScreenManager();
 		virtual ~WindowScreenManager();
 		static WindowScreenManager *eventHandler;
+		virtual void close();
 		static void onError(int error, const char *msg);
 		static void onKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mode);
 		static void onCursorPosEvent(GLFWwindow *window, double x, double y);

@@ -5,12 +5,19 @@
 
 #include <vector>
 
+namespace util {
+class DeltaTime;
+}
+namespace render {
+class RenderManager;
+}
+
 class PathHolder {
 	public:
 		std::vector<struct PathNode *> nodes;
 		PathHolder();
 		~PathHolder();
-		void render(glm::mat4 matrix);
+		void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
 };
 
 #endif

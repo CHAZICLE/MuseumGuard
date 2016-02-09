@@ -2,6 +2,12 @@
 #define __SCREENMANAGER_H_INCLUDED__
 
 class Screen;
+namespace util {
+class DeltaTime;
+}
+namespace render {
+class RenderManager;
+}
 
 #include <glm/glm.hpp>
 #include <list>
@@ -25,6 +31,10 @@ class ScreenManager {
 		 * Opens a screen over the existing screens
 		 */
 		void openScreen(Screen *screen);
+		/**
+		 * Exits the screen manager
+		 */
+		virtual void close();
 		/**
 		 * Returns true if the screen is a surface screen
 		 */
@@ -55,7 +65,7 @@ class ScreenManager {
 		/**
 		 * Render the screens
 		 */
-		void render(double time, double fps, glm::mat4 matrix);
+		void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
 		double getWidth();
 		double getHeight();
 };

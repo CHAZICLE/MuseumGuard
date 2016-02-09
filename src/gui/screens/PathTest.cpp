@@ -1,3 +1,6 @@
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
+
 #include "PathTest.hpp"
 
 PathTest::PathTest() : Screen()
@@ -10,12 +13,12 @@ PathTest::~PathTest()
 {
 	
 }
-void PathTest::render(double time, double fps, glm::mat4 matrix)
+void PathTest::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {
-	this->pathHolder->render(matrix);
-	if(this->lastTime<time-0.1)
+	this->pathHolder->render(deltaTime, manager);
+	/*if(this->lastTime<deltaTime->getTime()-0.1)
 	{
-		this->lastTime = time;
-		this->pathFinder->tick(1);
-	}
+		this->lastTime = deltaTime->getTime();
+	}*/
+	this->pathFinder->tick(1);
 }

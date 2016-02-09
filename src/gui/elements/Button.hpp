@@ -9,7 +9,7 @@ class Button : public Element {
 	public:
 		Button();
 		~Button();
-		virtual void render(double time, double fps, glm::mat4 matrix);
+		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
 };
 
 #endif

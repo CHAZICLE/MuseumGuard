@@ -27,11 +27,11 @@ class Element {
 		float getY();
 		float getWidth();
 		float getHeight();
-		void setX(float x);
-		void setY(float y);
-		void setWidth(float width);
-		void setHeight(float height);
-		void setSize(float x, float y, float width, float height);
+		Element *setX(float x);
+		Element *setY(float y);
+		Element *setWidth(float width);
+		Element *setHeight(float height);
+		Element *setSize(float x, float y, float width, float height);
 		bool isInside(float x, float y);
 		
 		/**

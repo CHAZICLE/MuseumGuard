@@ -14,11 +14,18 @@
 namespace render {
 
 class RenderManager {
+private:
+	bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
+	glm::mat4 MV,MP,MVP;
 public:
 	RenderManager();
 	virtual ~RenderManager();
 
-	glm::mat4 MVP;
+	glm::mat4 M,V,P;
+
+	void markPDirty();
+	void markVDirty();
+	void markMDirty();
 
 	void setMVPMatrix(GLuint mvpMatrixShaderLocation);
 };

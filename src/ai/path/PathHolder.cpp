@@ -2,6 +2,8 @@
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/BasicShapes.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
 
 #include "PathHolder.hpp"
 
@@ -59,7 +61,7 @@ PathHolder::~PathHolder()
 {
 	
 }
-void PathHolder::render(glm::mat4 matrix)
+void PathHolder::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {
 	glEnable(GL_BLEND);
 	for(std::vector<struct PathNode *>::iterator it = this->nodes.begin(); it != this->nodes.end(); it++)
@@ -69,14 +71,17 @@ void PathHolder::render(glm::mat4 matrix)
 		for(std::vector<struct PathNodeLink *>::iterator j = node->links.begin(); j != node->links.end(); j++)
 		{
 			struct PathNodeLink *nodeLnk = *j;
-			glUniformMatrix4fv(shaders::program_solidcolor_MVP, 1, GL_FALSE, &matrix[0][0]);
+			manager->M = glm::mat4(1.0f);
+			manager->markMDirty();
+			manager->setMVPMatrix(shaders::program_solidcolor_MVP);
 			glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.f, 0.4f, 1.f);
 			BasicShapes::drawLine(nodeLnk->a->position, nodeLnk->b->position, shaders::program_solidcolor_vertexPosition);
 		}
 		// Draw a point for the node
 		glUseProgram(shaders::program_solidcolor);
-		glm::mat4 tmatrix = glm::translate(matrix, node->position);
-		glUniformMatrix4fv(shaders::program_solidcolor_MVP, 1, GL_FALSE, &tmatrix[0][0]);
+		manager->M = glm::translate(glm::mat4(1.0f), node->position);
+		manager->markMDirty();
+		manager->setMVPMatrix(shaders::program_solidcolor_MVP);
 		if(node->current)
 			glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.f, 0.f, 1.f);
 		else if(node->closed)

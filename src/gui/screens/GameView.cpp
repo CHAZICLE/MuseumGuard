@@ -1,5 +1,8 @@
-#include <gui/screens/GameView.hpp>
 #include <world/World.hpp>
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
+
+#include "GameView.hpp"
 
 namespace screens {
 
@@ -11,7 +14,7 @@ GameView::~GameView() {
 	delete this->world;
 }
 
-void GameView::render(double time, double fps, glm::mat4 matrix) {
+void GameView::render(util::DeltaTime *deltaTime, render::RenderManager *manager) {
 
 }
 

@@ -49,7 +49,7 @@ void Screen::selectElement(Element *element, bool mouseSelection)
 }
 bool Screen::onControlEvent(int control, int action)
 {
-	if(action==CONTROL_ACTION_PRESS)
+	if(action&CONTROL_ACTION_PRESS)
 	{
 		if(this->selectedElement!=0)
 		{

@@ -29,6 +29,10 @@ void ScreenManager::openScreen(Screen *screen)
 	screen->manager = this;
 	this->screens.push_front(screen);
 }
+void ScreenManager::close()
+{
+
+}
 bool ScreenManager::isScreenSurface(Screen *screen)
 {
 	return this->screens.front()==screen;
@@ -77,12 +81,12 @@ void ScreenManager::onScreenResize()
 		screen->onScreenResize();
 	}
 }
-void ScreenManager::render(double time, double fps, glm::mat4 matrix)
+void ScreenManager::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {
 	for(std::list<Screen *>::iterator it = this->screens.begin(); it!=this->screens.end(); ++it)
 	{
 		Screen *screen = *it;
-		screen->render(time, fps, matrix);
+		screen->render(deltaTime, manager);
 	}
 }
 double ScreenManager::getWidth()
