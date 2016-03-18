@@ -1,5 +1,8 @@
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
+#include "input/Controls.hpp"
+#include "gui/screens/MainMenu.hpp"
+#include "gui/ScreenManager.hpp"
 
 #include "PathTest.hpp"
 
@@ -21,4 +24,13 @@ void PathTest::render(util::DeltaTime *deltaTime, render::RenderManager *manager
 		this->lastTime = deltaTime->getTime();
 	}*/
 	this->pathFinder->tick(1);
+}
+bool PathTest::onControlEvent(int control, int action)
+{
+	if((control&CONTROL_GUI_ESCAPE) && (action&CONTROL_KEYACTION_PRESS))
+	{
+		this->manager->openRootScreen(new MainMenu());
+		return true;
+	}
+	return false;
 }

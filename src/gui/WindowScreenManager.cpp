@@ -23,25 +23,25 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->monitorHeightPx = 0;
 	this->modeWidthPx = 0;
 	this->modeHeightPx = 0;
-	this->scale = 2;
+	this->scale = 1;
 	this->lastX = 0;
 	this->lastY = 0;
 
 	WindowScreenManager::eventHandler = this;
-	//glfwSetErrorCallback(WindowScreenManager::onError);
+	glfwSetErrorCallback(WindowScreenManager::onError);
 	// Initialise and create window
 	if(!glfwInit())
 	{
 		std::cerr << "GLFW Init failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	glfwWindowHint(GLFW_SAMPLES, 4);
+	/*glfwWindowHint(GLFW_SAMPLES, 4);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);*/
 	// Create window
-	this->window = glfwCreateWindow(800, 600, "Graphics 2 Coursework", NULL, NULL);
+	this->window = glfwCreateWindow(800, 600, "FYP", NULL, NULL);
 	if(!this->window)
 	{
 		std::cerr << "Window creation failed" << std::endl;
@@ -106,7 +106,6 @@ void WindowScreenManager::run()
 				renderManager.P = glm::ortho(0.f, (float)this->width, 0.f, (float)this->height, 0.f, 1.f);
 				renderManager.markPDirty();
 				this->onScreenResize();
-
 			}
 		}
 		
@@ -125,6 +124,10 @@ void WindowScreenManager::run()
 void WindowScreenManager::close()
 {
 	glfwSetWindowShouldClose(this->window, GL_TRUE);
+}
+void WindowScreenManager::onError(int error, const char *msg)
+{
+	std::cerr << msg << std::endl;
 }
 void WindowScreenManager::onKeyEvent(GLFWwindow *window, int key, int scancode, int action, int mode)
 {
@@ -172,4 +175,12 @@ void WindowScreenManager::onScrollEvent(GLFWwindow* window, double dx, double dy
 	dx = dx*WindowScreenManager::eventHandler->monitorWidthPx/WindowScreenManager::eventHandler->modeWidthPx/WindowScreenManager::eventHandler->scale;
 	dy = -dy*WindowScreenManager::eventHandler->monitorHeightPx/WindowScreenManager::eventHandler->modeHeightPx/WindowScreenManager::eventHandler->scale;
 	WindowScreenManager::eventHandler->onControlEvent(CONTROL_ACTION_SCROLL, 0, 0, dx, dy);
+}
+void WindowScreenManager::onSurfaceScreenChanged(Screen *screen)
+{
+	if(screen->supportsCursor())
+		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	else
+		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	ScreenManager::onSurfaceScreenChanged(screen);
 }

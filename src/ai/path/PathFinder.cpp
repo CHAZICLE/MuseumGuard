@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "PathFinder.hpp"
 
 PathFinder::PathFinder(PathHolder *holder, struct PathNode *start, struct PathNode *end)
@@ -33,7 +31,6 @@ bool PathFinder::tick(int ticks)
 				return true;
 		}
 	}
-	std::cout << "Tick PathFinder" << std::endl;
 	this->iterations++;
 	this->c = 0;
 	// Find a node in the open set with the lowest f cost
@@ -55,17 +52,14 @@ bool PathFinder::tick(int ticks)
 	{
 		// Done: Failed
 		this->done = true;
-		std::cout << "DONE FAILED" << std::endl;
 		return true;
 	}
 	if(c==this->end)
 	{
 		// Done: Complete path
-		std::cout << "DONE SUCESS" << std::endl;
 		this->done = true;
 		return true;
 	}
-	std::cout << "New nodes f cost=" << c->f << std::endl;
 	this->openSet.erase(c);
 	this->closedSet.insert(c);
 	c->node->open = false;
@@ -74,7 +68,6 @@ bool PathFinder::tick(int ticks)
 	// Add its parents to the open set
 	for(std::vector<struct PathNodeLink *>::iterator pnLinkIt = c->node->links.begin(); pnLinkIt!=c->node->links.end(); ++pnLinkIt)
 	{
-		std::cout << "LINK" << std::endl;
 		struct PathNodeLink *pnLink = *pnLinkIt;
 		// Get neighbour
 		struct PathNode *otherNode = pnLink->a;
@@ -95,7 +88,6 @@ bool PathFinder::tick(int ticks)
 		// Determine if this path is worse
 		else
 		{
-			std::cout << "dist=" << newNeighbourG << std::endl;
 			if(newNeighbourG >= neighbourNode->g)
 				continue;//Skip worse path
 		}

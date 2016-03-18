@@ -9,7 +9,7 @@ class MainMenu : public Screen {
 	public:
 		MainMenu();
 		~MainMenu();
-		Button *exitButton,*playButton;
+		Button *exitButton,*playButton,*pathTestButton;
 		virtual bool onControlEvent(int control, int action);
 };
 

@@ -1,6 +1,6 @@
 #include "gui/Screen.hpp"
 #include <glm/glm.hpp>
-#include <iostream>
+#include "input/Controls.hpp"
 
 #include "ScreenManager.hpp"
 
@@ -8,6 +8,8 @@ ScreenManager::ScreenManager()
 {
 	this->width = 0;
 	this->height = 0;
+	this->lastCursorX = -1;
+	this->lastCursorY = -1;
 }
 ScreenManager::~ScreenManager()
 {
@@ -23,11 +25,13 @@ void ScreenManager::openRootScreen(Screen *screen)
 	}
 	screen->manager = this;
 	this->screens.push_back(screen);
+	this->onSurfaceScreenChanged(screen);
 }
 void ScreenManager::openScreen(Screen *screen)
 {
 	screen->manager = this;
 	this->screens.push_front(screen);
+	this->onSurfaceScreenChanged(screen);
 }
 void ScreenManager::close()
 {
@@ -49,6 +53,7 @@ Screen *ScreenManager::closeScreen(Screen *screen)
 	if(screen!=0 && s!=screen)
 		return 0;
 	this->screens.pop_front();
+	this->onSurfaceScreenChanged(this->screens.front());
 	return s;
 }
 bool ScreenManager::onControlEvent(int control, int action)
@@ -71,6 +76,8 @@ bool ScreenManager::onControlEvent(int control, double x, double y, double dx, d
 		if(screen->onControlEvent(control, x, y, dx, dy))
 			return true;
 	}
+	this->lastCursorX = x;
+	this->lastCursorY = y;
 	return false;
 }
 void ScreenManager::onScreenResize()
@@ -80,6 +87,10 @@ void ScreenManager::onScreenResize()
 		Screen *screen = *it;
 		screen->onScreenResize();
 	}
+}
+void ScreenManager::onSurfaceScreenChanged(Screen *screen)
+{
+	screen->onControlEvent(CONTROL_ACTION_MOUSE, this->lastCursorX, this->lastCursorY, 0, 0);
 }
 void ScreenManager::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 {

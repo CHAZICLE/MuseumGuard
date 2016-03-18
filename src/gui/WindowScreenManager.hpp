@@ -21,6 +21,7 @@ class WindowScreenManager : public ScreenManager {
 		static void onCursorPosEvent(GLFWwindow *window, double x, double y);
 		static void onMouseButtonEvent(GLFWwindow* window, int button, int action, int mods);
 		static void onScrollEvent(GLFWwindow* window, double dx, double dy);
+		virtual void onSurfaceScreenChanged(Screen *screen);
 		void run();
 };
 

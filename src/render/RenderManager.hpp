@@ -16,6 +16,7 @@ namespace render {
 class RenderManager {
 private:
 	bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
+	bool doCullFace,doDepthBuffer;
 	glm::mat4 MV,MP,MVP;
 public:
 	RenderManager();
@@ -28,8 +29,12 @@ public:
 	void markMDirty();
 
 	void setMVPMatrix(GLuint mvpMatrixShaderLocation);
+
+	void cullFace();
+	void enableDepth();
 };
 
 } /* namespace render */
+
 
 #endif /* SRC_RENDER_RENDERMANAGER_HPP_ */

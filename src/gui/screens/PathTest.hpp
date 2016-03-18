@@ -19,6 +19,7 @@ class PathTest : public Screen {
 		PathHolder *pathHolder;
 		PathFinder *pathFinder;
 		double lastTime;
+		virtual bool onControlEvent(int control, int action);
 };
 
 #endif

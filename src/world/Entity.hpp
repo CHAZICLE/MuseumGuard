@@ -11,15 +11,16 @@ namespace render {
 class Entity {
 	private:
 		glm::vec3 position, velocity;
-		glm::quat rotation;
+		glm::quat orientation;
 	public:
 		Entity();
-		~Entity();
+		virtual ~Entity();
 		glm::vec3 getPosition();
-		glm::quat getRotation();
-		void teleportTo(glm::vec3 location);
-		void rotateTo(glm::quat rotation);
-		void render(render::RenderManager *manager);
+		void setPosition(glm::vec3 location);
+		void translate(glm::vec3 location);
+		glm::quat getOrientation();
+		void setOrientation(glm::quat rotation);
+		virtual void render(render::RenderManager *manager);
 };
 
 #endif

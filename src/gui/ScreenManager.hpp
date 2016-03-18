@@ -15,6 +15,7 @@ class RenderManager;
 class ScreenManager {
 	private:
 		std::list<Screen *> screens;
+		double lastCursorX,lastCursorY;
 	protected:
 		double width;
 		double height;
@@ -61,6 +62,10 @@ class ScreenManager {
 		 * Called by the screen manager whenever the screen resizes
 		 */
 		virtual void onScreenResize();
+		/**
+		 * Called by ScreenManager when the surface screen changes
+		 */
+		virtual void onSurfaceScreenChanged(Screen *screen);
 
 		/**
 		 * Render the screens

@@ -16,7 +16,7 @@ DeltaTime::~DeltaTime()
 }
 void DeltaTime::postTime(double time)
 {
-	this->deltaTime = this->currentTime-time;
+	this->deltaTime = time-this->currentTime;
 	this->framerate = 1/this->deltaTime;
 	this->currentTime = time;
 }

@@ -12,17 +12,21 @@ glm::vec3 Entity::getPosition()
 {
 	return this->position;
 }
-glm::quat Entity::getRotation()
-{
-	return this->rotation;
-}
-void Entity::teleportTo(glm::vec3 location)
+void Entity::setPosition(glm::vec3 location)
 {
 	this->position = location;
 }
-void Entity::rotateTo(glm::quat rotation)
+void Entity::translate(glm::vec3 offset)
 {
-	this->rotation = rotation;
+	this->position += offset;
+}
+glm::quat Entity::getOrientation()
+{
+	return this->orientation;
+}
+void Entity::setOrientation(glm::quat rotation)
+{
+	this->orientation = rotation;
 }
 void Entity::render(render::RenderManager *manager)
 {

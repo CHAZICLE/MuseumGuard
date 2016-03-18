@@ -5,7 +5,8 @@
 
 GLuint BasicShapes::unitMeshArrayID = 0;
 GLuint BasicShapes::unitMeshVertexPositionBufferID = 0;
-GLuint BasicShapes::unitSquareIndexBufferID= 0;
+GLuint BasicShapes::unitSquareIndexBufferID = 0;
+GLuint BasicShapes::unitCubeIndexBufferID = 0;
 GLuint BasicShapes::lineVertexArrayID = 0;
 GLuint BasicShapes::lineVertexBufferID = 0;
 
@@ -14,6 +15,7 @@ void BasicShapes::init()
 	glGenVertexArrays(1, &BasicShapes::unitMeshArrayID);
 	glGenBuffers(1, &BasicShapes::unitMeshVertexPositionBufferID);
 	glGenBuffers(1, &BasicShapes::unitSquareIndexBufferID);
+	glGenBuffers(1, &BasicShapes::unitCubeIndexBufferID);
 
 	glGenVertexArrays(1, &BasicShapes::lineVertexArrayID);
 	glGenBuffers(1, &BasicShapes::lineVertexBufferID);
@@ -58,24 +60,24 @@ void BasicShapes::init()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitSquareIndicies), unitSquareIndicies, GL_STATIC_DRAW);
 	
 	GLubyte unitCubeIndicies[] = {
-		// Closest face
-		4,5,6,
-		4,6,7,
-		// Right side
-		7,6,10,
-		7,10,11,
 		// Back
 		11,10,9,
 		11,9,8,
-		// Left side
-		8,9,5,
-		8,5,4,
+		// Right side
+		7,6,10,
+		7,10,11,
 		// top
 		5,9,10,
 		5,10,6,
+		// Closest face
+		4,5,6,
+		4,6,7,
+		// Left side
+		8,9,5,
+		8,5,4,
 		// bottom
 		8,4,7,
-		8,7,11
+		8,7,11,
 	};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitCubeIndexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitCubeIndicies), unitCubeIndicies, GL_STATIC_DRAW);
