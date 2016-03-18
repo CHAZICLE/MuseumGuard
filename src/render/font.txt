@@ -1,0 +1,3 @@
+Glyphs can be loaded:
+	onScreenResize()
+	render() on the fly
