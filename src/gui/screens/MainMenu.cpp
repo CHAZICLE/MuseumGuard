@@ -17,9 +17,9 @@ using namespace screens;
 
 MainMenu::MainMenu() : Screen()
 {
-	this->playButton = new Button();
-	this->pathTestButton = new Button();
-	this->exitButton = new Button();
+	this->playButton = new Button("Play");
+	this->pathTestButton = new Button("???");
+	this->exitButton = new Button("Quit");
 
 	this->playButton->setY(20);
 	this->pathTestButton->setY(10);

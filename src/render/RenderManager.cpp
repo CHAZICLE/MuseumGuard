@@ -50,11 +50,48 @@ namespace render {
 		glDepthFunc(GL_LESS);
 		glEnable(GL_DEPTH_TEST);
 	}
-	void RenderManager::cullFace() {
+	void RenderManager::disableDepth() {
+		glDisable(GL_DEPTH_TEST);
+	}
+	void RenderManager::enableCullFace() {
 		this->doCullFace = true;
 		glCullFace(GL_FRONT);
 		glFrontFace(GL_CW);
 		glEnable(GL_CULL_FACE);
+	}
+	void RenderManager::disableCullFace() {
+		this->doCullFace = false;
+		glDisable(GL_CULL_FACE);
+	}
+	void RenderManager::enableTransparency() {
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	}
+	void RenderManager::disableTransparency() {
+		glDisable(GL_BLEND);
+	}
+
+	void RenderManager::setDimensionsPx(int widthPx, int heightPx)
+	{
+		this->widthPx = widthPx;
+		this->heightPx = heightPx;
+	}
+	void RenderManager::setDimensionsMM(float widthMM, float heightMM)
+	{
+		this->widthMM = widthMM;
+		this->heightMM = heightMM;
+	}
+	int RenderManager::getWidthPx() {
+		return this->widthPx;
+	}
+	int RenderManager::getHeightPx() {
+		return this->heightPx;
+	}
+	float RenderManager::getWidthMM() {
+		return this->widthMM;
+	}
+	float RenderManager::getHeightMM() {
+		return this->heightMM;
 	}
 
 }

@@ -38,7 +38,7 @@ void World::tick(util::DeltaTime *deltaTime)
 void World::render(render::RenderManager *manager)
 {
 	manager->enableDepth();
-	manager->cullFace();
+	manager->enableCullFace();
 	
 	manager->V = glm::lookAt(
 			this->player->getPosition(),
@@ -74,4 +74,7 @@ void World::render(render::RenderManager *manager)
 	manager->markMDirty();
 	manager->setMVPMatrix(shaders::program_modelTest_MVP);
 	BasicShapes::renderUnitCube(shaders::program_modelTest_vertexPosition);
+	
+	manager->disableCullFace();
+	manager->disableDepth();
 }

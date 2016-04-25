@@ -92,6 +92,7 @@ void WindowScreenManager::run()
 		if(windowWidthPx!=this->lastWindowWidthPx || windowHeightPx!=this->lastWindowHeightPx)
 		{
 			glViewport(0, 0, windowWidthPx, windowHeightPx);
+			renderManager.setDimensionsPx(windowWidthPx, windowHeightPx);
 			this->lastWindowWidthPx = windowWidthPx;
 			this->lastWindowHeightPx = windowHeightPx;
 			GLFWmonitor *monitor = glfwGetPrimaryMonitor();
@@ -103,6 +104,7 @@ void WindowScreenManager::run()
 				this->modeHeightPx = mode->height;
 				this->width = windowWidthPx*monitorWidthPx/modeWidthPx/scale;
 				this->height = windowHeightPx*monitorHeightPx/modeHeightPx/scale;
+				renderManager.setDimensionsMM(width, height);
 				renderManager.P = glm::ortho(0.f, (float)this->width, 0.f, (float)this->height, 0.f, 1.f);
 				renderManager.markPDirty();
 				this->onScreenResize();

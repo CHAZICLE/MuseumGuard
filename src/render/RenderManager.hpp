@@ -1,40 +1,45 @@
-/*
- * RenderManager.hpp
- *
- *  Created on: 31 Jan 2016
- *      Author: charles
- */
-
-#ifndef SRC_RENDER_RENDERMANAGER_HPP_
-#define SRC_RENDER_RENDERMANAGER_HPP_
+#ifndef __RENDERMANAGER_H_INCLUDED__
+#define __RENDERMANAGER_H_INCLUDED__
 
 #include <glm/matrix.hpp>
 #include <util/gl.h>
 
 namespace render {
 
-class RenderManager {
-private:
-	bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
-	bool doCullFace,doDepthBuffer;
-	glm::mat4 MV,MP,MVP;
-public:
-	RenderManager();
-	virtual ~RenderManager();
+	class RenderManager {
+	private:
+		bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
+		bool doCullFace,doDepthBuffer;
+		glm::mat4 MV,MP,MVP;
+		int widthPx,heightPx;
+		float widthMM,heightMM;
+	public:
+		RenderManager();
+		virtual ~RenderManager();
 
-	glm::mat4 M,V,P;
+		glm::mat4 M,V,P;
 
-	void markPDirty();
-	void markVDirty();
-	void markMDirty();
+		void markPDirty();
+		void markVDirty();
+		void markMDirty();
 
-	void setMVPMatrix(GLuint mvpMatrixShaderLocation);
+		void setMVPMatrix(GLuint mvpMatrixShaderLocation);
 
-	void cullFace();
-	void enableDepth();
-};
+		void enableDepth();
+		void disableDepth();
+		void enableCullFace();
+		void disableCullFace();
+		void enableTransparency();
+		void disableTransparency();
 
-} /* namespace render */
+		void setDimensionsPx(int widthPx, int heightPx);
+		void setDimensionsMM(float widthMM, float heightMM);
+		int getWidthPx();
+		int getHeightPx();
+		float getWidthMM();
+		float getHeightMM();
+	};
 
+}
 
-#endif /* SRC_RENDER_RENDERMANAGER_HPP_ */
+#endif
