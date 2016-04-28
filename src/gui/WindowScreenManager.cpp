@@ -10,6 +10,9 @@
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
 
+// debug
+#include "render/MD5Model.hpp"
+
 #include "WindowScreenManager.hpp"
 
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
@@ -49,6 +52,8 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(this->window);
+
+	new render::MD5Model("bob");
 	
 #ifdef USE_GLEW
 	// Setup GLEW
