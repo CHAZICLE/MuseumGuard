@@ -9,9 +9,7 @@
 #include "input/Controls.hpp"
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
-
-// debug
-#include "render/MD5Model.hpp"
+#include "util/AssetManager.hpp"
 
 #include "WindowScreenManager.hpp"
 
@@ -52,8 +50,6 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 		exit(EXIT_FAILURE);
 	}
 	glfwMakeContextCurrent(this->window);
-
-	new render::MD5Model("bob");
 	
 #ifdef USE_GLEW
 	// Setup GLEW
@@ -81,6 +77,8 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	BasicShapes::init();
 	glEnableClientState(GL_VERTEX_ARRAY);
 	this->openRootScreen(new MainMenu());
+
+	util::AssetManager::getAssetManager()->init();
 }
 WindowScreenManager::~WindowScreenManager()
 {

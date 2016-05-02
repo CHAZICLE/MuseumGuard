@@ -6,3 +6,4 @@ depend/*
 .project
 .settings
 assets.gz
+__pycache__

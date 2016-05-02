@@ -28,8 +28,9 @@ inline float readFloat(std::istream &fp)
 
 #define READ_VEC3F(x) glm::vec3(readFloat(x), readFloat(x), readFloat(x))
 
-MD5Model::MD5Model(std::string modelname, std::istream &fp)
+MD5Model::MD5Model(std::istream &fp)
 {
+	readString(fp);
 	//load joints and meshes
 	int numJoints;
 	int numMeshes;
@@ -79,8 +80,6 @@ MD5Model::MD5Model(std::string modelname, std::istream &fp)
 			mesh.weights.push_back(weight);
 		}
 	}
-
-	gzfile.close();
 	//Allocate vertex array objects and buffer objects
 }
 MD5Model::~MD5Model()

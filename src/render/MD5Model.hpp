@@ -7,6 +7,7 @@ namespace render{
 
 #include <string>
 #include <fstream>
+#include <list>
 #include <glm/glm.hpp>
 
 namespace render {
@@ -56,7 +57,7 @@ namespace render {
 
 	class MD5Model {
 		public:
-			MD5Model(std::string filename);
+			MD5Model(std::istream &fp);
 			~MD5Model();
 			void render();
 		private:
