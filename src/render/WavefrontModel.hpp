@@ -9,11 +9,12 @@
 
 namespace render {
 	typedef struct {
-		std::string object_name;
-		bool usemtl;
+		std::string name;
+		std::string usemtl;
 		bool s;
-		int lenf;
-		int *f;
+		int numPrimitives;//triangles/faces
+		//int numVerticies = numPrimitives*3
+		int *indecies;//length = numVerticies
 	} WavefrontObject;
 	class WavefrontModel : public util::Asset {
 		public:

@@ -20,21 +20,21 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 	int vertexStride = 1;
 	int vertexTexturesOffset = 0;
 	int vertexNormalsOffset = 0;
-	std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], v[1], v[2]]...]
+	std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], vn[1], vn[2]]...]
 	std::unordered_map<int[3], int> assocMap;//[v index, vt index, vn index] : [faceIndex]
 
 	//v
 	int lenv = readInt(fp);
 	float *vertexPosiions = new float[lenv*3];
-	fp.read((char *)vertexPosiions sizeof(float)*lenv);
+	fp.read((char *)vertexPosiions, sizeof(float)*lenv);
 	//vt
 	int lenvt = readInt(fp);
-	float *vt = new float[lenvt*2];
-	fp.read((char *)vt, sizeof(float)*lenvt);
+	float *vertexTextures = new float[lenvt*2];
+	fp.read((char *)vertexTextures, sizeof(float)*lenvt);
 	//vn
 	int lenvn = readInt(fp);
-	float *vn = new float[lenvn*3];
-	fp.read((char *)vn, sizeof(float)*lenvn);
+	float *vertexNormals = new float[lenvn*3];
+	fp.read((char *)vertexNormals, sizeof(float)*lenvn);
 	//enable t/n
 	bool enableTextures = readBool(fp);
 	bool enableNormals = readBool(fp);
@@ -43,7 +43,7 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 		dataBufferStride += 2;
 		dataBufferTexturesOffset = 2;
 		vertexStride += 1;
-		vertexTexturesOffset++;
+		vertexTexturesOffset = 1;
 	}
 	if(enableNormals)//enableNormals
 	{
@@ -55,34 +55,55 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 	//objects
 	int len = readInt(fp);
 	int temp[3];
+	int currentVertexIndex = 0;
 	for(int i=0;i<len;i++)
 	{
+		currentVertexIndex = 0;
+		WavefrontObject *o = new WavefrontObject;
 		// Load the wavefront object
-		std::string object_name = readString(fp);
-		bool usemtl = readBool(fp);
-		bool s = readBool(fp);
-		int numVerticies = readInt(fp);
-		int *vertexIndicies = new int[numVerticies*vertexStride];
-		fp.read((char *)vertexIndicies, sizeof(int)*numVerticies*vertexStride);
+		o->name = readString(fp);
+		o->usemtl = readString(fp);
+		o->s = readBool(fp);
+		o->numPrimitives = readInt(fp);
+		int *objectIndecies = new int[o->numPrimitives*3*vertexStride];
+		o->indecies = new int[o->numPrimitives*3];
+		fp.read((char *)o->indecies, sizeof(int)*o->numPrimitives*3);
 		// Store the faces
-		for(int v=0;v<numVerticies;v++)
+		for(int v=0;v<o->numPrimitives*3;v++)
 		{
 			// Load the vertex indexes for the components of the vertex
-			temp[0] = vertexIndicies[v*vertexStride];
-			temp[1] = (enableTextures ? vertexIndicies[v*vertexStride+vertexTexturesOffset] : -1);
-			temp[2] = (enableNormals ? vertexIndicies[v*vertexStride+vertexNormalsOffset] : -1);
+			temp[0] = objectIndecies[v*vertexStride];
+			temp[1] = (enableTextures ? objectIndecies[v*vertexStride+vertexTexturesOffset] : -1);
+			temp[2] = (enableNormals ? objectIndecies[v*vertexStride+vertexNormalsOffset] : -1);
 
 			std::unordered_map<int[3],int>::const_iterator findFace = assocMap.find(temp);
-			if(findFace==assocMap.end())
+			if(findFace==assocMap.end())//If vertex is not already associated
 			{
-				int faceAssoc = assocMap[temp];
+				// Associate the store the new index
+				assocMap[temp] = currentVertexIndex;
+				o->indecies[v] = currentVertexIndex;
+				currentVertexIndex++;
+				// Put the vertex data into the vertex buffer
 				dataBuffer.push_back(vertexPosiions[temp[0]*3+0]);
+				dataBuffer.push_back(vertexPosiions[temp[0]*3+1]);
+				dataBuffer.push_back(vertexPosiions[temp[0]*3+2]);
+				if(enableTextures)
+				{
+					dataBuffer.push_back(vertexTextures[temp[1]*2+0]);
+					dataBuffer.push_back(vertexTextures[temp[1]*2+1]);
+				}
+				if(enableNormals)
+				{
+					dataBuffer.push_back(vertexNormals[temp[2]*3+0]);
+					dataBuffer.push_back(vertexNormals[temp[2]*3+1]);
+					dataBuffer.push_back(vertexNormals[temp[2]*3+2]);
+				}
 			}
 			else
 			{
-				std::cout << findFace->second << std::endl;
+				// Store the existing vertex index in the new index buffer
+				o->indecies[v] = assocMap[temp];
 			}
-			faceIndexBuffer[f] = assocMap[temp]
 		}
 	}
 }

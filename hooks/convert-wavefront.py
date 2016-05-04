@@ -21,6 +21,7 @@ def parseVertexData(line, tt):
 def loadWavefrontFile(wavefront_filepath, wavefront_file):
     enableTextures = None
     enableNormals = None
+    numPrimitives = 0
     v = []
     vt = []
     vn = []
@@ -53,6 +54,7 @@ def loadWavefrontFile(wavefront_filepath, wavefront_file):
             s = line.split(" ")[1]=="on"
         if line.find("f ")==0:
             verticies = line[2:].split(" ")
+            numPrimitives = numPrimitives+1
             if len(verticies)>3:
                 print("Wavefront file is not triangular!")
                 os.exit(1)
@@ -85,7 +87,7 @@ def loadWavefrontFile(wavefront_filepath, wavefront_file):
                         faceFinal.append(int(fin[2]))
                 f.append(faceFinal)
     objects.append((object_name, usemtl, s, f))
-    return (len(v), v, len(vt), vt, len(vn), vn, enableTextures, enableNormals, len(objects), objects)
+    return (len(v), v, len(vt), vt, len(vn), vn, enableTextures, enableNormals, numPrimitives, objects)
 
 if __name__ == "__main__":
     wavefront_filepath = sys.argv[1]
