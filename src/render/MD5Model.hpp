@@ -9,6 +9,7 @@ namespace render{
 #include <fstream>
 #include <list>
 #include <glm/glm.hpp>
+#include "util/AssetManager.hpp"
 
 namespace render {
 
@@ -55,11 +56,12 @@ namespace render {
 	//weights.append((weightIndex, joint, bias, pos))
 
 
-	class MD5Model {
+	class MD5Model : public util::Asset {
 		public:
-			MD5Model(std::istream &fp);
-			~MD5Model();
+			MD5Model(int assetId, std::istream &fp);
+			virtual ~MD5Model();
 			void render();
+			virtual void postload();
 		private:
 			std::list<MD5Joint> joints;
 	};

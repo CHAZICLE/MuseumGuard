@@ -1,36 +1,15 @@
 #include <iostream>
 
 #include "MD5Model.hpp"
+#include "util/StreamUtils.hpp"
 
+using namespace util;
+using namespace util::StreamUtils;
 using namespace render;
 
-inline std::string readString(std::istream &fp)
+MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 {
-	int len;
-	fp.read((char *)&len, sizeof(int));
-	char *buf = new char[len+1];
-	fp.read(buf, len);
-	buf[len] = '\0';
-	return std::string(buf);
-}
-inline int readInt(std::istream &fp)
-{
-	int i;
-	fp.read((char *)&i, sizeof(int));
-	return i;
-}
-inline float readFloat(std::istream &fp)
-{
-	float i;
-	fp.read((char *)&i, sizeof(float));
-	return i;
-}
-
-#define READ_VEC3F(x) glm::vec3(readFloat(x), readFloat(x), readFloat(x))
-
-MD5Model::MD5Model(std::istream &fp)
-{
-	readString(fp);
+	this->setName(readString(fp));
 	//load joints and meshes
 	int numJoints;
 	int numMeshes;
@@ -44,8 +23,8 @@ MD5Model::MD5Model(std::istream &fp)
 		// Read the joint data
 		joint.name = readString(fp);
 		fp.read((char *)&joint.parent, sizeof(int));
-		joint.pos = READ_VEC3F(fp);
-		joint.ori = READ_VEC3F(fp);
+		joint.pos = readVec3f(fp);
+		joint.ori = readVec3f(fp);
 		joints.push_back(joint);
 		//std::cout << joint;
 	}
@@ -76,7 +55,7 @@ MD5Model::MD5Model(std::istream &fp)
 			weight.index = readInt(fp);
 			weight.joint = readInt(fp);
 			weight.bias = readFloat(fp);
-			weight.pos = READ_VEC3F(fp);
+			weight.pos = readVec3f(fp);
 			mesh.weights.push_back(weight);
 		}
 	}
@@ -95,6 +74,10 @@ void MD5Model::render()
 		
 		//Push shader variables
 		//draw
+}
+void MD5Model::postload()
+{
+
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint)
 {

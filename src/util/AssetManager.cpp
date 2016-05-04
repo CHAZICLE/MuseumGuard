@@ -3,10 +3,13 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include "render/MD5Model.hpp"
+#include "render/WavefrontModel.hpp"
+#include "util/StreamUtils.hpp"
 
 #include "AssetManager.hpp"
 
 using namespace util;
+using namespace util::StreamUtils;
 
 void assetManagerThreadRun()
 {
@@ -43,20 +46,22 @@ void AssetManager::run()
 	inbuf.push(gzfile);
 	std::istream fp(&inbuf);
 	
-	char c = 0;
-	render::MD5Model *model = 0;
+	int assetType = 0, assetId = 0;
+	render::MD5Model *md5Model = 0;
+	render::WavefrontModel *wvModel = 0;
 	while(!fp.eof())
 	{
-		fp.read(&c, 1);
-		std::cout << "Read a " << (int)c << std::endl;
-		switch((int)c)
+		assetType = readInt(fp);
+		std::cout << "Read a " << assetType << std::endl;
+		switch(assetType)
 		{
 			case ASSET_WAVEFRONT:
+				wvModel = new render::WavefrontModel(assetId, fp);
 				break;
 			case ASSET_MTLLIB:
 				break;
 			case ASSET_MD5MESH:
-				model = new render::MD5Model(fp);
+				md5Model = new render::MD5Model(assetId, fp);
 				break;
 			case ASSET_MD5ANIM:
 				break;
@@ -65,6 +70,7 @@ void AssetManager::run()
 			case ASSET_DDS:
 				break;
 		}
+		assetId++;
 		return;
 	}
 	std::cout << "Reader thread exit" << std::endl;
@@ -89,4 +95,12 @@ Asset::Asset(int assetId)
 int Asset::getAssetID()
 {
 	return this->_assetId;
+}
+std::string Asset::getName()
+{
+	return this->name;
+}
+void Asset::setName(std::string name)
+{
+	this->name = name;
 }

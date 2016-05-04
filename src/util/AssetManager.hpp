@@ -38,10 +38,14 @@ namespace util {
 	class Asset {
 		public:
 			Asset(int assetId);
-			virtual ~Asset() = 0;
 			int getAssetID();
+			std::string getName();
+			virtual void postload() = 0;
 		private:
 			int _assetId;
+			std::string name;
+		protected:
+			void setName(std::string name);
 	};
 }
 

@@ -85,7 +85,7 @@ def loadWavefrontFile(wavefront_filepath, wavefront_file):
                         faceFinal.append(int(fin[2]))
                 f.append(faceFinal)
     objects.append((object_name, usemtl, s, f))
-    return (len(v), v, len(vt), vt, len(vn), vn, len(objects), objects)
+    return (len(v), v, len(vt), vt, len(vn), vn, enableTextures, enableNormals, len(objects), objects)
 
 if __name__ == "__main__":
     wavefront_filepath = sys.argv[1]
