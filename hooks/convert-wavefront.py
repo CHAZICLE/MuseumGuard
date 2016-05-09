@@ -97,7 +97,7 @@ if __name__ == "__main__":
     fp = gzip.open(wavefront_outpath, "wb")
     wavefront = loadWavefrontFile(wavefront_filepath, wavefront_file)
     print(wavefront)
-    fp.write(bytes([0]))
+    fp.write(bytes([1]))
     writeType(fp, wavefront_filepath[wavefront_filepath.rfind("/")+1:]);
     writeType(fp, wavefront)
     fp.close()

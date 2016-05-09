@@ -4,6 +4,8 @@
 #include <iostream>
 #include <unordered_map>
 #include "util/StreamUtils.hpp"
+#include "util/gl.h"
+#include "render/RenderManager.hpp"
 
 using namespace render;
 using namespace util::StreamUtils;
@@ -12,7 +14,8 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
 
-	int dataBufferStride = 0;
+//	int dataBufferStride = 0; - Field
+	dataBufferStride = 3;
 	int dataBufferTexturesOffset = 0;
 	int dataBufferNormalsOffset = 0;
 	int dataBufferVertexCount = 0;
@@ -20,7 +23,7 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 	int vertexStride = 1;
 	int vertexTexturesOffset = 0;
 	int vertexNormalsOffset = 0;
-	std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], vn[1], vn[2]]...]
+	//std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], vn[1], vn[2]]...]
 	std::unordered_map<int[3], int> assocMap;//[v index, vt index, vn index] : [faceIndex]
 
 	//v
@@ -58,7 +61,6 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 	int currentVertexIndex = 0;
 	for(int i=0;i<len;i++)
 	{
-		currentVertexIndex = 0;
 		WavefrontObject *o = new WavefrontObject;
 		// Load the wavefront object
 		o->name = readString(fp);
@@ -105,6 +107,7 @@ WavefrontModel::WavefrontModel(int assetId, std::istream &fp) : Asset(assetId)
 				o->indecies[v] = assocMap[temp];
 			}
 		}
+		this->objects.push_back(o);
 	}
 }
 WavefrontModel::~WavefrontModel()
@@ -113,9 +116,31 @@ WavefrontModel::~WavefrontModel()
 }
 void WavefrontModel::postload()
 {
-	for(WavefrontObject &obj : this->objects)
+	glGenVertexArrays(1, &this->vertexArrayID);
+	glBindVertexArray(this->vertexArrayID);
+	
+	glGenBuffers(1, &this->vertexDataBufferID);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
+	glBufferData(GL_ARRAY_BUFFER, this->dataBuffer.size()*sizeof(float), &this->dataBuffer[0], GL_STATIC_DRAW);
+	
+	for(WavefrontObject *object : this->objects)
 	{
-		//Allocate index buffer
-		//push index data (fixed, size)
+		glGenBuffers(1, &object->indexBufferID);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*sizeof(int), object->indecies, GL_STATIC_DRAW);
+	}
+}
+void WavefrontModel::render(render::RenderManager *rManager, GLuint shaderVertexPositionID)
+{
+	//Select shader
+	glBindVertexArray(this->vertexArrayID);
+	
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
+	glVertexAttribPointer(shaderVertexPositionID, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
+	
+	for(WavefrontObject *object : this->objects)
+	{
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
+		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_INT, 0);
 	}
 }

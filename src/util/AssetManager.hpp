@@ -8,8 +8,8 @@ namespace render {
 	class MD5Model;
 }
 
-#define ASSET_WAVEFRONT 0
-#define ASSET_MTLLIB 1
+#define ASSET_MTLLIB 0
+#define ASSET_WAVEFRONT 1
 #define ASSET_MD5MESH 2
 #define ASSET_MD5ANIM 3
 #define ASSET_FONT 4
