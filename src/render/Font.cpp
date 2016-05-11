@@ -12,10 +12,11 @@ Font::Font(std::string fontfamily, float heightMM)
 	{
 		return;
 	}
-	const char *fullFontPath = ("./res/fonts/"+fontfamily).c_str();
-	//std::cout << (FONT_RESOURCE_FOLDER+fontfamily) << std::endl;
 	this->face = new FT_Face;
-	if(FT_New_Face(Font::library, "./res/fonts/cour.ttf", 0, this->face))
+	FT_Byte fontData[] = {
+		#include "cour.h"
+	};
+	if(FT_New_Memory_Face(Font::library, fontData, sizeof(fontData), 0, this->face))
 	{
 		std::cerr << "Failed to load font face" << std::endl;
 		std::exit(1);

@@ -44,21 +44,25 @@ Element *Element::setX(float x)
 {
 	this->x = x;
 	this->onElementResize();
+	return this;
 }
 Element *Element::setY(float y)
 {
 	this->y = y;
 	this->onElementResize();
+	return this;
 }
 Element *Element::setWidth(float width)
 {
 	this->width = width;
 	this->onElementResize();
+	return this;
 }
 Element *Element::setHeight(float height)
 {
 	this->height = height;
 	this->onElementResize();
+	return this;
 }
 Element *Element::setSize(float x, float y, float width, float height)
 {
@@ -67,6 +71,7 @@ Element *Element::setSize(float x, float y, float width, float height)
 	this->width = width;
 	this->height = height;
 	this->onElementResize();
+	return this;
 }
 bool Element::isInside(float x, float y)
 {

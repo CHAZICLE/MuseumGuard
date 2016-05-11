@@ -11,6 +11,8 @@
 #include "util/DeltaTime.hpp"
 #include "util/AssetManager.hpp"
 
+using util::AssetManager;
+
 #include "WindowScreenManager.hpp"
 
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
@@ -88,8 +90,17 @@ void WindowScreenManager::run()
 {
 	render::RenderManager renderManager;
 	util::DeltaTime deltaTime(true, 60);
+	AssetManager *am = AssetManager::getAssetManager();
+	long loop = 0;
 	while(!glfwWindowShouldClose(this->window))
 	{
+		// Postload when ready
+		if(am!=0 && am->postload())
+		{
+			am = 0;
+			std::cout << "Postload " << loop << std::endl;
+		}
+
 		// Get screen dimensions
 		glfwGetFramebufferSize(this->window, &windowWidthPx, &windowHeightPx);
 		if(windowWidthPx!=this->lastWindowWidthPx || windowHeightPx!=this->lastWindowHeightPx)
@@ -124,6 +135,7 @@ void WindowScreenManager::run()
 		// Update frame buffer
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
+		loop++;
 	}
 }
 void WindowScreenManager::close()
