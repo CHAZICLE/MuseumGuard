@@ -1,7 +1,7 @@
 #include <iostream>
+#include "util/StreamUtils.hpp"
 
 #include "MD5Model.hpp"
-#include "util/StreamUtils.hpp"
 
 using namespace util;
 using namespace util::StreamUtils;
@@ -11,28 +11,25 @@ MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
 	//load joints and meshes
-	int numJoints;
-	int numMeshes;
-	fp.read((char *)&numJoints, sizeof(int));
-	fp.read((char *)&numMeshes, sizeof(int));
-	std::cout << "numJoints=" << numJoints << ", numMeshes=" << numMeshes << std::endl;
-	
+	int numJoints = readInt(fp);
 	for(int j=0;j<numJoints;j++)
 	{
 		MD5Joint joint;
 		// Read the joint data
 		joint.name = readString(fp);
-		fp.read((char *)&joint.parent, sizeof(int));
+		joint.parent = readInt(fp);
 		joint.pos = readVec3f(fp);
 		joint.ori = readVec3f(fp);
 		joints.push_back(joint);
-		//std::cout << joint;
 	}
+	int numMeshes = readInt(fp);
+	//meshes.append((shader_name, numverts, verts, numtris, tris, numweights, weights))
 	for(int i=0;i<numMeshes;i++)
 	{
 		MD5Mesh mesh;
 		mesh.shader_name = readString(fp);
 		int numverts = readInt(fp);
+		//verts.append((vertIndex, tex, startWeight, countWeight))
 		for(int i=0;i<numverts;i++)
 		{
 			MD5Vertex vertex;
@@ -43,12 +40,14 @@ MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 			mesh.verts.push_back(vertex);
 		}
 		int numtris = readInt(fp);
+		//tris.append((triIndex, vertIndex0, vertIndex1, vertIndex2))
 		for(int i=0;i<numtris;i++)
 		{
-			MD5Tri tri = {readInt(fp), readInt(fp), readInt(fp), readInt(fp)};
+			MD5Primitive tri = {readInt(fp), readInt(fp), readInt(fp), readInt(fp)};
 			mesh.tris.push_back(tri);
 		}
 		int numweights = readInt(fp);
+		//weights.append((weightIndex, joint, bias, pos))
 		for(int i=0;i<numweights;i++)
 		{
 			MD5Weight weight;
@@ -57,9 +56,10 @@ MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 			weight.bias = readFloat(fp);
 			weight.pos = readVec3f(fp);
 			mesh.weights.push_back(weight);
+			//std::cout << weight.index << ":" << weight.pos.x << ", " << weight.pos.y << ", " << weight.pos.z << std::endl;
 		}
+		meshes.push_back(mesh);
 	}
-	//Allocate vertex array objects and buffer objects
 }
 MD5Model::~MD5Model()
 {
@@ -74,6 +74,14 @@ void MD5Model::render()
 		
 		//Push shader variables
 		//draw
+}
+void MD5Model::write(std::ostream &ost) const
+{
+	ost << "[" << this->getAssetID() << ":" << this->getName() << ".md5mesh]";
+	for(const render::MD5Joint &joint : this->joints)
+	{
+		ost << joint;
+	}
 }
 void MD5Model::postload()
 {

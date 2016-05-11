@@ -3,6 +3,11 @@
 
 namespace render{
 	class MD5Model;
+	typedef struct MD5Joint MD5Joint;
+	typedef struct MD5Vertex MD5Vertex;
+	typedef struct MD5Primitive MD5Primitive;
+	typedef struct MD5Weight MD5Weight;
+	typedef struct MD5Mesh MD5Mesh;
 }
 
 #include <string>
@@ -11,42 +16,45 @@ namespace render{
 #include <glm/glm.hpp>
 #include "util/AssetManager.hpp"
 
+std::ostream &operator<<(std::ostream &ost, const render::MD5Model &model);
+std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint);
+
 namespace render {
 
-	typedef struct {
+	struct MD5Joint {
 		std::string name;
 		int parent;
 		glm::vec3 pos;
 		glm::vec3 ori;
-	} MD5Joint;
+	};
 
-	typedef struct {
+	struct MD5Vertex {
 		int index;
 		glm::vec2 tex;
 		int startWeight;
 		int countWeight;
-	} MD5Vertex;
+	};
 
-	typedef struct {
+	struct MD5Primitive {
 		int index;
 		int vertex0;
 		int vertex1;
 		int vertex2;
-	} MD5Tri;
+	};
 
-	typedef struct {
+	struct MD5Weight {
 		int index;
 		int joint;
 		float bias;
 		glm::vec3 pos;
-	} MD5Weight;
+	};
 
-	typedef struct {
+	struct MD5Mesh {
 		std::string shader_name;
 		std::list<MD5Vertex> verts;
-		std::list<MD5Tri> tris;
+		std::list<MD5Primitive> tris;
 		std::list<MD5Weight> weights;
-	} MD5Mesh;
+	};
 
 	//joints.append((name, parent, pos, ori))
 	//meshes.append((shader_name, numverts, verts, numtris, tris, numweights, weights))
@@ -61,12 +69,14 @@ namespace render {
 			MD5Model(int assetId, std::istream &fp);
 			virtual ~MD5Model();
 			void render();
+			virtual void write(std::ostream &ost) const;
 			virtual void postload();
 		private:
 			std::list<MD5Joint> joints;
+			std::list<MD5Mesh> meshes;
+		friend std::ostream &::operator<<(std::ostream &ost, const render::MD5Model &model);
 	};
 }
 
-std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint);
 
 #endif

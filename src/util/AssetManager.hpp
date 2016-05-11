@@ -3,21 +3,25 @@
 
 namespace util {
 	class AssetManager;
+	class Asset;
 }
 namespace render {
 	class MD5Model;
 }
 
+
 #define ASSET_MTLLIB 0
 #define ASSET_WAVEFRONT 1
 #define ASSET_MD5MESH 2
 #define ASSET_MD5ANIM 3
-#define ASSET_FONT 4
-#define ASSET_DDS 5
 
 #include <mutex>
 #include <list>
 #include <thread>
+#include <vector>
+#include <ostream>
+
+std::ostream &operator<<(std::ostream &ost, const util::Asset &asset);
 
 namespace util {
 	class AssetManager {
@@ -25,6 +29,7 @@ namespace util {
 			static AssetManager *getAssetManager();
 			void init();
 			void run();
+			bool postload();
 			float getProgress();
 		private:
 			static AssetManager *instance;
@@ -33,13 +38,15 @@ namespace util {
 			std::thread *assetManagerThread;
 			std::mutex progress_mutex;
 			std::list<render::MD5Model *> models;
-			
+			std::vector<Asset *> assets;
+			bool preload_complete,postload_complete;
 	};
 	class Asset {
 		public:
 			Asset(int assetId);
-			int getAssetID();
-			std::string getName();
+			int getAssetID() const;
+			std::string getName() const;
+			virtual void write(std::ostream &ost) const;
 			virtual void postload() = 0;
 		private:
 			int _assetId;
