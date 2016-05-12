@@ -1,5 +1,5 @@
-#ifndef __WAVEFRONTMODEL_H_INCLUDED__
-#define __WAVEFRONTMODEL_H_INCLUDED__
+#ifndef __OBJMODEL_H_INCLUDED__
+#define __OBJMODEL_H_INCLUDED__
 
 namespace render {
 	struct FaceKey;
@@ -42,7 +42,7 @@ namespace render {
 		bool s;
 		int numPrimitives;//triangles/faces
 		//int numVerticies = numPrimitives*3
-		int *indecies;//length = numVerticies
+		GLuint *indecies;//length = numVerticies
 		GLuint indexBufferID;
 	};
 	class OBJModel : public util::Asset {
@@ -57,7 +57,7 @@ namespace render {
 			int dataBufferStride;
 			int dataBufferTexturesOffset;
 			int dataBufferNormalsOffset;
-			std::vector<float> dataBuffer;
+			std::vector<GLfloat> dataBuffer;
 			std::list<OBJObject *> objects;
 			GLuint vertexArrayID,vertexDataBufferID;
 	};

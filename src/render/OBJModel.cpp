@@ -65,15 +65,15 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 		o->numPrimitives = readInt(fp);
 		int numVerticies = o->numPrimitives*3;
 		int *objectIndecies = new int[numVerticies*vertexStride];
-		o->indecies = new int[numVerticies];
+		o->indecies = new GLuint[numVerticies];
 		fp.read((char *) objectIndecies, sizeof(int)*numVerticies*vertexStride);
 		// Store the faces
 		for(int v=0;v<numVerticies;v++)
 		{
 			// Load the vertex indexes for the components of the vertex
-			faceKey.vertexPositionIndex = objectIndecies[v*vertexStride];
-			faceKey.vertexTextureIndex = (lenVertexTextures>0 ? objectIndecies[v*vertexStride+vertexTexturesOffset] : -1);
-			faceKey.vertexNormalIndex = (lenVertexNormals>0 ? objectIndecies[v*vertexStride+vertexNormalsOffset] : -1);
+			faceKey.vertexPositionIndex = objectIndecies[v*vertexStride]-1;
+			faceKey.vertexTextureIndex = (lenVertexTextures>0 ? objectIndecies[v*vertexStride+vertexTexturesOffset]-1 : -1);
+			faceKey.vertexNormalIndex = (lenVertexNormals>0 ? objectIndecies[v*vertexStride+vertexNormalsOffset]-1 : -1);
 			
 			std::unordered_map<struct FaceKey, int, FaceKeyHasher>::const_iterator findFace = assocMap.find(faceKey);
 			if(findFace==assocMap.end())//If vertex is not already associated
@@ -113,37 +113,38 @@ OBJModel::~OBJModel()
 }
 void OBJModel::postload()
 {
+	// Load
 	glGenVertexArrays(1, &this->vertexArrayID);
 	glBindVertexArray(this->vertexArrayID);
 	
 	glGenBuffers(1, &this->vertexDataBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
-	glBufferData(GL_ARRAY_BUFFER, this->dataBuffer.size()*sizeof(float), &this->dataBuffer[0], GL_STATIC_DRAW);
-	
+	glBufferData(GL_ARRAY_BUFFER, this->dataBuffer.size()*sizeof(GLfloat), &this->dataBuffer[0], GL_STATIC_DRAW);
+
 	for(OBJObject *object : this->objects)
 	{
 		glGenBuffers(1, &object->indexBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*sizeof(int), object->indecies, GL_STATIC_DRAW);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*3*sizeof(GLuint), object->indecies, GL_STATIC_DRAW);
 	}
 }
 void OBJModel::render(render::RenderManager *rManager, GLuint shaderVertexPositionID)
 {
-	//Select shader
 	glBindVertexArray(this->vertexArrayID);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
+	glEnableVertexAttribArray(shaderVertexPositionID);
 	glVertexAttribPointer(shaderVertexPositionID, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
 	
 	for(OBJObject *object : this->objects)
 	{
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
-		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_INT, 0);
+		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_UNSIGNED_INT, 0);
 	}
 }
 void OBJModel::write(std::ostream &ost) const
 {
-	ost << "[" << this->getAssetID() << ":" << this->getName() << ".obj] " << this->dataBuffer.size()/this->dataBufferStride << " verticies by " << this->dataBufferStride << " attributes, " << this->objects.size() << " objects:" << std::endl;
+	ost << "[" << this->getAssetID() << ":" << this->getName() << ".obj] " << this->dataBuffer.size()/this->dataBufferStride << " verticies by " << this->dataBufferStride << " attributes (" << this->dataBuffer.size() << " dbuf size), " << this->objects.size() << " objects:" << std::endl;
 	for(render::OBJObject *o : this->objects)
 		ost << *o << std::endl;
 }
