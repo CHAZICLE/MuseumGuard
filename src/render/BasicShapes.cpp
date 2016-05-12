@@ -113,6 +113,8 @@ void BasicShapes::drawLine(glm::vec3 start, glm::vec3 end, GLuint vertexPosition
 
 	glBindBuffer(GL_ARRAY_BUFFER, BasicShapes::lineVertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_DYNAMIC_DRAW);
+
+	glEnableVertexAttribArray(vertexPositionPointer);
 	glVertexAttribPointer(vertexPositionPointer, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glDrawArrays(GL_LINES, 0, 2);
