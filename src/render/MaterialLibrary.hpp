@@ -1,30 +1,12 @@
 #ifndef __MATERIALLIBRARY_H_INCLUDED__
 #define __MATERIALLIBRARY_H_INCLUDED__
 
-#define MASK_Ka 1
-#define MASK_Kd 2
-#define MASK_Ks 4
-#define MASK_Tf 8
-#define MASK_d 16
-#define MASK_Ns 32
-#define MASK_Ni 64
-#define MASK_illum 128
-#define MASK_sharpness 256
-#define MASK_map_Ka 512
-#define MASK_map_Kd 1024
-#define MASK_map_Ks 2048
-#define MASK_map_Ns 4096
-#define MASK_map_d 8192
-#define MASK_disp 16384
-#define MASK_decal 32768
-#define MASK_bump 65536
-
 namespace render {
 	class MaterialLibrary;
 	typedef struct Material Material;
 }
 
-
+#include "render/MaterialData.h"
 #include "util/AssetManager.hpp"
 #include <vector>
 #include <ostream>
