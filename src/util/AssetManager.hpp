@@ -20,27 +20,11 @@ namespace render {
 #include <thread>
 #include <vector>
 #include <ostream>
+#include "util/AssetsMeta.h"
 
 std::ostream &operator<<(std::ostream &ost, const util::Asset &asset);
 
 namespace util {
-	class AssetManager {
-		public:
-			static AssetManager *getAssetManager();
-			void init();
-			void run();
-			bool postload();
-			float getProgress();
-		private:
-			static AssetManager *instance;
-			int progress_current;
-			int progress_total;
-			std::thread *assetManagerThread;
-			std::mutex progress_mutex;
-			std::list<render::MD5Model *> models;
-			std::vector<Asset *> assets;
-			bool preload_complete,postload_complete;
-	};
 	class Asset {
 		public:
 			Asset(int assetId);
@@ -53,6 +37,23 @@ namespace util {
 			std::string name;
 		protected:
 			void setName(std::string name);
+	};
+	class AssetManager {
+		public:
+			static AssetManager *getAssetManager();
+			void init();
+			void run();
+			bool postload();
+			float getProgress();
+			Asset *getAsset(int assetId);
+		private:
+			static AssetManager *instance;
+			int progress_current;
+			int progress_total;
+			std::thread *assetManagerThread;
+			std::mutex progress_mutex;
+			Asset *assets[ASSETS_COUNT];
+			bool preload_complete,postload_complete;
 	};
 }
 

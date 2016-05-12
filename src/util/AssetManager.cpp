@@ -2,10 +2,11 @@
 #include <fstream>
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
-#include "render/MD5Model.hpp"
-#include "render/OBJModel.hpp"
 #include "util/StreamUtils.hpp"
 #include "render/MaterialLibrary.hpp"
+#include "render/OBJModel.hpp"
+#include "render/MD5Model.hpp"
+#include "render/MD5AnimatedModel.hpp"
 
 #include "AssetManager.hpp"
 
@@ -33,6 +34,7 @@ void AssetManager::init()
 	this->assetManagerThread = new std::thread(assetManagerThreadRun);
 	this->preload_complete = false;
 	this->postload_complete = false;
+	memset(assets, 0, sizeof(assets));
 }
 void AssetManager::run()
 {
@@ -52,12 +54,13 @@ void AssetManager::run()
 	Asset *asset;
 	int assetType = 0, assetId = 0;
 	render::MaterialLibrary *mtlib = 0;
-	render::MD5Model *md5Model = 0;
 	render::OBJModel *wvModel = 0;
+	render::MD5Model *md5Model = 0;
+	render::MD5AnimatedModel *md5anim = 0;
 	while(!fp.eof())
 	{
 		fp.read((char *)&assetType, 1);
-//		std::cout << assetType << std::endl;
+		std::cout << "Read asset type: " << assetType << std::endl;
 		if(fp.eof())
 			break;
 		switch(assetType)
@@ -75,12 +78,14 @@ void AssetManager::run()
 				asset = md5Model;
 				break;
 			case ASSET_MD5ANIM:
+				md5anim = new render::MD5AnimatedModel(assetId, fp);
+				asset = md5anim;
 				break;
 			default:
 				std::cerr << "ERROR: Unknown asset type" << std::endl;
 				return;
 		}
-		this->assets.push_back(asset);
+		this->assets[assetId] = asset;
 		std::cout << *asset << std::endl;
 		assetId++;
 	}
@@ -110,6 +115,10 @@ float AssetManager::getProgress()
 	float f = (float)progress_current/(float)progress_total;
 	progress_mutex.unlock();
 	return f;
+}
+Asset *AssetManager::getAsset(int assetId)
+{
+	return this->assets[assetId];
 }
 Asset::Asset(int assetId)
 {
