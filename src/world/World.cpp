@@ -8,6 +8,8 @@
 #include "util/DeltaTime.hpp"
 #include <iostream>
 #include "input/controls/DebugControls.hpp"
+#include "util/AssetManager.hpp"
+#include "render/OBJModel.hpp"
 
 #include "World.hpp"
 
@@ -38,7 +40,7 @@ void World::tick(util::DeltaTime *deltaTime)
 void World::render(render::RenderManager *manager)
 {
 	manager->enableDepth();
-	manager->enableCullFace();
+	//manager->enableCullFace();
 	
 	manager->V = glm::lookAt(
 			this->player->getPosition(),
@@ -67,14 +69,25 @@ void World::render(render::RenderManager *manager)
 				BasicShapes::drawLine(glm::vec3(x,0,y), glm::vec3(x+10,0,y+10), shaders::program_solidcolor_vertexPosition);
 		}
 	}
+
 	
 	// Render cube
+	/*
 	glUseProgram(shaders::program_modelTest);
 	manager->M = glm::scale(glm::mat4(1.0f), glm::vec3(10,10,10));
 	manager->markMDirty();
 	manager->setMVPMatrix(shaders::program_modelTest_MVP);
 	BasicShapes::renderUnitCube(shaders::program_modelTest_vertexPosition);
+	*/
+
+	glUseProgram(shaders::program_modelTest);
+	manager->M = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
+	manager->markMDirty();
+	manager->setMVPMatrix(shaders::program_modelTest_MVP);
+	util::Asset *a = util::AssetManager::getAssetManager()->getAsset(ASSET_WEIRDSHAPE_OBJ);
+	if(a!=0)
+		((render::OBJModel *)a)->render(manager, shaders::program_solidcolor_vertexPosition);
 	
-	manager->disableCullFace();
 	manager->disableDepth();
+//	manager->disableCullFace();
 }
