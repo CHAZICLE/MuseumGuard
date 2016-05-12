@@ -29,12 +29,12 @@ if __name__=="__main__":
             writeType(object_fp, mtl)
         elif ext=="md5mesh":
             mtl = parseMD5Mesh(source_fp, verbose)
-            object_fp.write(bytes([1]))
+            object_fp.write(bytes([2]))
             writeType(object_fp, getFileName(fileToConvert))
             writeType(object_fp, mtl)
         elif ext=="md5anim":
             mtl = parseMD5Anim(source_fp, verbose)
-            object_fp.write(bytes([1]))
+            object_fp.write(bytes([3]))
             writeType(object_fp, getFileName(fileToConvert))
             writeType(object_fp, mtl)
         #print(mtl)

@@ -65,7 +65,7 @@ def parse3f(current, line, key):
     m = re.search("^"+key+"\s(-?\d+\.{0,1}\d+)\s(-?\d+\.{0,1}\d+)\s(-?\d+\.{0,1}\d+)$", line);
     if not m:
         return current
-    return [float(m.group(1)), float(m.group(1)), float(m.group(1))]
+    return [float(m.group(1)), float(m.group(2)), float(m.group(3))]
 
 if __name__=="__main__":
     pass

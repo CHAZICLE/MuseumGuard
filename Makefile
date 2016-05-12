@@ -14,7 +14,10 @@ DEPENDS = $(patsubst $(SRCDIR)/%.cpp, $(DEPDIR)/%.d, $(SOURCES))
 SHADERS = $(shell find $(SRCDIR)/render/shaders/glsl -type f -name '*.glsl.c')
 
 ### Assets
+ASSETS_FILE = assets.gz
 ASSETS_CONVERT_HOOK = hooks/asset_convert.py
+ASSETS_META_HOOK = hooks/asset_makemeta.py
+ASSETS_META_FILE = src/util/AssetsMeta.h
 
 # MTL Files
 ASSETS_MTL = $(shell find $(SRCDIR) -type f -name '*.mtl')
@@ -37,14 +40,18 @@ ASSETS_O = $(ASSETS_MTL_O) $(ASSETS_OBJ_O) $(ASSETS_MD5MESH_O) $(ASSETS_MD5ANIM_
 
 ### Main
 
-all: assets.gz $(DEPENDS) $(BIN)
+all: $(ASSETS_FILE) $(DEPENDS) $(BIN)
 
 clean:
-	@rm -vf $(BIN) assets.gz
+	@rm -vf $(BIN) $(ASSETS_FILE)
 	@rm -vrf $(BINDIR)
 
-assets.gz: $(ASSETS_O)
+$(ASSETS_META_FILE): $(ASSETS_FILE) $(ASSETS_META_HOOK)
+	$(ASSETS_META_HOOK) --source $(ASSETS) --object $(ASSETS_O) --meta "$@"
+
+$(ASSETS_FILE): $(ASSETS_O)
 	cat $(ASSETS_O) > "$@"
+
 
 $(BIN):  $(OBJECTS)
 	$(CXX) $(LDFLAGS) -o $(BIN) $(OBJECTS)
