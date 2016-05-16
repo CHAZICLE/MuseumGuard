@@ -4,10 +4,11 @@
 #include "input/Controls.hpp"
 #include "gui/ScreenManager.hpp"
 #include "gui/screens/MainMenu.hpp"
+#include "gui/screens/GamePauseMenu.hpp"
 #include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 
 #include "GameView.hpp"
-
 
 namespace screens {
 
@@ -18,18 +19,18 @@ GameView::GameView() {
 GameView::~GameView() {
 	delete this->world;
 }
-void GameView::render(util::DeltaTime *deltaTime, render::RenderManager *manager) {
-	manager = new render::RenderManager();
-	manager->P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 1.f, 10000.f);
-	manager->markPDirty();
-	this->world->tick(deltaTime);
+void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager) {
+	render::RenderManager gameRenderManager;
+	gameRenderManager.P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 1.f, 10000.f);
+	gameRenderManager.markPDirty();
+	this->world->tick(deltaTime, this->manager->isScreenSurface(this));
 	this->world->render(manager);
 }
-bool GameView::onControlEvent(int control, int action)
+bool GameView::onControlEvent(Control control, int action)
 {
-	if(control==CONTROL_GUI_ESCAPE && (action&CONTROL_KEYACTION_PRESS))
+	if(control==CONTROL_GUI_ESCAPE && action==CONTROL_KEYACTION_RELEASE)
 	{
-		this->manager->openRootScreen(new MainMenu());
+		this->manager->openScreen(new GamePauseMenu());
 		return true;
 	}
 	return false;

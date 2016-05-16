@@ -9,6 +9,8 @@
 
 #define RGBf(r,g,b) r/255.f, g/255.f, b/255.f
 
+using namespace render;
+
 render::Font *Button::buttonFont = 0;
 Button::Button(std::string text)
 {

@@ -56,7 +56,7 @@ namespace render {
 	void RenderManager::enableCullFace() {
 		this->doCullFace = true;
 		glCullFace(GL_FRONT);
-		glFrontFace(GL_CW);
+		glFrontFace(GL_CCW);
 		glEnable(GL_CULL_FACE);
 	}
 	void RenderManager::disableCullFace() {

@@ -15,7 +15,7 @@ class PathTest : public Screen {
 	public:
 		PathTest();
 		~PathTest();
-		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		PathHolder *pathHolder;
 		PathFinder *pathFinder;
 		double lastTime;

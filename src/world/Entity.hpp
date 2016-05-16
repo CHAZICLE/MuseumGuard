@@ -20,7 +20,7 @@ class Entity {
 		void translate(glm::vec3 location);
 		glm::quat getOrientation();
 		void setOrientation(glm::quat rotation);
-		virtual void render(render::RenderManager *manager);
+		virtual void render(render::RenderManager &manager);
 };
 
 #endif

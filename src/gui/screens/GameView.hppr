@@ -20,8 +20,8 @@ namespace screens {
 	public:
 		GameView();
 		virtual ~GameView();
-		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
-		bool onControlEvent(Control control, int action);
+		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		bool onControlEvent(int control, int action);
 		virtual void onScreenResize();
 		virtual bool supportsCursor();
 	};

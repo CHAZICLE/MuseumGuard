@@ -5,12 +5,13 @@ namespace util {
 	class Asset;
 }
 namespace render {
+	class RenderManager;
 	typedef struct MD5AnimatedModelJoint MD5AnimatedModelJoint;
 	typedef struct MD5AnimatedModelBound MD5AnimatedModelBound;
-	typedef struct MD5AnimatedModelFrame MD5AnimatedModelFrame;
 }
 
 #include "util/AssetManager.hpp"
+#include "render/MD5Model.hpp"
 
 namespace render {
 	struct MD5AnimatedModelJoint {
@@ -22,15 +23,13 @@ namespace render {
 	struct MD5AnimatedModelBound {
 		float minX,minY,minZ,maxX,maxY,maxZ;
 	};
-	struct MD5AnimatedModelFrame {
-		float posX,posY,posZ,oriX,oriY,oriZ;
-	};
 	class MD5AnimatedModel : public util::Asset {
 		public:
 			MD5AnimatedModel(int assetId, std::istream &fp);
 			~MD5AnimatedModel();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
+			void render(render::RenderManager &manager, MD5Model &model, float time);
 		private:
 			int numFrames;
 			int numJoints;
@@ -38,7 +37,8 @@ namespace render {
 			int numAnimatedComponents;
 			std::vector<MD5AnimatedModelJoint> hierarchy;
 			std::vector<MD5AnimatedModelBound> bounds;
-			std::vector<MD5AnimatedModelFrame> frames;
+			Skeleton baseFrame;
+			std::vector<Skeleton> frames;
 			float *frameData;
 	};
 }

@@ -14,7 +14,7 @@ ControlScheme::~ControlScheme()
 {
 	
 }
-void ControlScheme::tick(DeltaTime *deltaTime)
+void ControlScheme::tick(DeltaTime &deltaTime)
 {
 	
 }

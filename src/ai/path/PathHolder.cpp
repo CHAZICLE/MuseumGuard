@@ -7,6 +7,8 @@
 
 #include "PathHolder.hpp"
 
+using namespace render;
+
 inline struct PathNode *getNode(PathHolder *h, int x, int y)
 {
 	unsigned long i = x*50+y;
@@ -61,7 +63,7 @@ PathHolder::~PathHolder()
 {
 	
 }
-void PathHolder::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void PathHolder::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 {
 	glEnable(GL_BLEND);
 	for(std::vector<struct PathNode *>::iterator it = this->nodes.begin(); it != this->nodes.end(); it++)
@@ -71,17 +73,17 @@ void PathHolder::render(util::DeltaTime *deltaTime, render::RenderManager *manag
 		for(std::vector<struct PathNodeLink *>::iterator j = node->links.begin(); j != node->links.end(); j++)
 		{
 			struct PathNodeLink *nodeLnk = *j;
-			manager->M = glm::mat4(1.0f);
-			manager->markMDirty();
-			manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+			rManager.M = glm::mat4(1.0f);
+			rManager.markMDirty();
+			rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
 			glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.f, 0.4f, 1.f);
 			BasicShapes::drawLine(nodeLnk->a->position, nodeLnk->b->position, shaders::program_solidcolor_vertexPosition);
 		}
 		// Draw a point for the node
 		glUseProgram(shaders::program_solidcolor);
-		manager->M = glm::translate(glm::mat4(1.0f), node->position);
-		manager->markMDirty();
-		manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+		rManager.M = glm::translate(glm::mat4(1.0f), node->position);
+		rManager.markMDirty();
+		rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
 		if(node->current)
 			glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.f, 0.f, 1.f);
 		else if(node->closed)

@@ -28,7 +28,7 @@ void Entity::setOrientation(glm::quat rotation)
 {
 	this->orientation = rotation;
 }
-void Entity::render(render::RenderManager *manager)
+void Entity::render(render::RenderManager &manager)
 {
 	
 }

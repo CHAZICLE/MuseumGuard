@@ -17,7 +17,7 @@ class PathHolder {
 		std::vector<struct PathNode *> nodes;
 		PathHolder();
 		~PathHolder();
-		void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 };
 
 #endif

@@ -11,7 +11,7 @@ namespace controls {
 		public:
 			DebugControls(Entity *entity);
 			~DebugControls();
-			virtual void tick(util::DeltaTime *deltaTime);
+			virtual void tick(util::DeltaTime &deltaTime);
 	};
 }
 

@@ -26,7 +26,7 @@ void Screen::addElement(Element *e)
 	this->elements.push_back(e);
 	e->screen = this;
 }
-void Screen::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void Screen::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {
 	for(std::list<Element *>::iterator it = this->elements.begin(); it!=this->elements.end(); ++it)
 	{

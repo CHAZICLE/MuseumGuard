@@ -3,6 +3,8 @@
 
 #include "BasicShapes.hpp"
 
+using namespace render;
+
 GLuint BasicShapes::unitMeshArrayID = 0;
 GLuint BasicShapes::unitMeshVertexPositionBufferID = 0;
 GLuint BasicShapes::unitSquareIndexBufferID = 0;
@@ -21,16 +23,11 @@ void BasicShapes::init()
 	glGenBuffers(1, &BasicShapes::lineVertexBufferID);
 	
 	GLubyte unitMesh[] = {
-		// Unit square
+		// Unit square/Close face of Cube
 		0,	0,	0,
 		0,	1,	0,
 		1,	1,	0,
 		1,	0,	0,
-		// Close face of Cube
-		0,	0,	0,//4
-		0,	1,	0,//5
-		1,	1,	0,//6
-		1,	0,	0,//7
 		// Far face of Cube
 		0,	0,	1,//8
 		0,	1,	1,//9
@@ -61,6 +58,40 @@ void BasicShapes::init()
 	
 	GLubyte unitCubeIndicies[] = {
 		// Back
+		7,6,5,
+		7,5,4,
+		// Right side
+		3,2,6,
+		3,6,7,
+		// top
+		1,5,6,
+		1,6,2,
+		// Closest face
+		0,1,2,
+		0,2,3,
+		// Left side
+		4,5,1,
+		4,1,0,
+		// bottom
+		4,0,3,
+		4,3,7,
+/*
+ *  0
+ *  1
+ *  2
+ *  3
+ *  4 0
+ *  5 1
+ *  6 2
+ *  7 3
+ *  8 4
+ *  9 5
+ * 10 6
+ * 11 7
+ * /
+
+
+		// Back
 		11,10,9,
 		11,9,8,
 		// Right side
@@ -78,6 +109,7 @@ void BasicShapes::init()
 		// bottom
 		8,4,7,
 		8,7,11,
+		*/
 	};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitCubeIndexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitCubeIndicies), unitCubeIndicies, GL_STATIC_DRAW);

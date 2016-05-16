@@ -28,8 +28,8 @@ private:
 public:
 	World();
 	~World();
-	void tick(util::DeltaTime *deltaTime);
-	void render(render::RenderManager *manager);
+	void tick(util::DeltaTime &deltaTime, bool surface);
+	void render(render::RenderManager &manager);
 };
 
 #endif

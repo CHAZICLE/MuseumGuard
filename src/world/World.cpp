@@ -10,10 +10,13 @@
 #include "input/controls/DebugControls.hpp"
 #include "util/AssetManager.hpp"
 #include "render/OBJModel.hpp"
+#include "render/MD5Model.hpp"
+#include "render/MD5AnimatedModel.hpp"
 
 #include "World.hpp"
 
 using namespace entities;
+using namespace render;
 
 World::World()
 {
@@ -31,31 +34,33 @@ World::~World()
 {
 	
 }
-void World::tick(util::DeltaTime *deltaTime)
+void World::tick(util::DeltaTime &deltaTime, bool surface)
 {
 	this->viewDirection = glm::vec3( 0, 0,-1)*this->player->getOrientation();
 	this->viewUp = glm::vec3(0, 1, 0)*this->player->getOrientation();
-	this->controlScheme->tick(deltaTime);
+	if(surface)
+		this->controlScheme->tick(deltaTime);
 }
-void World::render(render::RenderManager *manager)
+void World::render(render::RenderManager &manager)
 {
-	manager->enableDepth();
-	//manager->enableCullFace();
+	manager.enableDepth();
+	manager.enableCullFace();
 	
-	manager->V = glm::lookAt(
+	manager.V = glm::lookAt(
 			this->player->getPosition(),
 			this->player->getPosition() + viewDirection,
 			viewUp
 		);
-	manager->markVDirty();
+	manager.markVDirty();
 	this->player->render(manager);
 	this->enemy->render(manager);
 	
+	/*
 	// Render lines
 	glUseProgram(shaders::program_solidcolor);
-	manager->M = glm::mat4(1.0f);
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+	manager.M = glm::mat4(1.0f);
+	manager.markMDirty();
+	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
 	glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.0f, 0.0f, 1.0f);
 	for(int x=-50;x<=50;x+=10)
 	{
@@ -68,26 +73,43 @@ void World::render(render::RenderManager *manager)
 			if(x!=50 && y!=50)
 				BasicShapes::drawLine(glm::vec3(x,0,y), glm::vec3(x+10,0,y+10), shaders::program_solidcolor_vertexPosition);
 		}
-	}
+	}*/
 
 	
 	// Render cube
 	/*
 	glUseProgram(shaders::program_modelTest);
-	manager->M = glm::scale(glm::mat4(1.0f), glm::vec3(10,10,10));
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_modelTest_MVP);
+	manager.M = glm::scale(glm::mat4(1.0f), glm::vec3(10,10,10));
+	manager.markMDirty();
+	manager.setMVPMatrix(shaders::program_modelTest_MVP);
 	BasicShapes::renderUnitCube(shaders::program_modelTest_vertexPosition);
 	*/
 
 	glUseProgram(shaders::program_modelTest);
-	manager->M = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_modelTest_MVP);
-	util::Asset *a = util::AssetManager::getAssetManager()->getAsset(ASSET_WEIRDSHAPE_OBJ);
-	if(a!=0)
-		((render::OBJModel *)a)->render(manager, shaders::program_solidcolor_vertexPosition);
+	manager.M = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
+	manager.markMDirty();
+	manager.setMVPMatrix(shaders::program_modelTest_MVP);
+
+	MD5Model *model = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5MESH);
+	MD5AnimatedModel *aModel = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5ANIM);
+
+	aModel->render(manager, *model, glfwGetTime());
+
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(manager);
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(manager, true, true);
 	
-	manager->disableDepth();
-//	manager->disableCullFace();
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(manager, true, true);
+
+#define RENDER_OBJ(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::OBJModel *>(a)->render(manager, shaders::program_solidcolor_vertexPosition); } } while(0);
+
+//	util::Asset *a = util::AssetManager::getAssetManager()->getAsset(ASSET_WEIRDSHAPE_OBJ);
+//	if(a!=0)
+//		((render::OBJModel *)a)->render(manager, shaders::program_solidcolor_vertexPosition);
+
+	//RENDER_OBJ(ASSET_WEIRDSHAPE_OBJ);
+	//RENDER_OBJ(ASSET_WORLD_OBJ);
+	//RENDER_OBJ(ASSET_CUBE_OBJ);
+	
+	manager.disableDepth();
+	manager.disableCullFace();
 }

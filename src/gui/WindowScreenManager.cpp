@@ -15,6 +15,8 @@ using util::AssetManager;
 
 #include "WindowScreenManager.hpp"
 
+using namespace render;
+
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
 WindowScreenManager::WindowScreenManager() : ScreenManager()
 {
@@ -130,7 +132,7 @@ void WindowScreenManager::run()
 		
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		this->render(&deltaTime, &renderManager);
+		this->render(deltaTime, renderManager);
 		
 		// Update frame buffer
 		glfwSwapBuffers(this->window);

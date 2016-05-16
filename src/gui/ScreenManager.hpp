@@ -70,7 +70,7 @@ class ScreenManager {
 		/**
 		 * Render the screens
 		 */
-		void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		double getWidth();
 		double getHeight();
 };

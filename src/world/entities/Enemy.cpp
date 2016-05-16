@@ -8,6 +8,7 @@
 #include <iostream>
 
 using namespace entities;
+using namespace render;
 
 Enemy::Enemy()
 {
@@ -17,12 +18,12 @@ Enemy::~Enemy()
 {
 	
 }
-void Enemy::render(render::RenderManager *manager)
+void Enemy::render(render::RenderManager &rManager)
 {
 	// Render cube
 	glUseProgram(shaders::program_modelTest);
-	manager->M = glm::scale(glm::translate(glm::mat4(1.0f), this->getPosition()), glm::vec3(1,1,1));
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_modelTest_MVP);
+	rManager.M = glm::scale(glm::translate(glm::mat4(1.0f), this->getPosition()), glm::vec3(1,1,1));
+	rManager.markMDirty();
+	rManager.setMVPMatrix(shaders::program_modelTest_MVP);
 	BasicShapes::renderUnitCube(shaders::program_modelTest_vertexPosition);
 }

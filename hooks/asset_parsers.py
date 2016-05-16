@@ -183,6 +183,7 @@ def parseMD5Mesh(md5mesh_file, verbose=0):
                         ori[1] = float(m.group(7))
                         ori[2] = float(m.group(8))
                         joints.append((name, parent, pos, ori))
+                        print((name, parent, pos, ori))
                     except Exception as e:
                         print("Error loading joint", e)
                 if line2.find("}")>=0:

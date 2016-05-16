@@ -13,7 +13,7 @@ namespace controls {
 		public:
 			ControlScheme(Entity *controlEntity);
 			~ControlScheme();
-			virtual void tick(util::DeltaTime *deltaTime);
+			virtual void tick(util::DeltaTime &deltaTime);
 	};
 };
 

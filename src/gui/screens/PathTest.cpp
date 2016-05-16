@@ -16,7 +16,7 @@ PathTest::~PathTest()
 {
 	
 }
-void PathTest::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void PathTest::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {
 	this->pathHolder->render(deltaTime, manager);
 	/*if(this->lastTime<deltaTime->getTime()-0.1)

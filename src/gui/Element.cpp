@@ -5,6 +5,8 @@
 
 #include "Element.hpp"
 
+using namespace render;
+
 Element::Element()
 {
 	this->x = 0;
@@ -80,10 +82,10 @@ bool Element::isInside(float x, float y)
 		&& this->getY()<=y
 		&& this->getY()+this->getHeight()>=y;
 }
-void Element::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void Element::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {
 	glUseProgram(shaders::program_solidcolor);
-	manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
 	
 	BasicShapes::renderUnitSquare(shaders::program_solidcolor_vertexPosition);
 }

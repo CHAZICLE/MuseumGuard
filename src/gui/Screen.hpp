@@ -28,7 +28,7 @@ class Screen {
 		/**
 		 * Renders the GUI screen
 		 */
-		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		void selectElement(Element *element, bool mouseSelection);
 
 		// Events

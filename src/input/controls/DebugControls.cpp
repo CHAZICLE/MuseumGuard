@@ -22,7 +22,7 @@ DebugControls::~DebugControls()
 {
 	
 }
-void DebugControls::tick(util::DeltaTime *deltaTime)
+void DebugControls::tick(util::DeltaTime &deltaTime)
 {
 	float r;
 	glm::vec3 movement = glm::vec3(0,0,0);
@@ -37,7 +37,7 @@ void DebugControls::tick(util::DeltaTime *deltaTime)
 	}
 	else
 	{
-		r = deltaTime->getTimeDelta()*2.f;
+		r = deltaTime.getTimeDelta()*2.f;
 		this->cursorDeltaX = (this->cursorX-this->lastCursorX)*r;
 		this->cursorDeltaY = (this->cursorY-this->lastCursorY)*r;
 		if(this->cursorDeltaX!=0 || this->cursorDeltaY!=0)
@@ -51,7 +51,7 @@ void DebugControls::tick(util::DeltaTime *deltaTime)
 	this->lastCursorY = this->cursorY;
 
 	// Orientation changes
-	r = 2*deltaTime->getTimeDelta();
+	r = 2*deltaTime.getTimeDelta();
 
 	// Relative Roll
 	if(glfwGetKey(window, GLFW_KEY_1)==GLFW_PRESS)
@@ -72,7 +72,7 @@ void DebugControls::tick(util::DeltaTime *deltaTime)
 		orientation *= glm::angleAxis(r, glm::vec3( 0,-1, 0));
 
 	// Movement Controls
-	r = 30.f*deltaTime->getTimeDelta();
+	r = 30.f*deltaTime.getTimeDelta();
 
 	// Forward/Backward
 	if(glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)
@@ -93,7 +93,7 @@ void DebugControls::tick(util::DeltaTime *deltaTime)
 		movement += glm::vec3( 0, r, 0)*orientation;
 
 	glm::vec3 orientationEuler = glm::eulerAngles(orientation);
-	std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;
+	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;
 
 	this->controlEntity->translate(movement);
 	this->controlEntity->setOrientation(orientation);

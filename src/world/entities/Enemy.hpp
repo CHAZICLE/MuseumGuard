@@ -8,7 +8,7 @@ namespace entities {
 		public:
 			Enemy();
 			virtual ~Enemy();
-			virtual void render(render::RenderManager *manager);
+			virtual void render(render::RenderManager &rManager);
 	};
 }
 

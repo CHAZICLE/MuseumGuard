@@ -30,7 +30,7 @@ void ScreenManager::openRootScreen(Screen *screen)
 void ScreenManager::openScreen(Screen *screen)
 {
 	screen->manager = this;
-	this->screens.push_front(screen);
+	this->screens.push_back(screen);
 	this->onSurfaceScreenChanged(screen);
 }
 void ScreenManager::close()
@@ -49,16 +49,19 @@ Screen *ScreenManager::closeScreen(Screen *screen)
 {
 	if(this->screens.size()<=1)
 		return 0;
-	Screen *s = this->screens.front();
+	Screen *s = this->screens.back();
 	if(screen!=0 && s!=screen)
 		return 0;
-	this->screens.pop_front();
+	this->screens.pop_back();
 	this->onSurfaceScreenChanged(this->screens.front());
 	return s;
 }
+#include <iostream>
+#include <typeinfo>
 bool ScreenManager::onControlEvent(int control, int action)
 {
-	for(std::list<Screen *>::reverse_iterator it = this->screens.rbegin(); it!=this->screens.rend(); it++)
+	//std::cout << "EVENT: control=" << control << ", action=" << action << ", mask=" << (action&CONTROL_KEYACTION_RELEASE) << std::endl;
+	for(std::list<Screen *>::reverse_iterator it = this->screens.rbegin(); it!=this->screens.rend(); ++it)
 	{
 		Screen *screen = *it;
 		if(screen->onControlEvent(control, action))
@@ -92,7 +95,7 @@ void ScreenManager::onSurfaceScreenChanged(Screen *screen)
 {
 	screen->onControlEvent(CONTROL_ACTION_MOUSE, this->lastCursorX, this->lastCursorY, 0, 0);
 }
-void ScreenManager::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void ScreenManager::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {
 	for(std::list<Screen *>::iterator it = this->screens.begin(); it!=this->screens.end(); ++it)
 	{

@@ -37,7 +37,7 @@ class Element {
 		/**
 		 * Renders the GUI screen
 		 */
-		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		/**
 		 * Called by resize methods
 		 */
