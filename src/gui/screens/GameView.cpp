@@ -24,7 +24,7 @@ void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager
 	gameRenderManager.P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 1.f, 10000.f);
 	gameRenderManager.markPDirty();
 	this->world->tick(deltaTime, this->manager->isScreenSurface(this));
-	this->world->render(manager);
+	this->world->render(gameRenderManager);
 }
 bool GameView::onControlEvent(Control control, int action)
 {

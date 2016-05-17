@@ -27,7 +27,7 @@ Button::~Button()
 {
 	
 }
-void Button::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
+void Button::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 {
 	glm::mat4 translationMatrix = glm::translate(glm::mat4(1.0f), glm::vec3(this->getX(), this->getY(), 0));
 	glm::mat4 boxMat;
@@ -36,9 +36,9 @@ void Button::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 	glUseProgram(shaders::program_solidcolor);
 	boxMat = translationMatrix*glm::scale(boxMat, glm::vec3(this->getWidth(), this->getHeight(), 0));
 	
-	manager->M = boxMat;
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+	rManager.M = boxMat;
+	rManager.markMDirty();
+	rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
 
 	if(this->selected)
 		glUniform4fv(shaders::program_solidcolor_inColor, 1, &this->selectedBackgroundColor[0]);
@@ -49,16 +49,16 @@ void Button::render(util::DeltaTime *deltaTime, render::RenderManager *manager)
 
 	// Render debug line
 	glUseProgram(shaders::program_solidcolor);
-	manager->M = translationMatrix;
-	manager->markMDirty();
-	manager->setMVPMatrix(shaders::program_solidcolor_MVP);
+	rManager.M = translationMatrix;
+	rManager.markMDirty();
+	rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
 	glUniform4f(shaders::program_solidcolor_inColor, 0.5f, 0.f, 0.f, 1.f);
 	BasicShapes::drawLine(glm::vec3(0,0,0),glm::vec3(10,10,0),shaders::program_solidcolor_vertexPosition);
 
 	// Render text
 	boxMat = glm::mat4(1.0f);
 	boxMat = glm::translate(boxMat, glm::vec3(this->getX()+1.0f, this->getY()+3.0f, 0));
-	manager->M = boxMat;
-	manager->markMDirty();
-	this->buttonFont->printf(this->text, manager);
+	rManager.M = boxMat;
+	rManager.markMDirty();
+	this->buttonFont->printf(this->text, rManager);
 }

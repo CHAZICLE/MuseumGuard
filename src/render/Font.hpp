@@ -26,8 +26,8 @@ namespace render {
 			Font(std::string fontfamily, float heightMM);
 			~Font();
 			
-			void printf(std::string text, render::RenderManager *rManager);
-			float getTextWidth(std::string text, render::RenderManager *rManager);
+			void printf(std::string text, render::RenderManager &rManager);
+			float getTextWidth(std::string text, render::RenderManager &rManager);
 			void setHeight(float heightMM);
 			void setColor(float r, float g, float b, float a);
 		private:

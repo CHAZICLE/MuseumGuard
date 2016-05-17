@@ -15,7 +15,7 @@ class Button : public Element {
 	public:
 		Button(std::string text);
 		~Button();
-		virtual void render(util::DeltaTime *deltaTime, render::RenderManager *manager);
+		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		static render::Font *buttonFont;
 };
 

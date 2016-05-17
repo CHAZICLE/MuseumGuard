@@ -198,8 +198,26 @@ void WindowScreenManager::onScrollEvent(GLFWwindow* window, double dx, double dy
 void WindowScreenManager::onSurfaceScreenChanged(Screen *screen)
 {
 	if(screen->supportsCursor())
+	{
+		double x = this->supportedCursorLastX;
+		double y = this->supportedCursorLastY;
+
+		glfwGetCursorPos(this->window, &this->unsupportedCursorLastX, &this->unsupportedCursorLastY);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+		glfwSetCursorPos(this->window, x, y);
+
+		y = this->windowHeightPx-y;
+		x = x*this->monitorWidthPx/this->modeWidthPx/this->scale;
+		y = y*this->monitorHeightPx/this->modeHeightPx/this->scale;
+		this->onControlEvent(CONTROL_ACTION_MOUSE, x, y, this->lastX-x, this->lastY-y);
+		this->lastX = x;
+		this->lastY = y;
+	}
 	else
+	{
+		glfwGetCursorPos(this->window, &this->supportedCursorLastX, &this->supportedCursorLastY);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		glfwSetCursorPos(this->window, this->unsupportedCursorLastX, this->unsupportedCursorLastY);
+	}
 	ScreenManager::onSurfaceScreenChanged(screen);
 }

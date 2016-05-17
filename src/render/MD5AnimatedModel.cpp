@@ -121,9 +121,7 @@ void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, f
 
 	manager.disableCullFace();
 	MD5AnimatedModelBound &aabb = this->bounds[frame];
-	std::cout << aabb.minY << ", " << aabb.maxY << std::endl;
 	manager.M = glm::mat4(1.0f);
-	std::cout << aabb.minX << ", " << aabb.minY << ", " << aabb.minZ << " ) ( " << aabb.maxX << ", " << aabb.maxY << ", " << aabb.maxZ << " ) " << std::endl;
 	manager.M = glm::translate(manager.M, glm::vec3(aabb.minX, aabb.minY, aabb.minZ));
 	manager.M = glm::scale(manager.M, glm::vec3(aabb.maxX-aabb.minX, aabb.maxY-aabb.minY, aabb.maxZ-aabb.minZ));
 	manager.markMDirty();

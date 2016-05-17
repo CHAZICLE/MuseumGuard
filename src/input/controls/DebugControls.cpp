@@ -92,7 +92,7 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 	if(glfwGetKey(window, GLFW_KEY_E)==GLFW_PRESS)
 		movement += glm::vec3( 0, r, 0)*orientation;
 
-	glm::vec3 orientationEuler = glm::eulerAngles(orientation);
+	//glm::vec3 orientationEuler = glm::eulerAngles(orientation);
 	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;
 
 	this->controlEntity->translate(movement);

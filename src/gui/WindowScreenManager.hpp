@@ -11,6 +11,7 @@ class WindowScreenManager : public ScreenManager {
 		int lastWindowWidthPx,lastWindowHeightPx,windowWidthPx,windowHeightPx,monitorWidthPx,monitorHeightPx,modeWidthPx,modeHeightPx;
 		double scale;
 		double lastX,lastY;
+		double supportedCursorLastX,supportedCursorLastY,unsupportedCursorLastX,unsupportedCursorLastY;
 	public:
 		WindowScreenManager();
 		virtual ~WindowScreenManager();

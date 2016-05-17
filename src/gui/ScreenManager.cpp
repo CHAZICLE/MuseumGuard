@@ -39,11 +39,11 @@ void ScreenManager::close()
 }
 bool ScreenManager::isScreenSurface(Screen *screen)
 {
-	return this->screens.front()==screen;
+	return this->screens.back()==screen;
 }
 bool ScreenManager::isScreenBase(Screen *screen)
 {
-	return this->screens.back()==screen;
+	return this->screens.front()==screen;
 }
 Screen *ScreenManager::closeScreen(Screen *screen)
 {
@@ -93,7 +93,6 @@ void ScreenManager::onScreenResize()
 }
 void ScreenManager::onSurfaceScreenChanged(Screen *screen)
 {
-	screen->onControlEvent(CONTROL_ACTION_MOUSE, this->lastCursorX, this->lastCursorY, 0, 0);
 }
 void ScreenManager::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {

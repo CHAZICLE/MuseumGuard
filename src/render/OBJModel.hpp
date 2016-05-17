@@ -52,7 +52,7 @@ namespace render {
 			virtual ~OBJModel();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
-			void render(render::RenderManager *rManager, GLuint shaderVertexPositionID);
+			void render(render::RenderManager &rManager, GLuint shaderVertexPositionID);
 		private:
 			int dataBufferStride;
 			int dataBufferTexturesOffset;

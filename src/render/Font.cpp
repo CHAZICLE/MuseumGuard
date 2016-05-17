@@ -35,10 +35,10 @@ Font::~Font()
 {
 	FT_Done_FreeType(Font::library);
 }
-float Font::getTextWidth(std::string text, render::RenderManager *rManager)
+float Font::getTextWidth(std::string text, render::RenderManager &rManager)
 {
-	float calculatedPixelSize = this->heightMM*rManager->getHeightPx()/rManager->getHeightMM();
-	float sx = rManager->getWidthMM()/rManager->getWidthPx();
+	float calculatedPixelSize = this->heightMM*rManager.getHeightPx()/rManager.getHeightMM();
+	float sx = rManager.getWidthMM()/rManager.getWidthPx();
 	float totalWidth = 0;
 	for(unsigned long i=0;i<text.length(); i++)
 	{
@@ -48,20 +48,20 @@ float Font::getTextWidth(std::string text, render::RenderManager *rManager)
 	}
 	return totalWidth;
 }
-void Font::printf(std::string text, render::RenderManager *rManager)
+void Font::printf(std::string text, render::RenderManager &rManager)
 {
 	// Prime Shader Program
 	glUseProgram(shaders::program_font);
-	rManager->setMVPMatrix(shaders::program_font_MVP);
+	rManager.setMVPMatrix(shaders::program_font_MVP);
 	glUniform4f(shaders::program_font_textColor, this->r, this->g, this->b, this->a);
 	glUniform1i(shaders::program_font_texture, 0);
 	
 	// Set up vertex array/buffer objects
 	glBindVertexArray(this->fontFaceVertexArrayObjectID);
 	
-	float calculatedPixelSize = this->heightMM*rManager->getHeightPx()/rManager->getHeightMM();
-	float x=0,y=0,vx=1,vy=1,vw=10,vh=10,sx=rManager->getWidthMM()/rManager->getWidthPx(),sy=rManager->getHeightMM()/rManager->getHeightPx();
-	rManager->enableTransparency();
+	float calculatedPixelSize = this->heightMM*rManager.getHeightPx()/rManager.getHeightMM();
+	float x=0,y=0,vx=1,vy=1,vw=10,vh=10,sx=rManager.getWidthMM()/rManager.getWidthPx(),sy=rManager.getHeightMM()/rManager.getHeightPx();
+	rManager.enableTransparency();
 	glActiveTexture(GL_TEXTURE0);
 	for(unsigned long i=0;i<text.length(); i++)
 	{
@@ -106,7 +106,7 @@ void Font::printf(std::string text, render::RenderManager *rManager)
 		x += (glyph->advanceX >> 6) * sx;
 		y += (glyph->advanceY >> 6) * sy;
 	}
-	rManager->disableTransparency();
+	rManager.disableTransparency();
 }
 void Font::setHeight(float heightMM)
 {

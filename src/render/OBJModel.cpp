@@ -128,8 +128,9 @@ void OBJModel::postload()
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*3*sizeof(GLuint), object->indecies, GL_STATIC_DRAW);
 	}
 }
-void OBJModel::render(render::RenderManager *rManager, GLuint shaderVertexPositionID)
+void OBJModel::render(render::RenderManager &rManager, GLuint shaderVertexPositionID)
 {
+	std::cout << "AP" << std::endl;
 	glBindVertexArray(this->vertexArrayID);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
