@@ -130,7 +130,6 @@ void OBJModel::postload()
 }
 void OBJModel::render(render::RenderManager &rManager, GLuint shaderVertexPositionID)
 {
-	std::cout << "AP" << std::endl;
 	glBindVertexArray(this->vertexArrayID);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);

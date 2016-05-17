@@ -37,7 +37,6 @@ GamePauseMenu::~GamePauseMenu()
 }
 bool GamePauseMenu::onControlEvent(Control control, int action)
 {
-	std::cout << control << ", " << action << std::endl;
 	if(action==CONTROL_KEYACTION_RELEASE && control==CONTROL_GUI_ESCAPE)
 	{
 		this->manager->closeScreen(this);

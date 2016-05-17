@@ -112,4 +112,20 @@ void World::render(render::RenderManager &manager)
 	
 	manager.disableDepth();
 	manager.disableCullFace();
+
+	// Draw axis guides
+	//
+	glUseProgram(shaders::program_solidcolor);
+	manager.M = glm::mat4(1.0f);
+	manager.markMDirty();
+	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3(10, 0, 0), shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 1.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0,10, 0), shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0,10), shaders::program_solidcolor_vertexPosition);
 }

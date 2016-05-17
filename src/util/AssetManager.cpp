@@ -38,11 +38,10 @@ void AssetManager::init()
 }
 void AssetManager::run()
 {
-	std::cout << "AssetManager: Loader Thread started" << std::endl;
 	//Open file with boost libs
 	std::ifstream gzfile("assets.gz", std::ios_base::in | std::ios_base::binary);
 	if(!gzfile.is_open()) {
-		std::cout << "FAILED TO OPEN FILE" << std::endl;
+		std::cerr << "ERROR: Failed to open asset file" << std::endl;
 		return;
 	}
 	
@@ -60,7 +59,6 @@ void AssetManager::run()
 	while(!fp.eof())
 	{
 		fp.read((char *)&assetType, 1);
-		std::cout << "Read asset type: " << assetType << std::endl;
 		if(fp.eof())
 			break;
 		switch(assetType)
@@ -86,11 +84,9 @@ void AssetManager::run()
 				return;
 		}
 		this->assets[assetId] = asset;
-		std::cout << *asset << std::endl;
 		assetId++;
 	}
 	preload_complete = true;
-	std::cout << "Reader thread exit" << std::endl;
 }
 bool AssetManager::postload()
 {
