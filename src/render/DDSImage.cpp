@@ -15,7 +15,6 @@ DDSImage::DDSImage(int assetId, std::istream &fp) : util::Asset(assetId)
 	this->imageData = new char[this->imageDataSize];
 	fp.read(this->imageData, this->imageDataSize*sizeof(char));
 	unsigned int components  = 4;
-	unsigned int format;
 	switch(this->header->ddspf.dwFourCC)
 	{
 	case DWFOURCC_DXT1:

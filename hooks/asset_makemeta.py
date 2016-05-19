@@ -5,32 +5,12 @@ import sys
 from asset_common import *
 
 if __name__=="__main__":
-    current_type = 0
-    sources = []
-    objects = []
-    metafile = None
-    for i in range(len(sys.argv[1:])):
-        a = sys.argv[i]
-        if a=="--source":
-            current_type = 1
-            continue
-        if a=="--object":
-            current_type = 2
-            continue
-        if a=="--meta":
-            metafile = sys.argv[i+1]
-            continue
-        if current_type==1:
-            sources.append(a)
-        elif current_type==2:
-            objects.append(a)
+    sources = sys.argv[2:-2]
+    metafile = sys.argv[-1]
 
-    if len(sources)!=len(objects):
-        print("ERROR: Sources length and objects length don't match")
-
-    #print("Sources:", sources)
+    print("Sources:", sources)
     #print("Objects:", objects)
-    #print("Meta:", metafile)
+    print("Meta:", metafile)
 
     meta_fp = open(metafile, "w")
 

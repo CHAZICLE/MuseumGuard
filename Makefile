@@ -15,9 +15,9 @@ SHADERS = $(shell find $(SRCDIR)/render/shaders/glsl -type f -name '*.glsl.c')
 
 ### Assets
 ASSETS_FILE = assets.gz
-ASSETS_CONVERT_HOOK = hooks/asset_convert.py
 ASSETS_META_HOOK = hooks/asset_makemeta.py
 ASSETS_META_FILE = src/util/AssetsMeta.h
+ASSETS_CONVERT_HOOK = hooks/asset_convert.py
 
 # MTL Files
 ASSETS_MTL = $(shell find $(SRCDIR) -type f -name '*.mtl')
@@ -40,21 +40,20 @@ ASSETS_O = $(ASSETS_MTL_O) $(ASSETS_OBJ_O) $(ASSETS_MD5MESH_O) $(ASSETS_MD5ANIM_
 
 ### Main
 
-all: $(ASSETS_FILE) $(DEPENDS) $(BIN)
+all: $(ASSETS_META_FILE) $(ASSETS_FILE) $(DEPENDS) $(BIN)
+
+$(ASSETS_FILE): $(ASSETS_META_FILE) $(ASSETS_O)
+	cat $(ASSETS_O) > "$@"
+
+$(ASSETS_META_FILE): $(ASSETS) $(ASSETS_META_HOOK)
+	$(ASSETS_META_HOOK) --source $(ASSETS) --meta "$@"
+
+$(BIN):  $(OBJECTS)
+	$(CXX) $(LDFLAGS) -o $(BIN) $(OBJECTS)
 
 clean:
 	@rm -vf $(BIN) $(ASSETS_FILE)
 	@rm -vrf $(BINDIR)
-
-$(ASSETS_META_FILE): $(ASSETS_FILE) $(ASSETS_META_HOOK)
-	$(ASSETS_META_HOOK) --source $(ASSETS) --object $(ASSETS_O) --meta "$@"
-
-$(ASSETS_FILE): $(ASSETS_O)
-	cat $(ASSETS_O) > "$@"
-
-
-$(BIN):  $(OBJECTS)
-	$(CXX) $(LDFLAGS) -o $(BIN) $(OBJECTS)
 
 -include $(DEPENDS)
 
@@ -74,22 +73,22 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 # Assets->MTL
 $(BINDIR)/%.mtl.o.gz: $(SRCDIR)/%.mtl $(ASSETS_CONVERT_HOOK)
 	@mkdir -p "$(@D)"
-	$(ASSETS_CONVERT_HOOK) "$<" "$@"
+	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
 
 # Assets->OBJ
 $(BINDIR)/%.obj.o.gz: $(SRCDIR)/%.obj $(ASSETS_CONVERT_HOOK)
 	@mkdir -p "$(@D)"
-	$(ASSETS_CONVERT_HOOK) "$<" "$@" $(ASSET_MTL_O)
+	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
 
 # Assets->MD5Mesh
 $(BINDIR)/%.md5mesh.o.gz: $(SRCDIR)/%.md5mesh $(ASSETS_CONVERT_HOOK)
 	@mkdir -p "$(@D)"
-	$(ASSETS_CONVERT_HOOK) "$<" "$@"
+	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
 
 # Assets->MD5Anim
 $(BINDIR)/%.md5anim.o.gz: $(SRCDIR)/%.md5anim $(ASSETS_CONVERT_HOOK)
 	@mkdir -p "$(@D)"
-	$(ASSETS_CONVERT_HOOK) "$<" "$@"
+	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
 
 # Shaders
 $(SRCDIR)/render/shaders/ShaderUtils.hpp $(SRCDIR)/render/shaders/ShaderUtils.cpp: $(SRCDIR)/render/shaders/shadercode.h $(SRCDIR)/render/shaders/shadercode.c
