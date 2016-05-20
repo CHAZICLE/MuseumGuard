@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import sys,subprocess
+import sys
 
 from asset_parsers import *
 from asset_common import *
+from asset_convert_image import convertImage
 
 
 if __name__=="__main__":
@@ -14,13 +15,12 @@ if __name__=="__main__":
         ext = getFileExtension(fileToConvert)
         verbose = 1
 
+        object_fp = open_objectfile(fileToPlace)
+
         if ext=="png" or ext=="tga":
-            proc = subprocess.Popen("convert -format dds -define dds:mipmaps=5 -define dds:compression=dxt1 "+fileToConvert+" dds:-", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            print(proc.stdout.read())
-            print(proc.stderr.read())
+            convertImage(fileToConvert, object_fp)
         else:
             source_fp = open_sourcefile(fileToConvert)
-            object_fp = open_objectfile(fileToPlace)
 
 
             if ext=="mtl":
