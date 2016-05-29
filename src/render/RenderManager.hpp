@@ -1,8 +1,15 @@
 #ifndef __RENDERMANAGER_H_INCLUDED__
 #define __RENDERMANAGER_H_INCLUDED__
 
+namespace render {
+	namespace shaders {
+		class ShaderProgram;
+	}
+}
+
 #include <glm/matrix.hpp>
 #include <util/gl.h>
+#include "shaders/ShaderPrograms.h"
 
 namespace render {
 
@@ -10,12 +17,13 @@ namespace render {
 	private:
 		bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
 		bool doCullFace,doDepthBuffer;
-		glm::mat4 MV,MP,MVP;
+		glm::mat4 MV,VP,MVP;
 		int widthPx,heightPx;
 		float widthMM,heightMM;
 	public:
 		RenderManager();
 		virtual ~RenderManager();
+		void setMVPMatrix(GLuint mvpMatrixShaderLocation);
 
 		glm::mat4 M,V,P;
 
@@ -23,7 +31,8 @@ namespace render {
 		void markVDirty();
 		void markMDirty();
 
-		void setMVPMatrix(GLuint mvpMatrixShaderLocation);
+		void setShaderMatricies(shaders::ShaderProgram &shaderProgram);
+		void useShader(int shader);
 
 		void enableDepth();
 		void disableDepth();

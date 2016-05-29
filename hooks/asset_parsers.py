@@ -1,10 +1,10 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python5
 
 import re
 
 from asset_common import *
 
-def parseMTL(mtl_file, verbose=0):
+def parseMTL(filepath, filename, source_fp, meta, verbose=0):
     names = ["Ka", "Kd", "Ks", "Tf", "d", "Ns", "Ni", "illum", "sharpness", "map_Ka", "map_Kd", "map_Ks", "map_Ns", "map_d", "disp", "decal", "bump"]
     def flattenArray(material_name, data):
         final_data = [material_name, 0]
@@ -12,13 +12,21 @@ def parseMTL(mtl_file, verbose=0):
             ap = ""
         for i in range(len(data)):
             if data[i]!=None:
-                if verbose==1:
-                    ap += ", "+names[i]+"="+str(data[i])
-                final_data.append(data[i])
+                if type(data[i])==str:
+                    print(meta['textures'])
+                    textureAssetId = meta['textures'][filepath+"/"+data[i].strip()]
+                    if verbose==1:
+                        ap += ", "+names[i]+"=["+str(textureAssetId)+"]"+str(data[i])
+                    final_data.append(textureAssetId)
+                else:
+                    if verbose==1:
+                        ap += ", "+names[i]+"="+str(data[i])
+                    final_data.append(data[i])
                 final_data[1] = final_data[1]|(1<<i)
         if verbose==1:
             print("\t"+material_name+": Flags="+str(final_data[1])+ap)
         return final_data
+
     materials = []
     current_material_name = None
     # Color/Illumination
@@ -40,7 +48,7 @@ def parseMTL(mtl_file, verbose=0):
     disp = None
     decal = None
     bump = None
-    for line in mtl_file:
+    for line in source_fp:
         line = line[:-1]
         temp = parse1s(None, line, "newmtl")
         if temp!=None:
@@ -74,10 +82,11 @@ def parseMTL(mtl_file, verbose=0):
     materials.append(flattenArray(current_material_name, [Ka, Kd, Ks, Tf, d, Ns, Ni, illum, sharpness, map_Ka, map_Kd, map_Ks, map_Ns, map_d, disp, decal, bump]))
     return [len(materials)]+materials
 
-def parseOBJ(obj_fp, verbose=0):
+def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
     enableTextures = None
     enableNormals = None
     numPrimitives = 0
+    mtllib = None
     v = []
     vt = []
     vn = []
@@ -86,25 +95,28 @@ def parseOBJ(obj_fp, verbose=0):
     s = False
     f = []
     objects = []
-    for line in obj_fp:
+    for line in source_fp:
         line = line[:-1]
         tv = parse3f(None, line, "v")
         if tv!=None:
             v.append(tv)
-        tvt = parse3f(None, line, "vt")
+        tvt = parse2f(None, line, "vt")
         if tvt!=None:
             vt.append(tvt)
         tvn = parse3f(None, line, "vn")
         if tvn!=None:
             vn.append(tvn)
-        if line.find("o ")>=0:
+        if line.find("g ")>=0:
             if object_name!=None:
-                objects.append((object_name, usemtl, s, numPrimitives, f))
+                objects.append((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
             object_name = line.split(" ")[1]
+            print(object_name)
             usemtl = ""
-            s = None
+            s = False
             numPrimitives = 0
             f = []
+        if line.find("mtllib ")>=0:
+            mtllib = line.split(" ")[1]
         if line.find("usemtl ")>=0:
             usemtl = line.split(" ")[1]
         if line.find("s ")>=0:
@@ -143,19 +155,21 @@ def parseOBJ(obj_fp, verbose=0):
                         enableNormals = True
                         faceFinal.append(int(fin[2]))
                 f.append(faceFinal)
-    objects.append((object_name, usemtl, s, numPrimitives, f))
+    print(meta['materials'][filepath+"/"+mtllib+":"+usemtl])
+    objects.append((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
+    print((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
     if verbose>=1:
         print("	"+str(len(v))+" vertecies, "+str(len(vt))+" texture coordinates, "+str(len(vn))+" normal coordinates, "+str(len(objects))+" objects")
     return (len(v), v, len(vt), vt, len(vn), vn, len(objects), objects)
 
-def parseMD5Mesh(md5mesh_file, verbose=0):
+def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
     # Data to load and store
     numJoints = 0
     numMeshes = 0
     joints = []
     meshes = []
     # Load from the .md5mesh file
-    for line in md5mesh_file:
+    for line in source_fp:
         if line.find("MD5Version")>=0:
             if line.find("MD5Version 10")!=0:
                 print("Unknown MD5Version!")
@@ -168,7 +182,7 @@ def parseMD5Mesh(md5mesh_file, verbose=0):
             #print("numMeshes=", numMeshes)
         if line.find("joints {")>=0:
             #print("Joints")
-            for line2 in md5mesh_file:
+            for line2 in source_fp:
                 m = re.search("^\s\"(.*)\"\s(-?\d+)\s\(\s(-?\d*\.{0,1}\d+)\s(-?\d*\.{0,1}\d+)\s(-?\d*\.{0,1}\d+)\s\)\s\(\s(-?\d*\.{0,1}\d+)\s(-?\d*\.{0,1}\d+)\s(-?\d*\.{0,1}\d+)\s\).*$",line2)
                 if m:
                     try:
@@ -190,17 +204,20 @@ def parseMD5Mesh(md5mesh_file, verbose=0):
                     break
         if line.find("mesh {")>=0:
             #print("Mesh")
-            shader_name = "Unnamed"
+            shader_id = None
             numverts = 0
             verts = []
             numtris = 0
             tris = []
             numweights = 0
             weights = []
-            for line2 in md5mesh_file:
+            for line2 in source_fp:
                 if line2.find("shader ")>=0:
                     shader_name = line2.split(" ")[1][1:-2]
-                    #print("Shader name", shader_name)
+                    try:
+                        shader_id = meta["materials"][filepath+"/"+filename[:filename.rfind(".")]+".mtl:"+shader_name]
+                    except KeyError:
+                        shader_id = (-1, -1)
 
                 # Mesh->Vert
                 if line2.find("numverts ")>=0:
@@ -269,12 +286,12 @@ def parseMD5Mesh(md5mesh_file, verbose=0):
                 print("Expected to load "+str(numtris)+" tris, but instead loaded "+str(len(tris)))
             if len(weights)!=numweights:
                 print("Expected to load "+str(numweights)+" weights, but instead loaded "+str(len(weights)))
-            meshes.append((shader_name, numverts, verts, numtris, tris, numweights, weights))
+            meshes.append((shader_id, numverts, verts, numtris, tris, numweights, weights))
     if verbose>=1:
         print("	"+str(numJoints)+" joints, "+str(numMeshes)+" meshes")
     return (numJoints, joints, numMeshes, meshes)
 
-def parseMD5Anim(md5anim_fp, verbose=0):
+def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
         # args
     #hierarchy
     #bounds
@@ -288,7 +305,7 @@ def parseMD5Anim(md5anim_fp, verbose=0):
     bounds = []
     baseframe = []
     frames = []
-    for line in md5anim_fp:
+    for line in source_fp:
         #print(line)
         line = line[:-1]#Remove \n
 
@@ -301,7 +318,7 @@ def parseMD5Anim(md5anim_fp, verbose=0):
         numAnimatedComponents = parse1i(numAnimatedComponents, line, "numAnimatedComponents")
 
         if line.find("hierarchy {")>=0:
-            for line2 in md5anim_fp:
+            for line2 in source_fp:
                 m = re.search("^\s+\"(.*)\"\s*"+REGEX_INT_CLASS+"\s+"+REGEX_INT_CLASS+"\s+"+REGEX_INT_CLASS+".*$", line2)
 
                 if m:
@@ -317,7 +334,7 @@ def parseMD5Anim(md5anim_fp, verbose=0):
 
 
         if line.find("bounds {")>=0:
-            for line2 in md5anim_fp:
+            for line2 in source_fp:
 
                 #( -1.634066 -1.634066 -1.634066 ) ( -1.634066 6.444685 5.410537 )
                 m = re.search("^\s*\(\s*"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s*\)\s*\(\s*"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s*\).*$", line2)
@@ -331,7 +348,7 @@ def parseMD5Anim(md5anim_fp, verbose=0):
                     break
 
         if line.find("baseframe {")>=0:
-            for line2 in md5anim_fp:
+            for line2 in source_fp:
 
                 m = re.search("^\s*\(\s*"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s*\)\s*\(\s*"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s+"+REGEX_FLOAT_CLASS+"\s*\).*$", line2)
                 if m:
@@ -347,7 +364,7 @@ def parseMD5Anim(md5anim_fp, verbose=0):
         if m:
             frameNum = int(m.group(1))
             frame = []
-            for line2 in md5anim_fp:
+            for line2 in source_fp:
 
                 # Break line2
                 if line2.find("}")>=0:

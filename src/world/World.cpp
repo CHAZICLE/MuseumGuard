@@ -1,27 +1,32 @@
-#include "entities/Enemy.hpp"
-#include "entities/Player.hpp"
+#include <iostream>
 #include "util/gl.h"
 #include <glm/gtc/matrix_transform.hpp>
+
 #include "render/BasicShapes.hpp"
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/RenderManager.hpp"
-#include "util/DeltaTime.hpp"
-#include <iostream>
-#include "input/controls/DebugControls.hpp"
-#include "util/AssetManager.hpp"
 #include "render/OBJModel.hpp"
 #include "render/MD5Model.hpp"
 #include "render/MD5AnimatedModel.hpp"
 
+#include "util/DeltaTime.hpp"
+#include "util/AssetManager.hpp"
+
+#include "input/controls/DebugControls.hpp"
+
+#include "world/entities/Enemy.hpp"
+#include "world/entities/Player.hpp"
+
 #include "World.hpp"
 
+using namespace world;
 using namespace entities;
 using namespace render;
 
 World::World()
 {
 	this->player = new Player();
-	this->player->setPosition(glm::vec3(100,10,100));
+	this->player->setPosition(glm::vec3(10,1,10));
 	this->enemy = new Enemy();
 	this->enemy->setPosition(glm::vec3(100,0,0));
 	this->vertAngle = 0;
@@ -36,8 +41,8 @@ World::~World()
 }
 void World::tick(util::DeltaTime &deltaTime, bool surface)
 {
-	this->viewDirection = glm::vec3( 0, 0,-1)*this->player->getOrientation();
-	this->viewUp = glm::vec3(0, 1, 0)*this->player->getOrientation();
+	this->viewDirection = glm::vec3( 0, 1, 0)*this->player->getOrientation();
+	this->viewUp = glm::vec3(0, 0, 1)*this->player->getOrientation();
 	if(surface)
 		this->controlScheme->tick(deltaTime);
 }
@@ -90,10 +95,14 @@ void World::render(render::RenderManager &manager)
 	manager.markMDirty();
 	manager.setMVPMatrix(shaders::program_modelTest_MVP);
 
-	MD5Model *model = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5MESH);
-	MD5AnimatedModel *aModel = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5ANIM);
+	//MD5Model *model = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5MESH);
+	//MD5AnimatedModel *aModel = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5ANIM);
 
-	aModel->render(manager, *model, glfwGetTime());
+
+	manager.useShader(SHADER_fuzzyModel);
+	manager.disableCullFace();
+	((render::OBJModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_3YPWORLD2_OBJ))->render(manager, SHADER_modelTexture);
+	manager.enableCullFace();
 
 	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(manager);
 	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(manager, true, true);
@@ -128,4 +137,12 @@ void World::render(render::RenderManager &manager)
 
 	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
 	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0,10), shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 1.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0, 0)+glm::vec3(0, 1, 0)*this->player->getOrientation(), shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0, 0)+glm::vec3(0, 0, 1)*this->player->getOrientation(), shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
 }

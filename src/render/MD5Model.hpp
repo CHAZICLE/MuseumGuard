@@ -48,7 +48,6 @@ namespace render {
 
 	struct MD5Vertex {
 		int index;
-		glm::vec2 tex;
 		int startWeight;
 		int countWeight;
 	};
@@ -61,11 +60,13 @@ namespace render {
 	};
 
 	struct MD5Mesh {
-		std::string shader_name;
+		int mtlAssetId;
+		int materialId;
 		std::vector<MD5Vertex> verts;
+		std::vector<GLfloat> textureUVs;
 		std::vector<GLuint> indecies;
 		std::vector<MD5Weight> weights;
-		GLuint vertexBufferID,indexBufferID;
+		GLuint vertexBufferID,indexBufferID,vertexTextureBufferID;
 	};
 
 	void calculateQuaternionW(glm::quat &q);

@@ -1,9 +1,13 @@
+#include "util/Globals.hpp"
 #include <istream>
 #include <iostream>
 #include <unordered_map>
 #include "util/StreamUtils.hpp"
 #include "util/gl.h"
 #include "render/RenderManager.hpp"
+#include "render/shaders/ShaderProgram.hpp"
+#include "render/MaterialLibrary.hpp"
+#include "util/AssetUtils.hpp"
 
 #include "OBJModel.hpp"
 
@@ -31,6 +35,7 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 	fp.read((char *)vertexPositions, sizeof(float)*lenVertexPositions*3);
 	//vt
 	int lenVertexTextures = readInt(fp);
+	std::cout << "lenVertexTextures=" << lenVertexTextures << std::endl;
 	float *vertexTextures = new float[lenVertexTextures*2];
 	if(lenVertexTextures>0)//enableTextures
 	{
@@ -55,12 +60,14 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 	int lenObjects = readInt(fp);
 	struct FaceKey faceKey;
 	int currentVertexIndex = 0;
+	temp_totalVertexCount = 0;
 	for(int i=0;i<lenObjects;i++)
 	{
 		OBJObject *o = new OBJObject;
 		// Load the wavefront object
 		o->name = readString(fp);
-		o->usemtl = readString(fp);
+		o->mtlAsset = readInt(fp);
+		o->materialId = readInt(fp);
 		o->s = readBool(fp);
 		o->numPrimitives = readInt(fp);
 		int numVerticies = o->numPrimitives*3;
@@ -68,12 +75,14 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 		o->indecies = new GLuint[numVerticies];
 		fp.read((char *) objectIndecies, sizeof(int)*numVerticies*vertexStride);
 		// Store the faces
+		temp_totalVertexCount+=numVerticies;
 		for(int v=0;v<numVerticies;v++)
 		{
 			// Load the vertex indexes for the components of the vertex
 			faceKey.vertexPositionIndex = objectIndecies[v*vertexStride]-1;
 			faceKey.vertexTextureIndex = (lenVertexTextures>0 ? objectIndecies[v*vertexStride+vertexTexturesOffset]-1 : -1);
 			faceKey.vertexNormalIndex = (lenVertexNormals>0 ? objectIndecies[v*vertexStride+vertexNormalsOffset]-1 : -1);
+		//	std::cout << faceKey.vertexPositionIndex << ", " << faceKey.vertexTextureIndex << ", " << faceKey.vertexNormalIndex << std::endl;
 			
 			std::unordered_map<struct FaceKey, int, FaceKeyHasher>::const_iterator findFace = assocMap.find(faceKey);
 			if(findFace==assocMap.end())//If vertex is not already associated
@@ -120,6 +129,13 @@ void OBJModel::postload()
 	glGenBuffers(1, &this->vertexDataBufferID);
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
 	glBufferData(GL_ARRAY_BUFFER, this->dataBuffer.size()*sizeof(GLfloat), &this->dataBuffer[0], GL_STATIC_DRAW);
+	
+	GLfloat *colors = new GLfloat[temp_totalVertexCount*3];
+	for(int i=0;i<temp_totalVertexCount*3;i++)
+		colors[i] = (float)(std::rand()%100)/100;
+	glGenBuffers(1, &tempColorBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, this->tempColorBuffer);
+	glBufferData(GL_ARRAY_BUFFER, temp_totalVertexCount*3*sizeof(GLfloat), colors, GL_STATIC_DRAW);
 
 	for(OBJObject *object : this->objects)
 	{
@@ -128,18 +144,47 @@ void OBJModel::postload()
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*3*sizeof(GLuint), object->indecies, GL_STATIC_DRAW);
 	}
 }
-void OBJModel::render(render::RenderManager &rManager, GLuint shaderVertexPositionID)
+void OBJModel::render(render::RenderManager &rManager, int shader)
 {
+	shader = SHADER_modelTexture;
+	rManager.useShader(shader);
+	shaders::ShaderProgram *proc = shaders::ShaderProgram::getShader(shader);
+	if(proc==0)
+	{
+		util::Globals::fatalError("Failed to find shader");
+	}
+	int sp = proc->getShaderLocation(false, SHADERVAR_vertex_position);
+	int tp = proc->getShaderLocation(false, SHADERVAR_vertex_texture);
+	glUniform1i(proc->getShaderLocation(true, SHADERVAR_material_map_Kd), 0);
+	//int vc = proc->getShaderLocation(true, SHADER_fuzzyModel_vertex_color);
+	if(sp==-1)
+	{
+		util::Globals::fatalError("Failed to find shader var");
+	}
+	if(tp==-1)
+	{
+		util::Globals::fatalError("Failed to find shader var");
+	}
 	glBindVertexArray(this->vertexArrayID);
 	
 	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
-	glEnableVertexAttribArray(shaderVertexPositionID);
-	glVertexAttribPointer(shaderVertexPositionID, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
+	glEnableVertexAttribArray(sp);
+	glVertexAttribPointer(sp, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
+	glEnableVertexAttribArray(tp);
+	glVertexAttribPointer(tp, 2, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+
+	//glBindBuffer(GL_ARRAY_BUFFER, this->tempColorBuffer);
+	//glEnableVertexAttribArray(vc);
+	//glVertexAttribPointer(vc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	
 	for(OBJObject *object : this->objects)
 	{
+		glActiveTexture(GL_TEXTURE0);
+		util::AssetUtils::bindTexture(util::AssetUtils::getMaterial(object->mtlAsset, object->materialId)->map_Kd);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
 		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_UNSIGNED_INT, 0);
+		
 	}
 }
 void OBJModel::write(std::ostream &ost) const
@@ -150,5 +195,5 @@ void OBJModel::write(std::ostream &ost) const
 }
 std::ostream &operator<<(std::ostream &ost, const render::OBJObject &o)
 {
-	return ost << "	" << o.name << ": Material " << o.usemtl << ", Shading: " << o.s << ", " << o.numPrimitives << " primitives (" << (o.numPrimitives*3) << " verticies) ";
+	return ost << "	" << o.name << ": Material [" << o.mtlAsset << ":" << o.materialId << "]" << ", Shading: " << o.s << ", " << o.numPrimitives << " primitives (" << (o.numPrimitives*3) << " verticies) ";
 }

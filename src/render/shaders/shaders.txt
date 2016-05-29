@@ -1,0 +1,4 @@
+font:fontvertex.c,fontfragment.c
+fuzzyModel:fuzzymodel_vertex.c,fuzzymodel_fragment.c
+modelTexture:modelTexture_vertex.c,modelTexture_fragment.c
+UVTest:UVTest_vertex.c,UVText_fragment.c

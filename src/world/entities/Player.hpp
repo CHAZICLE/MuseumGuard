@@ -3,12 +3,14 @@
 
 #include "world/Entity.hpp"
 
-namespace entities {
-	class Player : public Entity {
-		public:
-			Player();
-			~Player();
-	};
+namespace world {
+	namespace entities {
+		class Player : public Entity {
+			public:
+				Player();
+				~Player();
+		};
+	}
 }
 
 #endif

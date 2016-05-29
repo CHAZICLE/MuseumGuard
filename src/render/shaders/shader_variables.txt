@@ -1,0 +1,29 @@
+// vertex attributes
+vertex_position
+vertex_texture
+vertex_normal
+// matrix uniforms
+matrix_MVP
+matrix_MV
+matrix_VP
+matrix_M
+matrix_V
+matrix_P
+// materials
+material_Ka
+material_Kd
+material_Ks
+material_Tf
+material_d
+material_Ns
+material_Ni
+material_illum
+material_sharpness
+material_map_Ka
+material_map_Kd
+material_map_Ks
+material_map_Ns
+material_map_d
+material_disp
+material_decal
+material_bump

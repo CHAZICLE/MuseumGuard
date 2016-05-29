@@ -7,6 +7,7 @@
 #include "render/BasicShapes.hpp"
 #include <iostream>
 
+using namespace world;
 using namespace entities;
 using namespace render;
 

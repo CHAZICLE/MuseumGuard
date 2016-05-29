@@ -15,6 +15,11 @@ std::ostream &operator<<(std::ostream &ost, const render::Material &m);
 
 namespace render {
 
+	struct MaterialAsset {
+		int assetId;
+		int materialId;
+	};
+
 	struct Material {
 		std::string name;
 		int flags;
@@ -28,14 +33,14 @@ namespace render {
 		float Ni;
 		int illum;
 		int sharpness;
-		std::string map_Ka;
-		std::string map_Kd;
-		std::string map_Ks;
-		std::string map_Ns;
-		std::string map_d;
-		std::string disp;
-		std::string decal;
-		std::string bump;
+		int map_Ka;
+		int map_Kd;
+		int map_Ks;
+		int map_Ns;
+		int map_d;
+		int disp;
+		int decal;
+		int bump;
 	};
 
 	class MaterialLibrary : public util::Asset {
@@ -45,6 +50,7 @@ namespace render {
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
 			void printMaterial(std::ostream &ost);
+			Material *getMaterial(int materialId);
 		private:
 			std::vector<Material> materials;
 	};

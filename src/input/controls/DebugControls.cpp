@@ -6,9 +6,10 @@
 
 #include "DebugControls.hpp"
 
+using namespace world;
 using namespace controls;
 
-DebugControls::DebugControls(Entity *controlEntity) : ControlScheme(controlEntity)
+DebugControls::DebugControls(world::Entity *controlEntity) : ControlScheme(controlEntity)
 {
 	this->lastCursorX = -1000;
 	this->lastCursorY = -1000;
@@ -42,7 +43,7 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 		this->cursorDeltaY = (this->cursorY-this->lastCursorY)*r;
 		if(this->cursorDeltaX!=0 || this->cursorDeltaY!=0)
 		{
-			glm::quat q = glm::quat(glm::vec3(0, glm::radians(this->cursorDeltaX), 0));
+			glm::quat q = glm::quat(glm::vec3(0, 0, glm::radians(this->cursorDeltaX)));
 			glm::quat preq = glm::quat(glm::vec3(glm::radians(this->cursorDeltaY), 0, 0));
 			orientation = preq*orientation*q;
 		}
@@ -72,13 +73,13 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 		orientation *= glm::angleAxis(r, glm::vec3( 0,-1, 0));
 
 	// Movement Controls
-	r = 30.f*deltaTime.getTimeDelta();
+	r = 10.f*deltaTime.getTimeDelta();
 
 	// Forward/Backward
 	if(glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)
-		movement += glm::vec3( 0, 0,-r)*orientation;
+		movement += glm::vec3( 0,  r, 0)*orientation;
 	if(glfwGetKey(window, GLFW_KEY_S)==GLFW_PRESS)
-		movement += glm::vec3( 0, 0, r)*orientation;
+		movement += glm::vec3( 0, -r, 0)*orientation;
 
 	// Left/Right
 	if(glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS)
@@ -88,9 +89,9 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 
 	// Down/Up
 	if(glfwGetKey(window, GLFW_KEY_Q)==GLFW_PRESS)
-		movement += glm::vec3( 0,-r, 0)*orientation;
+		movement += glm::vec3( 0, 0,-r)*orientation;
 	if(glfwGetKey(window, GLFW_KEY_E)==GLFW_PRESS)
-		movement += glm::vec3( 0, r, 0)*orientation;
+		movement += glm::vec3( 0, 0, r)*orientation;
 
 	//glm::vec3 orientationEuler = glm::eulerAngles(orientation);
 	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;

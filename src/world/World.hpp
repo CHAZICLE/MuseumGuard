@@ -4,9 +4,12 @@
 #include <glm/vec3.hpp>
 #include "input/ControlScheme.hpp"
 
-namespace entities {
-	class Enemy;
-	class Player;
+namespace world {
+	class World;
+	namespace entities {
+		class Enemy;
+		class Player;
+	}
 }
 namespace render {
 	class RenderManager;
@@ -18,18 +21,20 @@ namespace controls {
 	class ControlScheme;
 }
 
-class World {
-private:
-	entities::Player *player;
-	entities::Enemy *enemy;
-	double vertAngle, horizAngle, lastX, lastY;
-	glm::vec3 viewDirection, viewUp;
-	controls::ControlScheme *controlScheme;
-public:
-	World();
-	~World();
-	void tick(util::DeltaTime &deltaTime, bool surface);
-	void render(render::RenderManager &manager);
-};
+namespace world {
+	class World {
+	private:
+		world::entities::Player *player;
+		world::entities::Enemy *enemy;
+		double vertAngle, horizAngle, lastX, lastY;
+		glm::vec3 viewDirection, viewUp;
+		controls::ControlScheme *controlScheme;
+	public:
+		World();
+		~World();
+		void tick(util::DeltaTime &deltaTime, bool surface);
+		void render(render::RenderManager &manager);
+	};
+}
 
 #endif

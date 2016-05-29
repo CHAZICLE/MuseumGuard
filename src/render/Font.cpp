@@ -6,11 +6,24 @@
 using namespace render;
 
 FT_Library Font::library;
+shaders::ShaderProgram *Font::shader = 0;
+GLint Font::vertexPositionAttribute = 0;
+GLint Font::vertexTextureAttribute = 0;
+GLint Font::uniformTextColor = 0;
+GLint Font::uniformTexture = 0;
 Font::Font(std::string fontfamily, float heightMM)
 {
-	if(Font::library==0 && FT_Init_FreeType(&Font::library))
+	if(Font::library==0)
 	{
-		return;
+		if(FT_Init_FreeType(&Font::library))
+		{
+			return;
+		}
+		Font::shader = shaders::ShaderProgram::getShader(SHADER_font);
+		Font::vertexPositionAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_position);
+		Font::vertexTextureAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_texture);
+		Font::uniformTextColor = Font::shader->getShaderLocation(true, SHADER_font_textColor);
+		Font::uniformTexture = Font::shader->getShaderLocation(true, SHADERVAR_material_map_Kd);
 	}
 	this->face = new FT_Face;
 	FT_Byte fontData[] = {
@@ -51,11 +64,10 @@ float Font::getTextWidth(std::string text, render::RenderManager &rManager)
 void Font::printf(std::string text, render::RenderManager &rManager)
 {
 	// Prime Shader Program
-	glUseProgram(shaders::program_font);
-	rManager.setMVPMatrix(shaders::program_font_MVP);
-	glUniform4f(shaders::program_font_textColor, this->r, this->g, this->b, this->a);
-	glUniform1i(shaders::program_font_texture, 0);
-	
+	rManager.useShader(SHADER_font);
+	glUniform4f(Font::uniformTextColor, this->r, this->g, this->b, this->a);
+	glUniform1i(Font::uniformTexture, 0);
+
 	// Set up vertex array/buffer objects
 	glBindVertexArray(this->fontFaceVertexArrayObjectID);
 	
@@ -66,6 +78,7 @@ void Font::printf(std::string text, render::RenderManager &rManager)
 	for(unsigned long i=0;i<text.length(); i++)
 	{
 		char c = text[i];
+		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, this->fontFaceTextures[(int)c]);
 		// (Re)Load the texture
 		struct GlyphMetrics *glyph = getGlyphMetrics(c, calculatedPixelSize);
@@ -88,20 +101,20 @@ void Font::printf(std::string text, render::RenderManager &rManager)
 			1,1,
 		};
 		
-		glEnableVertexAttribArray(shaders::program_font_vertexPosition);
+		glEnableVertexAttribArray(vertexPositionAttribute);
 		glBindBuffer(GL_ARRAY_BUFFER, this->fontFaceTextureCoordBufferID);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(coords), coords, GL_DYNAMIC_DRAW);
-		glVertexAttribPointer(shaders::program_font_vertexPosition, 2, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(vertexPositionAttribute, 2, GL_FLOAT, GL_FALSE, 0, 0);
 		
-		glEnableVertexAttribArray(shaders::program_font_vertexUV);
+		glEnableVertexAttribArray(vertexTextureAttribute);
 		glBindBuffer(GL_ARRAY_BUFFER, this->fontFaceTextureUVBufferID);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(uvCoords), uvCoords, GL_DYNAMIC_DRAW);
-		glVertexAttribPointer(shaders::program_font_vertexUV, 2, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(vertexTextureAttribute, 2, GL_UNSIGNED_INT, GL_FALSE, 0, 0);
 		
 		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 		
-		glDisableVertexAttribArray(shaders::program_font_vertexPosition);
-		glDisableVertexAttribArray(shaders::program_font_vertexUV);
+		glDisableVertexAttribArray(vertexPositionAttribute);
+		glDisableVertexAttribArray(vertexTextureAttribute);
 		
 		x += (glyph->advanceX >> 6) * sx;
 		y += (glyph->advanceY >> 6) * sy;

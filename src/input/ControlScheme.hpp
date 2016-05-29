@@ -4,14 +4,16 @@
 namespace util {
 	class DeltaTime;
 }
-class Entity;
+namespace world {
+	class Entity;
+}
 
 namespace controls {
 	class ControlScheme {
 		protected:
-			Entity *controlEntity;
+			world::Entity *controlEntity;
 		public:
-			ControlScheme(Entity *controlEntity);
+			ControlScheme(world::Entity *controlEntity);
 			~ControlScheme();
 			virtual void tick(util::DeltaTime &deltaTime);
 	};

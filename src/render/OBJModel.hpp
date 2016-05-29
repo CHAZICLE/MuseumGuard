@@ -38,7 +38,8 @@ namespace render {
 	};
 	struct OBJObject {
 		std::string name;
-		std::string usemtl;
+		int mtlAsset;
+		int materialId;
 		bool s;
 		int numPrimitives;//triangles/faces
 		//int numVerticies = numPrimitives*3
@@ -52,14 +53,16 @@ namespace render {
 			virtual ~OBJModel();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
-			void render(render::RenderManager &rManager, GLuint shaderVertexPositionID);
+			void render(render::RenderManager &rManager, int shader);
 		private:
 			int dataBufferStride;
 			int dataBufferTexturesOffset;
 			int dataBufferNormalsOffset;
 			std::vector<GLfloat> dataBuffer;
 			std::list<OBJObject *> objects;
-			GLuint vertexArrayID,vertexDataBufferID;
+			GLuint vertexArrayID,vertexDataBufferID,tempColorBuffer;
+
+			int temp_totalVertexCount;
 	};
 }
 

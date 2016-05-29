@@ -1,17 +1,14 @@
 #ifndef __MD5ANIMATEDMODEL_H_INCLUDED__
 #define __MD5ANIMATEDMODEL_H_INCLUDED__
 
-namespace util {
-	class Asset;
-}
 namespace render {
 	class RenderManager;
 	typedef struct MD5AnimatedModelJoint MD5AnimatedModelJoint;
 	typedef struct MD5AnimatedModelBound MD5AnimatedModelBound;
 }
 
-#include "util/AssetManager.hpp"
 #include "render/MD5Model.hpp"
+#include "util/AssetManager.hpp"
 
 namespace render {
 	struct MD5AnimatedModelJoint {

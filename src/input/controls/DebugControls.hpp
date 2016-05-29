@@ -1,6 +1,10 @@
 #ifndef __DEBUGCONTROLS_H_INCLUDED__
 #define __DEBUGCONTROLS_H_INCLUDED__
 
+namespace world {
+	class Entity;
+}
+
 #include "input/ControlScheme.hpp"
 
 namespace controls {
@@ -9,7 +13,7 @@ namespace controls {
 			double lastCursorX,lastCursorY,cursorX,cursorY,cursorDeltaX,cursorDeltaY;
 			bool lastCursor;
 		public:
-			DebugControls(Entity *entity);
+			DebugControls(world::Entity *entity);
 			~DebugControls();
 			virtual void tick(util::DeltaTime &deltaTime);
 	};

@@ -3,6 +3,7 @@
 
 #include "render/MaterialData.h"
 
+// Matrix data
 #define SHADER_LOCATION_M 0
 #define SHADER_LOCATION_V 1
 #define SHADER_LOCATION_P 2
@@ -15,9 +16,11 @@
 #define SHADER_LOCATION_IMV 9
 #define SHADER_LOCATION_IVP 10
 #define SHADER_LOCATION_IMVP 11
+// Vertex attributes
 #define SHADER_LOCATION_VERTEX_POSITION 12
 #define SHADER_LOCATION_VERTEX_TEXTURE 13
 #define SHADER_LOCATION_VERTEX_NORMAL 14
+
 
 #define SHADER_LOCATION_MATERIAL_OFFSET 15
 #define materialShaderLocation(x) (x+SHADER_LOCATION_MATERIAL_OFFSET)

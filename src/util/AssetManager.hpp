@@ -14,6 +14,7 @@ namespace render {
 #define ASSET_WAVEFRONT 1
 #define ASSET_MD5MESH 2
 #define ASSET_MD5ANIM 3
+#define ASSET_DDS 4
 
 #include <mutex>
 #include <list>

@@ -3,13 +3,15 @@
 
 #include "world/Entity.hpp"
 
-namespace entities {
-	class Enemy : public Entity {
-		public:
-			Enemy();
-			virtual ~Enemy();
-			virtual void render(render::RenderManager &rManager);
-	};
+namespace world {
+	namespace entities {
+		class Enemy : public Entity {
+			public:
+				Enemy();
+				virtual ~Enemy();
+				virtual void render(render::RenderManager &rManager);
+		};
+	}
 }
 
 #endif

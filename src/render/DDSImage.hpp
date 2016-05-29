@@ -7,41 +7,12 @@
 
 namespace render {
 	class DDSImage;
-	typedef struct DDS_HEADER DDS_HEADER;
-	typedef struct DDS_PIXELFORMAT DDS_PIXELFORMAT;
-	typedef unsigned int DWORD;
 }
 
 #include "util/gl.h"
 #include "util/AssetManager.hpp"
 
 namespace render {
-	struct DDS_PIXELFORMAT {
-		DWORD dwSize;
-		DWORD dwFlags;
-		DWORD dwFourCC;
-		DWORD dwRGBBitCount;
-		DWORD dwRBitMask;
-		DWORD dwGBitMask;
-		DWORD dwBBitMask;
-		DWORD dwABitMask;
-	};
-	struct DDS_HEADER {
-		DWORD           dwSize;
-		DWORD           dwFlags;
-		DWORD           dwHeight;
-		DWORD           dwWidth;
-		DWORD           dwPitchOrLinearSize;
-		DWORD           dwDepth;
-		DWORD           dwMipMapCount;
-		DWORD           dwReserved1[11];
-		DDS_PIXELFORMAT ddspf;
-		DWORD           dwCaps;
-		DWORD           dwCaps2;
-		DWORD           dwCaps3;
-		DWORD           dwCaps4;
-		DWORD           dwReserved2;
-	};
 	class DDSImage : public util::Asset {
 		public:
 			DDSImage(int assetId, std::istream &fp);
@@ -51,9 +22,8 @@ namespace render {
 			void bindTexture();
 		private:
 			bool imagePushed;
-			DDS_HEADER *header;
 			int imageDataSize;
-			char *imageData;
+			unsigned char *imageData;
 			GLuint textureID;
 			GLint format;
 	};

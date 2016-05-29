@@ -11,8 +11,7 @@ namespace render {
 #include <string>
 #include "util/gl.h"
 #include "RenderManager.hpp"
-
-#define FONT_RESOURCE_FOLDER "res/fonts/"
+#include "shaders/ShaderProgram.hpp"
 
 namespace render {
 	struct GlyphMetrics {
@@ -31,6 +30,7 @@ namespace render {
 			void setHeight(float heightMM);
 			void setColor(float r, float g, float b, float a);
 		private:
+			static shaders::ShaderProgram *shader;
 			static FT_Library library;
 			FT_Face *face;
 			struct GlyphMetrics metrics[128];
@@ -40,6 +40,7 @@ namespace render {
 			float r,g,b,a;
 			struct GlyphMetrics *getGlyphMetrics(char c, int calculatedPixelSize);
 			struct GlyphMetrics *getGlyphMetrics_NoTexture(char c, int calculatedPixelSize);
+			static GLint vertexPositionAttribute,vertexTextureAttribute,uniformTextColor,uniformTexture;
 	};
 }
 

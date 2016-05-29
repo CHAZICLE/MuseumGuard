@@ -1,5 +1,7 @@
 #include "Entity.hpp"
 
+using namespace world;
+
 Entity::Entity()
 {
 	

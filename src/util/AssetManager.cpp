@@ -7,6 +7,7 @@
 #include "render/OBJModel.hpp"
 #include "render/MD5Model.hpp"
 #include "render/MD5AnimatedModel.hpp"
+#include "render/DDSImage.hpp"
 
 #include "AssetManager.hpp"
 
@@ -56,11 +57,13 @@ void AssetManager::run()
 	render::OBJModel *wvModel = 0;
 	render::MD5Model *md5Model = 0;
 	render::MD5AnimatedModel *md5anim = 0;
+	render::DDSImage *ddsImage = 0;
 	while(!fp.eof())
 	{
 		fp.read((char *)&assetType, 1);
 		if(fp.eof())
 			break;
+		std::cout << "READ TYPE: " << assetType << std::endl;
 		switch(assetType)
 		{
 			case ASSET_MTLLIB:
@@ -79,8 +82,12 @@ void AssetManager::run()
 				md5anim = new render::MD5AnimatedModel(assetId, fp);
 				asset = md5anim;
 				break;
+			case ASSET_DDS:
+				ddsImage = new render::DDSImage(assetId, fp);
+				asset = ddsImage;
+				break;
 			default:
-				std::cerr << "ERROR: Unknown asset type" << std::endl;
+				std::cerr << "ERROR: Unknown asset type " << assetType << std::endl;
 				return;
 		}
 		this->assets[assetId] = asset;

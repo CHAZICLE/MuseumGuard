@@ -115,10 +115,10 @@ void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, f
 	int frame = (int)std::fmod(totalAnimationTime,numFrames);
 	Skeleton &skeleton = this->frames[frame];
 	model.render(manager, skeleton);
-	model.renderSkeleton(manager, skeleton);
-	model.renderWeights(manager, skeleton);
+//	model.renderSkeleton(manager, skeleton);
+//	model.renderWeights(manager, skeleton);
 
-
+	/*
 	manager.disableCullFace();
 	MD5AnimatedModelBound &aabb = this->bounds[frame];
 	manager.M = glm::mat4(1.0f);
@@ -128,6 +128,7 @@ void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, f
 	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
 	BasicShapes::renderUnitCube(shaders::program_solidcolor_vertexPosition);
 	manager.enableCullFace();
+	*/
 
 	manager.V = tempV;
 	manager.markVDirty();

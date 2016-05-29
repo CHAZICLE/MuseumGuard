@@ -4,7 +4,9 @@
 #include <glm/detail/type_mat.hpp>
 #include "../Screen.hpp"
 
-class World;
+namespace world {
+	class World;
+}
 namespace util {
 	class DeltaTime;
 }
@@ -16,7 +18,7 @@ namespace screens {
 
 	class GameView: public Screen {
 	private:
-		World *world;
+		world::World *world;
 	public:
 		GameView();
 		virtual ~GameView();

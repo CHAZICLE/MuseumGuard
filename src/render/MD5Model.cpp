@@ -6,6 +6,9 @@
 #include "render/shaders/ShaderUtils.hpp"
 #include "util/gl.h"
 #include <glm/gtc/matrix_transform.hpp>
+#include "util/AssetManager.hpp"
+#include "render/MaterialLibrary.hpp"
+#include "render/DDSImage.hpp"
 //#endif
 
 #include "MD5Model.hpp"
@@ -55,14 +58,16 @@ MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 	for(int i=0;i<numMeshes;i++)
 	{
 		MD5Mesh mesh;
-		mesh.shader_name = readString(fp);
+		mesh.mtlAssetId = readInt(fp);
+		mesh.materialId = readInt(fp);
 		int numverts = readInt(fp);
 		//verts.append((vertIndex, tex, startWeight, countWeight))
 		for(int i=0;i<numverts;i++)
 		{
 			MD5Vertex vertex;
 			vertex.index = readInt(fp);
-			vertex.tex = glm::vec2(readFloat(fp), readFloat(fp));
+			mesh.textureUVs.push_back(readFloat(fp));
+			mesh.textureUVs.push_back(readFloat(fp));
 			vertex.startWeight = readInt(fp);
 			vertex.countWeight = readInt(fp);
 			mesh.verts.push_back(vertex);
@@ -121,7 +126,12 @@ void MD5Model::postload()
 	for(render::MD5Mesh &mesh : this->meshes)
 	{
 		glGenBuffers(1, &mesh.vertexBufferID);
+		glGenBuffers(1, &mesh.vertexTextureBufferID);
 		glGenBuffers(1, &mesh.indexBufferID);
+
+		glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexTextureBufferID);
+		glBufferData(GL_ARRAY_BUFFER, mesh.textureUVs.size()*sizeof(GLfloat), &mesh.textureUVs[0], GL_STATIC_DRAW);
+
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indecies.size()*sizeof(GLuint), &mesh.indecies[0], GL_STATIC_DRAW);
 	}
@@ -180,10 +190,10 @@ void MD5Model::render(render::RenderManager &manager)
 void MD5Model::render(render::RenderManager &rManager, const Skeleton &skeleton)
 {
 	glBindVertexArray(this->vertexArrayID);
-	glUseProgram(shaders::program_modelTest);
+	glUseProgram(shaders::program_modelTexture);
 	rManager.M = glm::mat4(1.0f);
 	rManager.markMDirty();
-	rManager.setMVPMatrix(shaders::program_modelTest_MVP);
+	rManager.setMVPMatrix(shaders::program_modelTexture_MVP);
 	for(MD5Mesh &mesh : this->meshes) {
 		this->render(rManager, skeleton, mesh, 0);
 	}
@@ -210,10 +220,22 @@ void MD5Model::render(render::RenderManager &manager, const Skeleton &skeleton, 
 	}
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexBufferID);
 	glBufferData(GL_ARRAY_BUFFER, mesh.verts.size()*3*sizeof(GLfloat), vertexData, GL_DYNAMIC_DRAW);
-	glEnableVertexAttribArray(shaders::program_modelTest_vertexPosition);
-	glVertexAttribPointer(shaders::program_modelTest_vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glEnableVertexAttribArray(shaders::program_modelTexture_vertexPosition);
+	glVertexAttribPointer(shaders::program_modelTexture_vertexPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	glActiveTexture(GL_TEXTURE0);
+	int materialLocation = ((MaterialLibrary *)util::AssetManager::getAssetManager()->getAsset(mesh.mtlAssetId))->getMaterial(mesh.materialId)->map_Kd;
+	((DDSImage *)util::AssetManager::getAssetManager()->getAsset(materialLocation))->bindTexture();
+
+	glUniform1i(shaders::program_modelTexture_myTextureSampler, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexTextureBufferID);
+	glEnableVertexAttribArray(shaders::program_modelTexture_vertexUV);
+	glVertexAttribPointer(shaders::program_modelTexture_vertexUV, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.indexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indecies.size()*sizeof(GLuint), &mesh.indecies[0], GL_DYNAMIC_DRAW);
+
 	glDrawElements(GL_TRIANGLES, mesh.indecies.size(), GL_UNSIGNED_INT, 0);
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint)
@@ -223,12 +245,12 @@ std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint)
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Mesh &mesh)
 {
-	ost << "\t" << mesh.shader_name << mesh.verts.size() << " verticies, " << mesh.indecies.size() << " triangles, " << mesh.weights.size() << " weights";
+	ost << "\t" << "[Material#" << mesh.materialId << ":" << mesh.materialId << "]" << mesh.verts.size() << " verticies, " << mesh.indecies.size() << " triangles, " << mesh.weights.size() << " weights";
 	return ost;
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Vertex &vert)
 {
-	ost << vert.index << " ( " << vert.tex.s << " " << vert.tex.t << " ) " << vert.startWeight << " " << vert.countWeight;
+	ost << vert.index << ",  " << vert.startWeight << "-" << (vert.startWeight+vert.countWeight) << " (" << vert.countWeight << " weights)";
 	return ost;
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Weight &weight)

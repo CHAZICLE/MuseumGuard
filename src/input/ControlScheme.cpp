@@ -3,6 +3,7 @@
 
 #include "ControlScheme.hpp"
 
+using namespace world;
 using namespace controls;
 using namespace util;
 

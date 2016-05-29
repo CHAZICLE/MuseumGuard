@@ -2,7 +2,6 @@
 #include "util/gl.h"
 #include <iostream>
 #include <string>
-#include "render/shaders/ShaderUtils.hpp"
 #include "gui/screens/MainMenu.hpp"
 #include "util/Console.hpp"
 #include "render/BasicShapes.hpp"
@@ -10,6 +9,11 @@
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
 #include "util/AssetManager.hpp"
+#include "render/shaders/ShaderProgram.hpp"
+
+//TODO: remove this
+#include "render/shaders/ShaderUtils.hpp"
+
 
 using util::AssetManager;
 
@@ -77,7 +81,8 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	glfwSetMouseButtonCallback(this->window, WindowScreenManager::onMouseButtonEvent);
 	glfwSetScrollCallback(this->window, WindowScreenManager::onScrollEvent);
 	
-	shaders::compileShaders();
+	::shaders::compileShaders();
+	render::shaders::ShaderProgram::loadShaders();
 	BasicShapes::init();
 	glEnableClientState(GL_VERTEX_ARRAY);
 	this->openRootScreen(new MainMenu());

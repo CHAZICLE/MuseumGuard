@@ -1,6 +1,6 @@
 #include "util/StreamUtils.hpp"
 
-#include "MaterialLibrary.hpp"
+#include "render/MaterialLibrary.hpp"
 
 #define readFloat3(v,x) do { v[0] = readFloat(x); v[1]= readFloat(x); v[2] = readFloat(x); } while(0);
 
@@ -29,14 +29,14 @@ MaterialLibrary::MaterialLibrary(int assetId, std::istream &fp) : Asset(assetId)
 		if(m->flags&MATERIAL_MASK_Ni) m->Ni = readFloat(fp);
 		if(m->flags&MATERIAL_MASK_illum) m->illum = readInt(fp);
 		if(m->flags&MATERIAL_MASK_sharpness) m->sharpness = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_Ka) m->map_Ka = readString(fp);
-		if(m->flags&MATERIAL_MASK_map_Kd) m->map_Kd = readString(fp);
-		if(m->flags&MATERIAL_MASK_map_Ks) m->map_Ks = readString(fp);
-		if(m->flags&MATERIAL_MASK_map_Ns) m->map_Ns = readString(fp);
-		if(m->flags&MATERIAL_MASK_map_d) m->map_d = readString(fp);
-		if(m->flags&MATERIAL_MASK_disp) m->disp = readString(fp);
-		if(m->flags&MATERIAL_MASK_decal) m->decal = readString(fp);
-		if(m->flags&MATERIAL_MASK_bump) m->bump = readString(fp);
+		if(m->flags&MATERIAL_MASK_map_Ka) m->map_Ka = readInt(fp);
+		if(m->flags&MATERIAL_MASK_map_Kd) m->map_Kd = readInt(fp);
+		if(m->flags&MATERIAL_MASK_map_Ks) m->map_Ks = readInt(fp);
+		if(m->flags&MATERIAL_MASK_map_Ns) m->map_Ns = readInt(fp);
+		if(m->flags&MATERIAL_MASK_map_d) m->map_d = readInt(fp);
+		if(m->flags&MATERIAL_MASK_disp) m->disp = readInt(fp);
+		if(m->flags&MATERIAL_MASK_decal) m->decal = readInt(fp);
+		if(m->flags&MATERIAL_MASK_bump) m->bump = readInt(fp);
 
 		this->materials.push_back(*m);
 	}
@@ -50,6 +50,10 @@ void MaterialLibrary::write(std::ostream &ost) const
 	ost << "[" << this->getAssetID() << ":" << this->getName() << ".mtl] " << this->materials.size() << " materials" << std::endl;
 	for(const Material &m : this->materials)
 		ost << "	" << m << std::endl;
+}
+Material *MaterialLibrary::getMaterial(int materialId)
+{
+	return &this->materials[materialId];
 }
 void MaterialLibrary::postload()
 {
