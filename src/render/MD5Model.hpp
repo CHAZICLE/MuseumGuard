@@ -67,6 +67,7 @@ namespace render {
 		std::vector<GLuint> indecies;
 		std::vector<MD5Weight> weights;
 		GLuint vertexBufferID,indexBufferID,vertexTextureBufferID;
+		GLuint vertexColorBufferID;//debug
 	};
 
 	void calculateQuaternionW(glm::quat &q);

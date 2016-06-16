@@ -82,7 +82,9 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 	$(CXX) $(CXXFLAGS) -DSKIP_DEPEND_TREE -MM "$<" -MF "$@" -MT "$(patsubst src/%.cpp,bin/%.o, $(<)) $@"
 
 
-# Textures
-$(BINDIR)/%.o.gz: $(SRCDIR)/% $(ASSETS_CONVERT_HOOK) $(ASSETS_IMAGE_SCRIPT) $(ASSETS_META_FILE)
+# Assets
+$(BINDIR)/%.o.gz: $(SRCDIR)/% $(ASSETS_CONVERT_HOOK) $(ASSETS_IMAGE_SCRIPT)
 	@mkdir -p "$(@D)"
 	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
+
+$(BINDIR)/%.md5mesh.o.gz $(BINDIR)/%.md5anim.o.gz $(BINDIR)/%.obj.o.gz $(BINDIR)/%.mtl.o.gz: $(ASSETS_META_FILE)

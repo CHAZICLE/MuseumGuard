@@ -20,6 +20,7 @@ namespace render {
 		glm::mat4 MV,VP,MVP;
 		int widthPx,heightPx;
 		float widthMM,heightMM;
+		shaders::ShaderProgram *shader;
 	public:
 		RenderManager();
 		virtual ~RenderManager();
@@ -32,7 +33,10 @@ namespace render {
 		void markMDirty();
 
 		void setShaderMatricies(shaders::ShaderProgram &shaderProgram);
-		void useShader(int shader);
+		shaders::ShaderProgram *useShader(int shader);
+		GLint getVertexPosition();
+		GLint getVertexNormal();
+		GLint getVertexTexture();
 
 		void enableDepth();
 		void disableDepth();

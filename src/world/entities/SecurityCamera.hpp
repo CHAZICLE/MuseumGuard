@@ -9,11 +9,11 @@ namespace world {
 			public:
 				SecurityCamera();
 				~SecurityCamera();
-				void setTarget(glm::vec3 target);
+				void keepLookingAt(Entity *ent);
 				virtual void render(render::RenderManager &rManager);
 			private:
-				glm::quat targetRotation;
-				glm::vec3 targetPosition;
+				float pitch,yaw;
+				Entity *trackingEntity;
 		};
 	}
 }

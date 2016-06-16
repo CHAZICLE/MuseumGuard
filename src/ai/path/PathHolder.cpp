@@ -66,6 +66,9 @@ PathHolder::~PathHolder()
 void PathHolder::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 {
 	glEnable(GL_BLEND);
+	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_solidColor);
+	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
+	GLint loc = shader->getShaderLocation(false, SHADER_solidColor_solidColor);
 	for(std::vector<struct PathNode *>::iterator it = this->nodes.begin(); it != this->nodes.end(); it++)
 	{
 		struct PathNode *node = *it;
@@ -75,25 +78,25 @@ void PathHolder::render(util::DeltaTime &deltaTime, render::RenderManager &rMana
 			struct PathNodeLink *nodeLnk = *j;
 			rManager.M = glm::mat4(1.0f);
 			rManager.markMDirty();
-			rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
-			glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.f, 0.4f, 1.f);
-			BasicShapes::drawLine(nodeLnk->a->position, nodeLnk->b->position, shaders::program_solidcolor_vertexPosition);
+			rManager.setShaderMatricies(*shader);
+			glUniform4f(loc, 0.0f, 0.f, 0.4f, 1.f);
+			BasicShapes::drawLine(nodeLnk->a->position, nodeLnk->b->position, vploc);
 		}
 		// Draw a point for the node
-		glUseProgram(shaders::program_solidcolor);
+		rManager.useShader(SHADER_solidColor);
 		rManager.M = glm::translate(glm::mat4(1.0f), node->position);
 		rManager.markMDirty();
-		rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
+		rManager.setShaderMatricies(*shader);
 		if(node->current)
-			glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.f, 0.f, 1.f);
+			glUniform4f(loc, 1.0f, 0.f, 0.f, 1.f);
 		else if(node->closed)
-			glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 1.f, 0.f, 1.f);
+			glUniform4f(loc, 1.0f, 1.f, 0.f, 1.f);
 		else if(node->open)
-			glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 1.f, 0.f, 1.f);
+			glUniform4f(loc, 0.0f, 1.f, 0.f, 1.f);
 		else
-			glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.f, 1.f, 1.f);
+			glUniform4f(loc, 0.0f, 0.f, 1.f, 1.f);
 
-		BasicShapes::drawPoint(3,shaders::program_solidcolor_vertexPosition);
+		BasicShapes::drawPoint(3,vploc);
 		
 	}
 	glDisable(GL_BLEND);

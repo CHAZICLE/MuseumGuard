@@ -84,10 +84,9 @@ bool Element::isInside(float x, float y)
 }
 void Element::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {
-	glUseProgram(shaders::program_solidcolor);
-	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
+	manager.useShader(SHADER_solidColor);
 	
-	BasicShapes::renderUnitSquare(shaders::program_solidcolor_vertexPosition);
+	BasicShapes::renderUnitSquare(manager.getVertexPosition());
 }
 void Element::onElementResize()
 {

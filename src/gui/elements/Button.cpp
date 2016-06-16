@@ -33,27 +33,27 @@ void Button::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 	glm::mat4 boxMat;
 
 	// Render the background box
-	glUseProgram(shaders::program_solidcolor);
 	boxMat = translationMatrix*glm::scale(boxMat, glm::vec3(this->getWidth(), this->getHeight(), 0));
 	
 	rManager.M = boxMat;
 	rManager.markMDirty();
-	rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
+	shaders::ShaderProgram *prog = rManager.useShader(SHADER_solidColor);
+	GLint loc = prog->getShaderLocation(true, SHADER_solidColor_solidColor);
+	GLint vploc = rManager.getVertexPosition();
 
 	if(this->selected)
-		glUniform4fv(shaders::program_solidcolor_inColor, 1, &this->selectedBackgroundColor[0]);
+		glUniform4fv(loc, 1, &this->selectedBackgroundColor[0]);
 	else
-		glUniform4fv(shaders::program_solidcolor_inColor, 1, &this->backgroundColor[0]);
+		glUniform4fv(loc, 1, &this->backgroundColor[0]);
 	
-	BasicShapes::renderUnitSquare(shaders::program_solidcolor_vertexPosition);
+	BasicShapes::renderUnitSquare(vploc);
 
 	// Render debug line
-	glUseProgram(shaders::program_solidcolor);
 	rManager.M = translationMatrix;
 	rManager.markMDirty();
-	rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
-	glUniform4f(shaders::program_solidcolor_inColor, 0.5f, 0.f, 0.f, 1.f);
-	BasicShapes::drawLine(glm::vec3(0,0,0),glm::vec3(10,10,0),shaders::program_solidcolor_vertexPosition);
+
+	glUniform4f(loc, 0.5f, 0.f, 0.f, 1.f);
+	BasicShapes::drawLine(glm::vec3(0,0,0),glm::vec3(10,10,0),vploc);
 
 	// Render text
 	boxMat = glm::mat4(1.0f);

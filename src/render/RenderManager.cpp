@@ -67,15 +67,28 @@ void RenderManager::setShaderMatricies(ShaderProgram &shaderProgram)
 	MATRIX_SHADER_INJECT(SHADERVAR_matrix_VP, VP);
 	MATRIX_SHADER_INJECT(SHADERVAR_matrix_MVP, MVP);
 }
-void RenderManager::useShader(int shader)
+shaders::ShaderProgram *RenderManager::useShader(int shader)
 {
-	shaders::ShaderProgram *prog = shaders::ShaderProgram::getShader(shader);
-	if(prog==0)
+	this->shader = shaders::ShaderProgram::getShader(shader);
+	if(this->shader==0)
 	{
 		util::Globals::fatalError("Selected invalid shader");
 	}
-	prog->useShader();
-	setShaderMatricies(*prog);
+	this->shader->useShader();
+	setShaderMatricies(*this->shader);
+	return this->shader;
+}
+GLint RenderManager::getVertexPosition()
+{
+	return this->shader->getShaderLocation(false, SHADERVAR_vertex_position);
+}
+GLint RenderManager::getVertexNormal()
+{
+	return this->shader->getShaderLocation(false, SHADERVAR_vertex_normal);
+}
+GLint RenderManager::getVertexTexture()
+{
+	return this->shader->getShaderLocation(false, SHADERVAR_vertex_texture);
 }
 
 void RenderManager::enableDepth() {

@@ -2,6 +2,7 @@
 #define __WORLD_H_INCLUDED__
 
 #include <glm/vec3.hpp>
+#include <list>
 #include "input/ControlScheme.hpp"
 
 namespace world {
@@ -24,6 +25,7 @@ namespace controls {
 namespace world {
 	class World {
 	private:
+		std::list<world::Entity *> entities;
 		world::entities::Player *player;
 		world::entities::Enemy *enemy;
 		double vertAngle, horizAngle, lastX, lastY;

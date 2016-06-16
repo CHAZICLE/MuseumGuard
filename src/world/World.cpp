@@ -16,6 +16,7 @@
 
 #include "world/entities/Enemy.hpp"
 #include "world/entities/Player.hpp"
+#include "world/entities/SecurityCamera.hpp"
 
 #include "World.hpp"
 
@@ -28,7 +29,11 @@ World::World()
 	this->player = new Player();
 	this->player->setPosition(glm::vec3(10,1,10));
 	this->enemy = new Enemy();
-	this->enemy->setPosition(glm::vec3(100,0,0));
+	this->enemy->setPosition(glm::vec3(0,-10,0));
+	SecurityCamera *ent = new SecurityCamera();
+	ent->setPosition(glm::vec3(20,0,5));
+	ent->keepLookingAt(this->player);
+	this->entities.push_back(ent);
 	this->vertAngle = 0;
 	this->horizAngle = 0;
 	this->lastX = 0;
@@ -46,26 +51,30 @@ void World::tick(util::DeltaTime &deltaTime, bool surface)
 	if(surface)
 		this->controlScheme->tick(deltaTime);
 }
-void World::render(render::RenderManager &manager)
+void World::render(render::RenderManager &rManager)
 {
-	manager.enableDepth();
-	manager.enableCullFace();
+	rManager.enableDepth();
+	rManager.enableCullFace();
 	
-	manager.V = glm::lookAt(
+	rManager.V = glm::lookAt(
 			this->player->getPosition(),
 			this->player->getPosition() + viewDirection,
 			viewUp
 		);
-	manager.markVDirty();
-	this->player->render(manager);
-	this->enemy->render(manager);
+	rManager.markVDirty();
+
+	for(Entity *ent : this->entities)
+		ent->render(rManager);
+
+	this->player->render(rManager);
+	this->enemy->render(rManager);
 	
 	/*
 	// Render lines
 	glUseProgram(shaders::program_solidcolor);
-	manager.M = glm::mat4(1.0f);
-	manager.markMDirty();
-	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
+	rManager.M = glm::mat4(1.0f);
+	rManager.markMDirty();
+	rManager.setMVPMatrix(shaders::program_solidcolor_MVP);
 	glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.0f, 0.0f, 1.0f);
 	for(int x=-50;x<=50;x+=10)
 	{
@@ -84,65 +93,72 @@ void World::render(render::RenderManager &manager)
 	// Render cube
 	/*
 	glUseProgram(shaders::program_modelTest);
-	manager.M = glm::scale(glm::mat4(1.0f), glm::vec3(10,10,10));
-	manager.markMDirty();
-	manager.setMVPMatrix(shaders::program_modelTest_MVP);
+	rManager.M = glm::scale(glm::mat4(1.0f), glm::vec3(10,10,10));
+	rManager.markMDirty();
+	rManager.setMVPMatrix(shaders::program_modelTest_MVP);
 	BasicShapes::renderUnitCube(shaders::program_modelTest_vertexPosition);
 	*/
 
-	glUseProgram(shaders::program_modelTest);
-	manager.M = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
-	manager.markMDirty();
-	manager.setMVPMatrix(shaders::program_modelTest_MVP);
-
-	//MD5Model *model = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5MESH);
-	//MD5AnimatedModel *aModel = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_BOB_MD5ANIM);
+	//glUseProgram(shaders::program_modelTest);
+	rManager.M = glm::scale(glm::mat4(1.0f), glm::vec3(1,1,1));
+	rManager.markMDirty();
+	//rManager.setMVPMatrix(shaders::program_modelTest_MVP);
 
 
-	manager.useShader(SHADER_fuzzyModel);
-	manager.disableCullFace();
-	((render::OBJModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_3YPWORLD2_OBJ))->render(manager, SHADER_modelTexture);
-	manager.enableCullFace();
 
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(manager);
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(manager, true, true);
+
+	rManager.useShader(SHADER_fuzzyModel);
+	rManager.disableCullFace();
+	((render::OBJModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_3YPWORLD2_OBJ))->render(rManager, SHADER_modelTexture);
+	rManager.enableCullFace();
+
+
+
+	//drone->renderSkeleton(rManager, drone->bindPoseSkeleton);
+	//drone->renderWeights(rManager, drone->bindPoseSkeleton);
+	//drone->render();
+
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(rManager);
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
 	
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(manager, true, true);
+	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
 
-#define RENDER_OBJ(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::OBJModel *>(a)->render(manager, shaders::program_solidcolor_vertexPosition); } } while(0);
+#define RENDER_OBJ(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::OBJModel *>(a)->render(rManager, shaders::program_solidcolor_vertexPosition); } } while(0);
 
 //	util::Asset *a = util::AssetManager::getAssetManager()->getAsset(ASSET_WEIRDSHAPE_OBJ);
 //	if(a!=0)
-//		((render::OBJModel *)a)->render(manager, shaders::program_solidcolor_vertexPosition);
+//		((render::OBJModel *)a)->render(rManager, shaders::program_solidcolor_vertexPosition);
 
 	//RENDER_OBJ(ASSET_WEIRDSHAPE_OBJ);
 	//RENDER_OBJ(ASSET_WORLD_OBJ);
 	//RENDER_OBJ(ASSET_CUBE_OBJ);
 	
-	manager.disableDepth();
-	manager.disableCullFace();
+	rManager.disableDepth();
+	rManager.disableCullFace();
 
 	// Draw axis guides
 	//
-	glUseProgram(shaders::program_solidcolor);
-	manager.M = glm::mat4(1.0f);
-	manager.markMDirty();
-	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
+	rManager.M = glm::mat4(1.0f);
+	rManager.markMDirty();
+	shaders::ShaderProgram *shader = rManager.useShader(SHADER_solidColor);
+	GLint loc = shader->getShaderLocation(true, SHADER_solidColor_solidColor);
+	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 1.0f, 0.0f, 0.0f, 1.0f);
-	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3(10, 0, 0), shaders::program_solidcolor_vertexPosition);
+	glUniform4f(loc, 1.0f, 0.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3(10, 0, 0), vploc);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 1.0f, 0.0f, 1.0f);
-	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0,10, 0), shaders::program_solidcolor_vertexPosition);
+	glUniform4f(loc, 0.0f, 1.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0,10, 0), vploc);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
-	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0,10), shaders::program_solidcolor_vertexPosition);
+	glUniform4f(loc, 0.0f, 0.0f, 1.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0,10), vploc);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 1.0f, 0.0f, 1.0f);
-	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0, 0)+glm::vec3(0, 1, 0)*this->player->getOrientation(), shaders::program_solidcolor_vertexPosition);
+	glm::vec3 playerDirection = glm::vec3(0, 1, 0)*this->player->getOrientation();
+	glUniform4f(loc, 0.0f, 1.0f, 0.0f, 1.0f);
+	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0, 0)+playerDirection, vploc);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
-	BasicShapes::drawLine(glm::vec3(0,0,0), glm::vec3( 0, 0, 0)+glm::vec3(0, 0, 1)*this->player->getOrientation(), shaders::program_solidcolor_vertexPosition);
+	glUniform4f(loc, 0.0f, 0.0f, 1.0f, 1.0f);
+	BasicShapes::drawLine(playerDirection, playerDirection+glm::vec3(0, 0, 0.2)*this->player->getOrientation(), vploc);
 
-	glUniform4f(shaders::program_solidcolor_inColor, 0.0f, 0.0f, 1.0f, 1.0f);
+	glUniform4f(loc, 0.0f, 0.0f, 1.0f, 1.0f);
 }

@@ -104,19 +104,29 @@ void MD5AnimatedModel::postload()
 	
 }
 #include "render/BasicShapes.hpp"
+bool renderSkel = false;
+bool renderWeights = false;
+#include "gui/WindowScreenManager.hpp"
 void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, float time)
 {
 	// scale up
 	glm::mat4 tempV = manager.V;
-	manager.V = glm::scale(manager.V, glm::vec3(10.f, 10.f, 10.f));
-	manager.markVDirty();
+	//manager.V = glm::scale(manager.V, glm::vec3(10.f, 10.f, 10.f));
+	//manager.markVDirty();
 	// time scale up
 	float totalAnimationTime = frameRate*time;
 	int frame = (int)std::fmod(totalAnimationTime,numFrames);
 	Skeleton &skeleton = this->frames[frame];
 	model.render(manager, skeleton);
-//	model.renderSkeleton(manager, skeleton);
-//	model.renderWeights(manager, skeleton);
+	if(renderSkel)
+		model.renderSkeleton(manager, skeleton);
+	if(renderWeights)
+		model.renderWeights(manager, skeleton);
+
+	if(glfwGetKey(WindowScreenManager::eventHandler->window, GLFW_KEY_F5))
+		renderSkel = !renderSkel;
+	if(glfwGetKey(WindowScreenManager::eventHandler->window, GLFW_KEY_F6))
+		renderWeights = !renderWeights;
 
 	/*
 	manager.disableCullFace();

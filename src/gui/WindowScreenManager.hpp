@@ -6,7 +6,7 @@ struct GLFWwindow;
 #include "ScreenManager.hpp"
 
 class WindowScreenManager : public ScreenManager {
-	private:
+	public:
 		GLFWwindow *window;
 		int lastWindowWidthPx,lastWindowHeightPx,windowWidthPx,windowHeightPx,monitorWidthPx,monitorHeightPx,modeWidthPx,modeHeightPx;
 		double scale;

@@ -81,7 +81,6 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	glfwSetMouseButtonCallback(this->window, WindowScreenManager::onMouseButtonEvent);
 	glfwSetScrollCallback(this->window, WindowScreenManager::onScrollEvent);
 	
-	::shaders::compileShaders();
 	render::shaders::ShaderProgram::loadShaders();
 	BasicShapes::init();
 	glEnableClientState(GL_VERTEX_ARRAY);
