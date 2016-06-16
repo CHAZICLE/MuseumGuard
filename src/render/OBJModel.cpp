@@ -35,7 +35,6 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 	fp.read((char *)vertexPositions, sizeof(float)*lenVertexPositions*3);
 	//vt
 	int lenVertexTextures = readInt(fp);
-	std::cout << "lenVertexTextures=" << lenVertexTextures << std::endl;
 	float *vertexTextures = new float[lenVertexTextures*2];
 	if(lenVertexTextures>0)//enableTextures
 	{
@@ -82,7 +81,6 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 			faceKey.vertexPositionIndex = objectIndecies[v*vertexStride]-1;
 			faceKey.vertexTextureIndex = (lenVertexTextures>0 ? objectIndecies[v*vertexStride+vertexTexturesOffset]-1 : -1);
 			faceKey.vertexNormalIndex = (lenVertexNormals>0 ? objectIndecies[v*vertexStride+vertexNormalsOffset]-1 : -1);
-		//	std::cout << faceKey.vertexPositionIndex << ", " << faceKey.vertexTextureIndex << ", " << faceKey.vertexNormalIndex << std::endl;
 			
 			std::unordered_map<struct FaceKey, int, FaceKeyHasher>::const_iterator findFace = assocMap.find(faceKey);
 			if(findFace==assocMap.end())//If vertex is not already associated

@@ -7,12 +7,12 @@
 #include "util/gl.h"
 #include "render/shaders/ShaderUtils.hpp"
 
-#include "MD5AnimatedModel.hpp"
+#include "SkeletalAnimation.hpp"
 
 using namespace render;
 using namespace util::StreamUtils;
 
-MD5AnimatedModel::MD5AnimatedModel(int assetId, std::istream &fp) : Asset(assetId)
+SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
 	numFrames = readInt(fp);
@@ -22,7 +22,7 @@ MD5AnimatedModel::MD5AnimatedModel(int assetId, std::istream &fp) : Asset(assetI
 	//hierarchy
 	for(int i=0;i<numJoints;i++)
 	{
-		MD5AnimatedModelJoint joint;
+		SkeletalAnimationJoint joint;
 		joint.name = readString(fp);
 		joint.parent = readInt(fp);
 		joint.flags = readInt(fp);
@@ -32,7 +32,7 @@ MD5AnimatedModel::MD5AnimatedModel(int assetId, std::istream &fp) : Asset(assetI
 	// bounds
 	for(int i=0;i<numFrames;i++)
 	{
-		MD5AnimatedModelBound bound;
+		SkeletalAnimationBound bound;
 		bound.minX = readFloat(fp);
 		bound.minY = readFloat(fp);
 		bound.minZ = readFloat(fp);
@@ -64,7 +64,7 @@ MD5AnimatedModel::MD5AnimatedModel(int assetId, std::istream &fp) : Asset(assetI
 		Skeleton skeleton;
 		for(int i=0;i<numJoints;i++)
 		{
-			MD5AnimatedModelJoint &joint = this->hierarchy[i];
+			SkeletalAnimationJoint &joint = this->hierarchy[i];
 			MD5Bone bone = this->baseFrame[i];
 			j = 0;
 			float *currentFrameData = &frameData[f*numAnimatedComponents];
@@ -91,15 +91,15 @@ MD5AnimatedModel::MD5AnimatedModel(int assetId, std::istream &fp) : Asset(assetI
 	frameData = 0;
 	//[numFrames, numJoints, frameRate, numAnimatedComponents, hierarchy, bounds, baseframe, frames]
 }
-MD5AnimatedModel::~MD5AnimatedModel()
+SkeletalAnimation::~SkeletalAnimation()
 {
 	
 }
-void MD5AnimatedModel::write(std::ostream &ost) const
+void SkeletalAnimation::write(std::ostream &ost) const
 {
 	ost << "[" << this->getAssetID() << ":" << this->getName() << ".md5anim] " << this->numFrames << " frames (" << this->frameRate << " fps), " << this->numJoints << " joints, " << this->numAnimatedComponents << " animation components";
 }
-void MD5AnimatedModel::postload()
+void SkeletalAnimation::postload()
 {
 	
 }
@@ -107,7 +107,7 @@ void MD5AnimatedModel::postload()
 bool renderSkel = false;
 bool renderWeights = false;
 #include "gui/WindowScreenManager.hpp"
-void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, float time)
+void SkeletalAnimation::render(render::RenderManager &manager, SkeletalModel &model, float time)
 {
 	// scale up
 	glm::mat4 tempV = manager.V;
@@ -130,7 +130,7 @@ void MD5AnimatedModel::render(render::RenderManager &manager, MD5Model &model, f
 
 	/*
 	manager.disableCullFace();
-	MD5AnimatedModelBound &aabb = this->bounds[frame];
+	SkeletalAnimationBound &aabb = this->bounds[frame];
 	manager.M = glm::mat4(1.0f);
 	manager.M = glm::translate(manager.M, glm::vec3(aabb.minX, aabb.minY, aabb.minZ));
 	manager.M = glm::scale(manager.M, glm::vec3(aabb.maxX-aabb.minX, aabb.maxY-aabb.minY, aabb.maxZ-aabb.minZ));

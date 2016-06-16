@@ -14,6 +14,6 @@ def convertImage(infile_path, outfile_fp):
     dataToWrite = img_blob
     writeType(outfile_fp, [len(dataToWrite)])
     amountWritten = outfile_fp.write(dataToWrite)
-    print("\t"+str(amountWritten), "bytes written (out of "+str(len(dataToWrite)))
+    print("\t"+str(amountWritten), "bytes written")
     outfile_fp.flush()
 

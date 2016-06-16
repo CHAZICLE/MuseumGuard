@@ -6,8 +6,8 @@
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/RenderManager.hpp"
 #include "render/OBJModel.hpp"
-#include "render/MD5Model.hpp"
-#include "render/MD5AnimatedModel.hpp"
+#include "render/SkeletalModel.hpp"
+#include "render/SkeletalAnimation.hpp"
 
 #include "util/DeltaTime.hpp"
 #include "util/AssetManager.hpp"
@@ -118,10 +118,10 @@ void World::render(render::RenderManager &rManager)
 	//drone->renderWeights(rManager, drone->bindPoseSkeleton);
 	//drone->render();
 
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(rManager);
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
+	//((render::SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(rManager);
+	//((render::SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
 	
-	//((render::MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
+	//((render::SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
 
 #define RENDER_OBJ(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::OBJModel *>(a)->render(rManager, shaders::program_solidcolor_vertexPosition); } } while(0);
 

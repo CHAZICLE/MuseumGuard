@@ -5,8 +5,8 @@
 #include "util/StreamUtils.hpp"
 #include "render/MaterialLibrary.hpp"
 #include "render/OBJModel.hpp"
-#include "render/MD5Model.hpp"
-#include "render/MD5AnimatedModel.hpp"
+#include "render/SkeletalModel.hpp"
+#include "render/SkeletalAnimation.hpp"
 #include "render/DDSImage.hpp"
 
 #include "AssetManager.hpp"
@@ -55,15 +55,15 @@ void AssetManager::run()
 	int assetType = 0, assetId = 0;
 	render::MaterialLibrary *mtlib = 0;
 	render::OBJModel *wvModel = 0;
-	render::MD5Model *md5Model = 0;
-	render::MD5AnimatedModel *md5anim = 0;
+	render::SkeletalModel *md5Model = 0;
+	render::SkeletalAnimation *md5anim = 0;
 	render::DDSImage *ddsImage = 0;
 	while(!fp.eof())
 	{
 		fp.read((char *)&assetType, 1);
 		if(fp.eof())
 			break;
-		std::cout << "READ TYPE: " << assetType << std::endl;
+		//std::cout << "READ TYPE: " << assetType << std::endl;
 		switch(assetType)
 		{
 			case ASSET_MTLLIB:
@@ -75,11 +75,11 @@ void AssetManager::run()
 				asset = wvModel;
 				break;
 			case ASSET_MD5MESH:
-				md5Model = new render::MD5Model(assetId, fp);
+				md5Model = new render::SkeletalModel(assetId, fp);
 				asset = md5Model;
 				break;
 			case ASSET_MD5ANIM:
-				md5anim = new render::MD5AnimatedModel(assetId, fp);
+				md5anim = new render::SkeletalAnimation(assetId, fp);
 				asset = md5anim;
 				break;
 			case ASSET_DDS:

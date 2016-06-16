@@ -6,7 +6,7 @@ namespace util {
 	class Asset;
 }
 namespace render {
-	class MD5Model;
+	class SkeletalModel;
 }
 
 

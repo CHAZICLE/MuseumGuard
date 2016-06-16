@@ -11,7 +11,7 @@
 #include "render/DDSImage.hpp"
 //#endif
 
-#include "MD5Model.hpp"
+#include "SkeletalModel.hpp"
 
 using namespace util;
 using namespace util::StreamUtils;
@@ -30,7 +30,7 @@ void render::calculateQuaternionW(glm::quat &q)
 	}
 }
 
-MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
+SkeletalModel::SkeletalModel(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
 	//load joints and meshes
@@ -97,11 +97,11 @@ MD5Model::MD5Model(int assetId, std::istream &fp) : Asset(assetId)
 		meshes.push_back(mesh);
 	}
 }
-MD5Model::~MD5Model()
+SkeletalModel::~SkeletalModel()
 {
 	
 }
-void MD5Model::render()
+void SkeletalModel::render()
 {
 	//Select shader
 	//FOR EACH MESH
@@ -111,7 +111,7 @@ void MD5Model::render()
 		//Push shader variables
 		//draw
 }
-void MD5Model::write(std::ostream &ost) const
+void SkeletalModel::write(std::ostream &ost) const
 {
 	ost << "[" << this->getAssetID() << ":" << this->getName() << ".md5mesh]";
 	for(const render::MD5Joint &joint : this->joints)
@@ -119,7 +119,7 @@ void MD5Model::write(std::ostream &ost) const
 		ost << joint;
 	}
 }
-void MD5Model::postload()
+void SkeletalModel::postload()
 {
 
 	glGenVertexArrays(1, &this->vertexArrayID);
@@ -152,7 +152,7 @@ void MD5Model::postload()
 	}
 }
 //#ifdef ENABLE_DEBUG_RENDER_MD5JOINT
-void MD5Model::renderSkeleton(render::RenderManager &manager, const Skeleton &skeleton)
+void SkeletalModel::renderSkeleton(render::RenderManager &manager, const Skeleton &skeleton)
 {
 	manager.disableDepth();
 	manager.useShader(SHADER_solidColor);
@@ -171,7 +171,7 @@ void MD5Model::renderSkeleton(render::RenderManager &manager, const Skeleton &sk
 	}
 	manager.enableDepth();
 }
-void MD5Model::renderWeights(render::RenderManager &manager, const Skeleton &skeleton)
+void SkeletalModel::renderWeights(render::RenderManager &manager, const Skeleton &skeleton)
 {
 	manager.disableDepth();
 	float f = 0;
@@ -194,11 +194,11 @@ void MD5Model::renderWeights(render::RenderManager &manager, const Skeleton &ske
 	manager.enableDepth();
 }
 //#endif
-void MD5Model::render(render::RenderManager &manager)
+void SkeletalModel::render(render::RenderManager &manager)
 {
 	this->render(manager, this->bindPoseSkeleton);
 }
-void MD5Model::render(render::RenderManager &rManager, const Skeleton &skeleton)
+void SkeletalModel::render(render::RenderManager &rManager, const Skeleton &skeleton)
 {
 	glBindVertexArray(this->vertexArrayID);
 	shaders::ShaderProgram *shader = rManager.useShader(SHADER_fuzzyModel);
@@ -208,7 +208,7 @@ void MD5Model::render(render::RenderManager &rManager, const Skeleton &skeleton)
 		this->render(rManager, skeleton, mesh, 0);
 	}
 }
-void MD5Model::render(render::RenderManager &manager, const Skeleton &skeleton, MD5Mesh &mesh, const Material *material)
+void SkeletalModel::render(render::RenderManager &manager, const Skeleton &skeleton, MD5Mesh &mesh, const Material *material)
 {
 	GLfloat *vertexData = new GLfloat[mesh.verts.size()*3*sizeof(GLfloat)];
 	for(int v=0;v<(int)mesh.verts.size();v++)

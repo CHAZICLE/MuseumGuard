@@ -56,7 +56,8 @@ if __name__=="__main__":
                 source_fp.close()
             object_fp.close()
         except Exception as e:
-            print(e)
+            raise e
+            print("Exception:",e)
             result = False
         if result==False:
             print("Critical error!")

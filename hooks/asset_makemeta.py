@@ -18,9 +18,9 @@ if __name__=="__main__":
     sources = sys.argv[2:-2]
     metafile = sys.argv[-1]
 
-    print("Sources:", sources)
+    #print("Sources:", sources)
     #print("Objects:", objects)
-    print("Meta:", metafile)
+    #print("Meta:", metafile)
 
     meta_fp = open(metafile, "w")
 

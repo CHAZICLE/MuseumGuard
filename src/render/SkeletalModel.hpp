@@ -1,12 +1,12 @@
-#ifndef __MD5MODEL_H_INCLUDED__
-#define __MD5MODEL_H_INCLUDED__
+#ifndef __SKELETALMODEL_H_INCLUDED__
+#define __SKELETALMODEL_H_INCLUDED__
 
 #define ENABLE_DEBUG_RENDER_MD5JOINT
 
 #include <vector>
 
 namespace render{
-	class MD5Model;
+	class SkeletalModel;
 	typedef struct MD5Joint MD5Joint;
 	typedef struct MD5Bone MD5Bone;
 	typedef struct MD5Vertex MD5Vertex;
@@ -27,7 +27,7 @@ namespace render{
 #include "render/RenderManager.hpp"
 #endif
 
-std::ostream &operator<<(std::ostream &ost, const render::MD5Model &model);
+std::ostream &operator<<(std::ostream &ost, const render::SkeletalModel &model);
 std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint);
 std::ostream &operator<<(std::ostream &ost, const render::MD5Mesh &mesh);
 std::ostream &operator<<(std::ostream &ost, const render::MD5Vertex &vert);
@@ -80,10 +80,10 @@ namespace render {
 	//weights.append((weightIndex, joint, bias, pos))
 
 
-	class MD5Model : public util::Asset {
+	class SkeletalModel : public util::Asset {
 		public:
-			MD5Model(int assetId, std::istream &fp);
-			virtual ~MD5Model();
+			SkeletalModel(int assetId, std::istream &fp);
+			virtual ~SkeletalModel();
 			void render();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
@@ -99,7 +99,7 @@ namespace render {
 			std::vector<MD5Bone> bindPoseSkeleton;
 			std::list<MD5Mesh> meshes;
 			GLuint vertexArrayID;
-		friend std::ostream &::operator<<(std::ostream &ost, const render::MD5Model &model);
+		friend std::ostream &::operator<<(std::ostream &ost, const render::SkeletalModel &model);
 	};
 }
 

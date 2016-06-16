@@ -42,7 +42,6 @@ void DDSImage::postload()
 	GLfloat largest_supported_anisotropy;
 	glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &largest_supported_anisotropy);
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, largest_supported_anisotropy);
-	std::cout << this->textureID << std::endl;
 }
 void DDSImage::bindTexture()
 {

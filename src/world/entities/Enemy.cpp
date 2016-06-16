@@ -5,8 +5,8 @@
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/BasicShapes.hpp"
 
-#include "render/MD5Model.hpp"
-#include "render/MD5AnimatedModel.hpp"
+#include "render/SkeletalModel.hpp"
+#include "render/SkeletalAnimation.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
@@ -37,8 +37,8 @@ void Enemy::render(render::RenderManager &rManager)
 
 	rManager.useShader(SHADER_fuzzyModel);
 
-	MD5Model *drone = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5MESH);
-	MD5AnimatedModel *drone_anim = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5ANIM);
+	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5MESH);
+	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5ANIM);
 
 	drone_anim->render(rManager, *drone, glfwGetTime());
 }

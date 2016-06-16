@@ -13,7 +13,6 @@ def parseMTL(filepath, filename, source_fp, meta, verbose=0):
         for i in range(len(data)):
             if data[i]!=None:
                 if type(data[i])==str:
-                    print(meta['textures'])
                     textureAssetId = meta['textures'][filepath+"/"+data[i].strip()]
                     if verbose==1:
                         ap += ", "+names[i]+"=["+str(textureAssetId)+"]"+str(data[i])
@@ -110,7 +109,7 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
             if object_name!=None:
                 objects.append((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
             object_name = line.split(" ")[1]
-            print(object_name)
+            #print(object_name)
             usemtl = ""
             s = False
             numPrimitives = 0
@@ -155,9 +154,9 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
                         enableNormals = True
                         faceFinal.append(int(fin[2]))
                 f.append(faceFinal)
-    print(meta['materials'][filepath+"/"+mtllib+":"+usemtl])
+    #print(meta['materials'][filepath+"/"+mtllib+":"+usemtl])
     objects.append((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
-    print((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
+    #print((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
     if verbose>=1:
         print("	"+str(len(v))+" vertecies, "+str(len(vt))+" texture coordinates, "+str(len(vn))+" normal coordinates, "+str(len(objects))+" objects")
     return (len(v), v, len(vt), vt, len(vn), vn, len(objects), objects)
@@ -288,7 +287,7 @@ def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
                 print("Expected to load "+str(numweights)+" weights, but instead loaded "+str(len(weights)))
             meshes.append((shader_id, numverts, verts, numtris, tris, numweights, weights))
     if verbose>=1:
-        print("	"+str(numJoints)+" joints, "+str(numMeshes)+" meshes")
+        print("\t"+str(numJoints)+" joints, "+str(numMeshes)+" meshes")
     return (numJoints, joints, numMeshes, meshes)
 
 def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
@@ -381,5 +380,5 @@ def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
             frames[frameNum] = frame
 
     if(verbose==1):
-        print("	"+str(numFrames)+" frames, "+str(numJoints)+" joints, "+str(numAnimatedComponents)+" Animted Components")
+        print("\t"+str(numFrames)+" frames, "+str(numJoints)+" joints, "+str(numAnimatedComponents)+" Animted Components")
     return [numFrames, numJoints, frameRate, numAnimatedComponents, hierarchy, bounds, baseframe, frames]

@@ -6,8 +6,8 @@
 
 #include "util/gl.h"
 
-#include "render/MD5Model.hpp"
-#include "render/MD5AnimatedModel.hpp"
+#include "render/SkeletalModel.hpp"
+#include "render/SkeletalAnimation.hpp"
 
 #include "SecurityCamera.hpp"
 
@@ -35,7 +35,7 @@ void SecurityCamera::keepLookingAt(Entity *ent)
 }
 void SecurityCamera::render(RenderManager &rManager)
 {
-	MD5Model *drone = (MD5Model *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5MESH);
+	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5MESH);
 
 	Skeleton skel = drone->bindPoseSkeleton;
 	//skel[1].pos += glm::vec3(0, 0, 2);
@@ -55,14 +55,14 @@ void SecurityCamera::render(RenderManager &rManager)
 		this->yaw = -M_PI/2;
 	else if(this->yaw>M_PI/2)
 		this->yaw = M_PI/2;
-	std::cout << this->pitch*(180/M_PI) << std::endl;
+	//std::cout << this->pitch*(180/M_PI) << std::endl;
 
 	rManager.M = glm::translate(rManager.M, this->getPosition())*glm::toMat4(this->getOrientation());
 	rManager.markMDirty();
 	rManager.useShader(SHADER_fuzzyModel);
 
 	//drone->renderWeights(rManager, drone->bindPoseSkeleton);
-	MD5AnimatedModel *drone_anim = (MD5AnimatedModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5ANIM);
+	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5ANIM);
 	
 	skel[1].ori = glm::angleAxis(this->yaw, glm::vec3(0, 0, 1))*glm::angleAxis(this->pitch, glm::vec3(1,0,0));
 	//drone->renderSkeleton(rManager, skel);

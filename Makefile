@@ -1,6 +1,8 @@
 SRCDIR=src
-BINDIR=bin
-DEPDIR=depend
+BINDIR=bin/cpp
+DEPDIR=bin/depend
+RESSRCDIR=res
+RESBINDIR=bin/res
 CXX=g++ -fPIC -g
 CXXFLAGS=-Wall -ansi -DUSE_GLEW -std=c++11 -Isrc -I/usr/include/freetype2
 LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
@@ -30,20 +32,22 @@ ASSETS_META_HOOK = hooks/asset_makemeta.py
 ASSETS_META_FILE = src/util/AssetsMeta.h
 ASSETS_CONVERT_HOOK = hooks/asset_convert.py
 ASSETS_IMAGE_SCRIPT = hooks/asset_convert_image.py
+ASSETS_COMMON_HOOK = hooks/asset_common.py
+ASSETS_PARSER_HOOK = hooks/asset_parsers.py
 
 # MTL Files
-ASSETS_MTL = $(shell find $(SRCDIR) -type f -name '*.mtl')
+ASSETS_MTL = $(shell find $(RESSRCDIR) -type f -name '*.mtl')
 # OBJ Files
-ASSETS_OBJ = $(shell find $(SRCDIR) -type f -name '*.obj')
+ASSETS_OBJ = $(shell find $(RESSRCDIR) -type f -name '*.obj')
 # MD5 Meshes
-ASSETS_MD5MESH = $(shell find $(SRCDIR) -type f -name '*.md5mesh')
+ASSETS_MD5MESH = $(shell find $(RESSRCDIR) -type f -name '*.md5mesh')
 # MD5 Animations
-ASSETS_MD5ANIM = $(shell find $(SRCDIR) -type f -name '*.md5anim')
+ASSETS_MD5ANIM = $(shell find $(RESSRCDIR) -type f -name '*.md5anim')
 # Textures
-ASSETS_TEXTURES = $(shell find $(SRCDIR) -type f -name '*.tga') $(shell find $(SRCDIR) -type f -name '*.png') $(shell find $(SRCDIR) -type f -name '*.jpg')
+ASSETS_TEXTURES = $(shell find $(RESSRCDIR) -type f -name '*.tga') $(shell find $(RESSRCDIR) -type f -name '*.png') $(shell find $(RESSRCDIR) -type f -name '*.jpg')
 
 ASSETS = $(ASSETS_MTL) $(ASSETS_OBJ) $(ASSETS_MD5MESH) $(ASSETS_MD5ANIM) $(ASSETS_TEXTURES) 
-ASSETS_O = $(patsubst src/%,bin/%.o.gz,$(ASSETS))
+ASSETS_O = $(patsubst $(RESSRCDIR)/%,$(RESBINDIR)/%.o.gz,$(ASSETS))
 
 ### Main
 
@@ -61,7 +65,7 @@ $(BIN):  $(OBJECTS)
 
 clean:
 	@rm -vf $(BIN) $(ASSETS_FILE)
-	@rm -vrf $(BINDIR)
+	@rm -vrf $(BINDIR) $(RESBINDIR)
 
 -include $(DEPENDS)
 
@@ -83,8 +87,6 @@ $(DEPDIR)/%.d: $(SRCDIR)/%.cpp
 
 
 # Assets
-$(BINDIR)/%.o.gz: $(SRCDIR)/% $(ASSETS_CONVERT_HOOK) $(ASSETS_IMAGE_SCRIPT)
+$(RESBINDIR)/%.o.gz: $(RESSRCDIR)/% $(ASSETS_CONVERT_HOOK) $(ASSETS_COMMON_HOOK) $(ASSETS_META_FILE) $(ASSETS_PARSER_HOOK)
 	@mkdir -p "$(@D)"
 	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
-
-$(BINDIR)/%.md5mesh.o.gz $(BINDIR)/%.md5anim.o.gz $(BINDIR)/%.obj.o.gz $(BINDIR)/%.mtl.o.gz: $(ASSETS_META_FILE)

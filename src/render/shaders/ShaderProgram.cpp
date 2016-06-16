@@ -11,8 +11,6 @@ ShaderProgram **ShaderProgram::shader_program = 0;
 
 ShaderProgram::ShaderProgram(int shaderprogram_id, std::string shaderprogram_name, std::vector<GLint> shaderFiles, ShaderMask shaderVar_mask, ShaderMask shaderVar_overrideMask, std::vector<std::string> shaderVar_overrides, std::vector<std::string> shaderVar_custom)
 {
-
-	std::cout << "CONSTRUCT: " << shaderprogram_name << std::endl;
 	this->shaderprogram_id        = shaderprogram_id;
 	this->shaderprogram_name      = shaderprogram_name;
 	this->shaderFiles             = shaderFiles;
@@ -59,7 +57,6 @@ inline GLint getNamedShaderLocation(bool uniform, GLuint programID, const char *
 		a = glGetUniformLocation(programID, name);
 	else
 		a = glGetAttribLocation(programID, name);
-	std::cout << "[" << programID << ":" << name << ":" << uniform << "]" << a << std::endl;
 	return a;
 }
 GLint ShaderProgram::getShaderLocation(bool uniform, int shaderVar)
