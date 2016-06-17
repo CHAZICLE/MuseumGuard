@@ -3,6 +3,7 @@ BINDIR=bin/cpp
 DEPDIR=bin/depend
 RESSRCDIR=res
 RESBINDIR=bin/res
+HOOKSDIR=hooks
 CXX=g++ -fPIC -g
 CXXFLAGS=-Wall -ansi -DUSE_GLEW -std=c++11 -Isrc -I/usr/include/freetype2
 LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
@@ -28,12 +29,12 @@ SHADER_PROGRAMS = $(shell find $(SHADER_FOLDER) -type f -name '*.c')
 
 ### Assets
 ASSETS_FILE = assets.gz
-ASSETS_META_HOOK = hooks/asset_makemeta.py
-ASSETS_META_FILE = src/util/AssetsMeta.h
-ASSETS_CONVERT_HOOK = hooks/asset_convert.py
-ASSETS_IMAGE_SCRIPT = hooks/asset_convert_image.py
-ASSETS_COMMON_HOOK = hooks/asset_common.py
-ASSETS_PARSER_HOOK = hooks/asset_parsers.py
+ASSETS_META_HOOK = $(HOOKSDIR)/asset_makemeta.py
+ASSETS_META_FILE = $(SRCDIR)/util/AssetsMeta.h
+ASSETS_CONVERT_HOOK = $(HOOKSDIR)/asset_convert.py
+ASSETS_IMAGE_SCRIPT = $(HOOKSDIR)/asset_convert_image.py
+ASSETS_COMMON_HOOK = $(HOOKSDIR)/asset_common.py
+ASSETS_PARSER_HOOK = $(HOOKSDIR)/asset_parsers.py
 
 # MTL Files
 ASSETS_MTL = $(shell find $(RESSRCDIR) -type f -name '*.mtl')
