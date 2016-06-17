@@ -3,10 +3,8 @@
 
 #include <glm/gtc/quaternion.hpp>
 #include <glm/vec3.hpp>
-
-namespace render {
-	class RenderManager;
-}
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
 
 namespace world {
 	class Entity {
@@ -21,7 +19,9 @@ namespace world {
 			void translate(glm::vec3 location);
 			glm::quat getOrientation();
 			void setOrientation(glm::quat rotation);
-			virtual void render(render::RenderManager &manager);
+			virtual void tick(util::DeltaTime  &deltaTime);
+			virtual void render(render::RenderManager &rManager);
+			void renderDebug(render::RenderManager &rManager, bool renderPosition, bool renderOrientation);
 	};
 }
 

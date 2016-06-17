@@ -43,9 +43,9 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 		this->cursorDeltaY = (this->cursorY-this->lastCursorY)*r;
 		if(this->cursorDeltaX!=0 || this->cursorDeltaY!=0)
 		{
-			glm::quat q = glm::quat(glm::vec3(0, 0, glm::radians(this->cursorDeltaX)));
-			glm::quat preq = glm::quat(glm::vec3(glm::radians(this->cursorDeltaY), 0, 0));
-			orientation = preq*orientation*q;
+			glm::quat q = glm::quat(glm::vec3(0, 0, glm::radians(-this->cursorDeltaX)));
+			glm::quat preq = glm::quat(glm::vec3(glm::radians(-this->cursorDeltaY), 0, 0));
+			orientation = q*orientation*preq;
 		}
 	}
 	this->lastCursorX = this->cursorX;
@@ -77,21 +77,21 @@ void DebugControls::tick(util::DeltaTime &deltaTime)
 
 	// Forward/Backward
 	if(glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)
-		movement += glm::vec3( 0,  r, 0)*orientation;
+		movement += orientation*glm::vec3( 0,  r, 0);
 	if(glfwGetKey(window, GLFW_KEY_S)==GLFW_PRESS)
-		movement += glm::vec3( 0, -r, 0)*orientation;
+		movement += orientation*glm::vec3( 0, -r, 0);
 
 	// Left/Right
 	if(glfwGetKey(window, GLFW_KEY_A)==GLFW_PRESS)
-		movement += glm::vec3(-r, 0, 0)*orientation;
+		movement += orientation*glm::vec3(-r, 0, 0);
 	if(glfwGetKey(window, GLFW_KEY_D)==GLFW_PRESS)
-		movement += glm::vec3( r, 0, 0)*orientation;
+		movement += orientation*glm::vec3( r, 0, 0);
 
 	// Down/Up
 	if(glfwGetKey(window, GLFW_KEY_Q)==GLFW_PRESS)
-		movement += glm::vec3( 0, 0,-r)*orientation;
+		movement += orientation*glm::vec3( 0, 0,-r);
 	if(glfwGetKey(window, GLFW_KEY_E)==GLFW_PRESS)
-		movement += glm::vec3( 0, 0, r)*orientation;
+		movement += orientation*glm::vec3( 0, 0, r);
 
 	//glm::vec3 orientationEuler = glm::eulerAngles(orientation);
 	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;

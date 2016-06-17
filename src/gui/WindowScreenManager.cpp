@@ -35,6 +35,13 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->scale = 1;
 	this->lastX = 0;
 	this->lastY = 0;
+	this->supportedCursorLastX = 0;
+	this->supportedCursorLastY = 0;
+	this->unsupportedCursorLastX = 0;
+	this->unsupportedCursorLastY = 0;
+	this->supportedCursorInit = true;
+	this->unsupportedCursorInit = true;
+	this->skipNextEvent = false;
 
 	WindowScreenManager::eventHandler = this;
 	glfwSetErrorCallback(WindowScreenManager::onError);
@@ -170,6 +177,12 @@ void WindowScreenManager::onKeyEvent(GLFWwindow *window, int key, int scancode, 
 }
 void WindowScreenManager::onCursorPosEvent(GLFWwindow *window, double x, double y)
 {
+	// GLFW fires a cursor pos event to the center of the screen every time the cursor is set to normal
+	if(WindowScreenManager::eventHandler->skipNextEvent)
+	{
+		WindowScreenManager::eventHandler->skipNextEvent = false;
+		return;
+	}
 	y = WindowScreenManager::eventHandler->windowHeightPx-y;
 	x = x*WindowScreenManager::eventHandler->monitorWidthPx/WindowScreenManager::eventHandler->modeWidthPx/WindowScreenManager::eventHandler->scale;
 	y = y*WindowScreenManager::eventHandler->monitorHeightPx/WindowScreenManager::eventHandler->modeHeightPx/WindowScreenManager::eventHandler->scale;
@@ -205,6 +218,12 @@ void WindowScreenManager::onSurfaceScreenChanged(Screen *screen)
 	{
 		double x = this->supportedCursorLastX;
 		double y = this->supportedCursorLastY;
+		if(this->supportedCursorInit)
+		{
+			this->supportedCursorInit = false;
+			x = this->windowHeightPx/2;
+			y = this->windowHeightPx/2;
+		}
 
 		glfwGetCursorPos(this->window, &this->unsupportedCursorLastX, &this->unsupportedCursorLastY);
 		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
@@ -213,7 +232,8 @@ void WindowScreenManager::onSurfaceScreenChanged(Screen *screen)
 		y = this->windowHeightPx-y;
 		x = x*this->monitorWidthPx/this->modeWidthPx/this->scale;
 		y = y*this->monitorHeightPx/this->modeHeightPx/this->scale;
-		this->onControlEvent(CONTROL_ACTION_MOUSE, x, y, this->lastX-x, this->lastY-y);
+		this->onControlEvent(CONTROL_ACTION_MOUSE, x, y, 0, 0);
+		this->skipNextEvent = true;
 		this->lastX = x;
 		this->lastY = y;
 	}

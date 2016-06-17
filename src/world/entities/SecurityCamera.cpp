@@ -6,7 +6,6 @@
 
 #include "util/gl.h"
 
-#include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 
 #include "SecurityCamera.hpp"
@@ -15,62 +14,66 @@ using namespace world;
 using namespace entities;
 using namespace render;
 
-SecurityCamera::SecurityCamera() : Entity::Entity()
+SecurityCamera::SecurityCamera() : super()
 {
-	this->trackingEntity = 0;
+	this->targetEntity = 0;
+	this->currentYaw = 0;
+	this->currentPitch = 0;
+	this->targetYaw = 0;
+	this->targetPitch = 0;
+	this->model = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5MESH);
 }
 SecurityCamera::~SecurityCamera()
 {
 	
 }
-//void SecurityCamera::setTarget(glm::vec3 target)
-//{
-//	glm::vec3 direction = target-this->getPosition();
-//	glm::vec3 relativeUpVector = glm::vec3(0, 0, 1);
-//	glm::quat q = glm::rotation(direction, relativeUpVector);
-//}
 void SecurityCamera::keepLookingAt(Entity *ent)
 {
-	this->trackingEntity = ent;
+	this->targetEntity = ent;
+}
+
+#define TRACKING_SPEED 10
+
+void SecurityCamera::tick(util::DeltaTime &deltaTime)
+{
+		//this->setOrientation(this->getOrientation()*glm::quat(glm::vec3(0, 0, glm::radians(1.f))));
+	if(this->targetEntity!=0)
+	{
+		this->targetPosition = this->targetEntity->getPosition();
+		glm::vec3 direction = (this->targetPosition-(this->getPosition()+(this->getOrientation()*this->model->bindPoseSkeleton[1].pos)))*this->getOrientation();
+		this->targetYaw = -std::atan2(direction.x, direction.y);//Rotation around Z
+		this->targetPitch = -std::atan2(std::sqrt(direction.x*direction.x+direction.y*direction.y), direction.z)+glm::radians(90.f);
+	}
+
+	if(this->targetYaw<-M_PI/2)
+		this->targetYaw = -M_PI/2;
+	else if(this->targetYaw>M_PI/2)
+		this->targetYaw = M_PI/2;
+
 }
 void SecurityCamera::render(RenderManager &rManager)
 {
-	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5MESH);
-
-	Skeleton skel = drone->bindPoseSkeleton;
-	//skel[1].pos += glm::vec3(0, 0, 2);
-
-
-	if(this->trackingEntity!=0)
+	if(this->currentYaw!=this->targetYaw || this->currentPitch!=this->targetPitch)
 	{
-		glm::vec3 direction = (this->trackingEntity->getPosition()-(this->getPosition()+(this->getOrientation()*skel[1].pos)))*this->getOrientation();
-		this->yaw = -std::atan2(direction.x, direction.y);//Rotation around Z
-		this->pitch = -std::atan2(std::sqrt(direction.x*direction.x+direction.y*direction.y), direction.z)+glm::radians(90.f);
+		float dYaw = this->targetYaw-this->currentYaw;
+		float dPitch = this->targetPitch-this->currentPitch;
+		this->currentYaw += dYaw/10;
+		this->currentPitch += dPitch/10;
 	}
+	//this->setOrientation(this->getOrientation()*glm::quat(glm::vec3(0, 0, glm::radians((float)(std::rand()%100)/10))));
+	
 
-	this->setOrientation(this->getOrientation()*glm::quat(glm::vec3(0, 0, glm::radians(1.f))));
-	//this->pitch += 0.01f;
-	//this->yaw += 0.01f;
-	if(this->yaw<-M_PI/2)
-		this->yaw = -M_PI/2;
-	else if(this->yaw>M_PI/2)
-		this->yaw = M_PI/2;
-	//std::cout << this->pitch*(180/M_PI) << std::endl;
-
+	rManager.pushMatrixM();
 	rManager.M = glm::translate(rManager.M, this->getPosition())*glm::toMat4(this->getOrientation());
 	rManager.markMDirty();
 	rManager.useShader(SHADER_fuzzyModel);
 
-	//drone->renderWeights(rManager, drone->bindPoseSkeleton);
-	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5ANIM);
-	
-	skel[1].ori = glm::angleAxis(this->yaw, glm::vec3(0, 0, 1))*glm::angleAxis(this->pitch, glm::vec3(1,0,0));
+	Skeleton skel = this->model->bindPoseSkeleton;
+	skel[1].ori = glm::quat(glm::vec3(this->currentPitch, 0, this->currentYaw));//, glm::vec3(0, 0, 1))*glm::angleAxis(this->pitch, glm::vec3(1,0,0));
+	this->model->render(rManager, skel);
 	//drone->renderSkeleton(rManager, skel);
-	drone->render(rManager, skel);
-
-	//drone->render(rManager);
-	//drone->renderSkeleton(rManager, drone->bindPoseSkeleton);
-	//drone_anim->render(rManager, *drone, glfwGetTime());
+	//drone->renderWeights(rManager, skel);
+	rManager.popMatrixM();
 }
 
 //controllable by player

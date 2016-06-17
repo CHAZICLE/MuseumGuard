@@ -5,11 +5,13 @@ namespace render {
 	class RenderManager;
 }
 
-#include "ShaderVariables.h"
-#include "util/gl.h"
 #include <string>
 #include <cstdint>
 #include <vector>
+
+#include "ShaderVariables.h"
+#include "util/gl.h"
+#include "render/MaterialLibrary.hpp"
 
 
 namespace render {
@@ -24,6 +26,8 @@ namespace render {
 				static ShaderProgram *getShader(int shaderIndex);
 				void useShader();
 				GLint getShaderLocation(bool uniform, int shaderVar);
+				bool setVertexAttributePointer(int shaderVar, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer);
+				bool setMaterial(render::MaterialAsset mat);
 			private:
 				int shaderprogram_id;
 				std::string shaderprogram_name;
@@ -36,6 +40,8 @@ namespace render {
 				GLuint programID;
 				int shaderVar_locationsCount;
 				GLint *shaderVar_locations;
+
+				MaterialAsset currentMaterial;
 
 				static GLint compileShader(std::string name, int mask, std::string code);
 				static GLint *shader_files;

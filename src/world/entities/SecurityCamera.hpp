@@ -2,18 +2,23 @@
 #define __SECURITYCAMERA_H_INCLUDED__
 
 #include "world/Entity.hpp"
+#include "render/SkeletalModel.hpp"
 
 namespace world {
 	namespace entities {
 		class SecurityCamera : public Entity {
+			typedef Entity super;
+			private:
+				float currentPitch,currentYaw,targetPitch,targetYaw;
+				Entity *targetEntity;
+				glm::vec3 targetPosition;
+				render::SkeletalModel *model;
 			public:
 				SecurityCamera();
-				~SecurityCamera();
+				virtual ~SecurityCamera();
 				void keepLookingAt(Entity *ent);
+				virtual void tick(util::DeltaTime &deltaTime);
 				virtual void render(render::RenderManager &rManager);
-			private:
-				float pitch,yaw;
-				Entity *trackingEntity;
 		};
 	}
 }

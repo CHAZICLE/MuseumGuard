@@ -5,10 +5,13 @@
 
 namespace world {
 	namespace entities {
+		typedef Entity super;
 		class Enemy : public Entity {
+			double animTime;
 			public:
 				Enemy();
 				virtual ~Enemy();
+				virtual void tick(util::DeltaTime &deltaTime);
 				virtual void render(render::RenderManager &rManager);
 		};
 	}

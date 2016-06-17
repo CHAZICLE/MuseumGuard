@@ -17,13 +17,16 @@ namespace render {
 	private:
 		bool mDirty,vDirty,pDirty,mvDirty,vpDirty,mvpDirty;
 		bool doCullFace,doDepthBuffer;
-		glm::mat4 MV,VP,MVP;
+		glm::mat4 MV,VP,MVP,stackM,stackMV,stackMVP;
 		int widthPx,heightPx;
 		float widthMM,heightMM;
 		shaders::ShaderProgram *shader;
 	public:
 		RenderManager();
 		virtual ~RenderManager();
+
+
+		// Matrix
 		void setMVPMatrix(GLuint mvpMatrixShaderLocation);
 
 		glm::mat4 M,V,P;
@@ -31,6 +34,9 @@ namespace render {
 		void markPDirty();
 		void markVDirty();
 		void markMDirty();
+
+		void pushMatrixM();
+		void popMatrixM();
 
 		void setShaderMatricies(shaders::ShaderProgram &shaderProgram);
 		shaders::ShaderProgram *useShader(int shader);

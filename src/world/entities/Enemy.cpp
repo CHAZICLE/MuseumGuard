@@ -15,13 +15,18 @@ using namespace world;
 using namespace entities;
 using namespace render;
 
-Enemy::Enemy()
+Enemy::Enemy() : super()
 {
-	
+	this->animTime = 0;
 }
 Enemy::~Enemy()
 {
 	
+}
+
+void Enemy::tick(util::DeltaTime &deltaTime)
+{
+	this->animTime = deltaTime.getTime();
 }
 void Enemy::render(render::RenderManager &rManager)
 {
@@ -31,6 +36,7 @@ void Enemy::render(render::RenderManager &rManager)
 	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
 	BasicShapes::renderUnitCube(vploc);
 	*/
+	rManager.pushMatrixM();
 
 	rManager.M = glm::scale(glm::translate(glm::mat4(1.0f), this->getPosition()), glm::vec3(1,1,1));
 	rManager.markMDirty();
@@ -40,5 +46,7 @@ void Enemy::render(render::RenderManager &rManager)
 	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5MESH);
 	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5ANIM);
 
-	drone_anim->render(rManager, *drone, glfwGetTime());
+	drone_anim->render(rManager, *drone, animTime);
+
+	rManager.popMatrixM();
 }

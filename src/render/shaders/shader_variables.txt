@@ -2,6 +2,7 @@
 vertex_position
 vertex_texture
 vertex_normal
+vertex_color
 // matrix uniforms
 matrix_MVP
 matrix_MV

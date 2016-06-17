@@ -9,6 +9,7 @@ DeltaTime::DeltaTime(bool vsync, double targetFramerate)
 	this->deltaTime = 0;
 	this->framerate = 0;
 	this->vsync = vsync;
+	this->offsetTime = 0;
 }
 DeltaTime::~DeltaTime()
 {
@@ -20,9 +21,13 @@ void DeltaTime::postTime(double time)
 	this->framerate = 1/this->deltaTime;
 	this->currentTime = time;
 }
+void DeltaTime::setOffsetTime(double offsetTime)
+{
+	this->offsetTime = offsetTime;
+}
 double DeltaTime::getTime()
 {
-	return this->currentTime;
+	return this->currentTime+this->offsetTime;
 }
 double DeltaTime::getTimeDelta()
 {

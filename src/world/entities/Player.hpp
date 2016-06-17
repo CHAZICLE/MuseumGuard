@@ -5,6 +5,7 @@
 
 namespace world {
 	namespace entities {
+		typedef Entity super;
 		class Player : public Entity {
 			public:
 				Player();

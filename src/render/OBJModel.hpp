@@ -56,8 +56,8 @@ namespace render {
 			void render(render::RenderManager &rManager, int shader);
 		private:
 			int dataBufferStride;
-			int dataBufferTexturesOffset;
 			int dataBufferNormalsOffset;
+			int dataBufferColorsOffset;
 			std::vector<GLfloat> dataBuffer;
 			std::list<OBJObject *> objects;
 			GLuint vertexArrayID,vertexDataBufferID,tempColorBuffer;

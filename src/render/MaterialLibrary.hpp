@@ -4,9 +4,17 @@
 namespace render {
 	class MaterialLibrary;
 	typedef struct Material Material;
+	namespace shaders {
+		class ShaderProgram;
+	}
+	struct MaterialAsset {
+		int assetId;
+		int materialId;
+	};
 }
 
 #include "render/MaterialData.h"
+#include "render/shaders/ShaderProgram.hpp"
 #include "util/AssetManager.hpp"
 #include <vector>
 #include <ostream>
@@ -15,10 +23,8 @@ std::ostream &operator<<(std::ostream &ost, const render::Material &m);
 
 namespace render {
 
-	struct MaterialAsset {
-		int assetId;
-		int materialId;
-	};
+
+	typedef struct MaterialAsset MaterialAsset;
 
 	struct Material {
 		std::string name;
@@ -51,9 +57,12 @@ namespace render {
 			virtual void postload();
 			void printMaterial(std::ostream &ost);
 			Material *getMaterial(int materialId);
+			void updateShader(shaders::ShaderProgram *shader, int materialId);
 		private:
 			std::vector<Material> materials;
 	};
 }
+bool operator==(render::MaterialAsset &a, render::MaterialAsset &b);
+bool operator!=(render::MaterialAsset &a, render::MaterialAsset &b);
 
 #endif

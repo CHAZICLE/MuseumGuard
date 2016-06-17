@@ -12,6 +12,7 @@ class WindowScreenManager : public ScreenManager {
 		double scale;
 		double lastX,lastY;
 		double supportedCursorLastX,supportedCursorLastY,unsupportedCursorLastX,unsupportedCursorLastY;
+		bool supportedCursorInit,unsupportedCursorInit,skipNextEvent;
 	public:
 		WindowScreenManager();
 		virtual ~WindowScreenManager();

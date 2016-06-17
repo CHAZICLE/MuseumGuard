@@ -9,7 +9,7 @@ class GamePauseMenu : public Screen {
 	public:
 		GamePauseMenu();
 		~GamePauseMenu();
-		Button *exitButton,*playButton,*pathTestButton;
+		Button *exitButton,*resumeButton,*pathTestButton;
 		virtual bool onControlEvent(int control, int action);
 };
 

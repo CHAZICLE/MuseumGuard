@@ -41,10 +41,12 @@ ShaderProgram::ShaderProgram(int shaderprogram_id, std::string shaderprogram_nam
 	{
 		this->shaderVar_locations[i] = -1;
 	}
+	this->currentMaterial.assetId = -1;
+	this->currentMaterial.materialId = -1;
 }
 ShaderProgram::~ShaderProgram()
 {
-	
+	delete [] this->shader_program;
 }
 void ShaderProgram::useShader()
 {
@@ -91,6 +93,32 @@ GLint ShaderProgram::getShaderLocation(bool uniform, int shaderVar)
 		}
 	}
 	return sl;
+}
+bool ShaderProgram::setVertexAttributePointer(int shaderVar, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const void *pointer)
+{
+	int location = getShaderLocation(false, shaderVar);
+	if(location!=-1)
+	{
+		glEnableVertexAttribArray(location);
+		glVertexAttribPointer(location, size, type, normalized, stride, pointer);
+		return true;
+	}
+	return false;
+}
+
+bool ShaderProgram::setMaterial(MaterialAsset mat)
+{
+	if(this->currentMaterial!=mat)
+	{
+		this->currentMaterial = mat;
+		util::Asset *asset = util::AssetManager::getAssetManager()->getAsset(mat.assetId);
+		render::MaterialLibrary *mtlAsset = dynamic_cast<render::MaterialLibrary *>(asset);
+		if(asset==0 || mtlAsset==0)
+			util::Globals::fatalError("Failed to find material asset");
+		mtlAsset->updateShader(this, mat.materialId);
+		return true;
+	}
+	return false;
 }
 ShaderProgram *ShaderProgram::getShader(int shaderIndex)
 {

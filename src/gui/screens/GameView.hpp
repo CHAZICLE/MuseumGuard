@@ -19,6 +19,8 @@ namespace screens {
 	class GameView: public Screen {
 	private:
 		world::World *world;
+		double pauseStartTime,pauseOffsetTime;
+		bool wasSurface;
 	public:
 		GameView();
 		virtual ~GameView();

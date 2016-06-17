@@ -49,6 +49,20 @@ void RenderManager::markMDirty() {
 	this->mvpDirty = true;
 }
 
+void RenderManager::pushMatrixM()
+{
+	this->stackM = this->M;
+	this->stackMV = this->MV;
+	this->stackMVP = this->MVP;
+}
+void RenderManager::popMatrixM()
+{
+	
+	this->M = this->stackM;
+	this->MV = this->stackMV;
+	this->MVP = this->stackMVP;
+}
+
 #define MATRIX_SHADER_INJECT(INTVAR, MATVAR) loc = shaderProgram.getShaderLocation(true, INTVAR); if(loc!=-1) glUniformMatrix4fv(loc, 1, GL_FALSE, &MATVAR[0][0])
 
 // Shaders

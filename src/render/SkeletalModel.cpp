@@ -236,7 +236,7 @@ void SkeletalModel::render(render::RenderManager &manager, const Skeleton &skele
 	glEnableVertexAttribArray(vploc);
 	glVertexAttribPointer(vploc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	GLint colorLoc = shader->getShaderLocation(false, SHADER_fuzzyModel_vertex_color);
+	GLint colorLoc = shader->getShaderLocation(false, SHADERVAR_vertex_color);
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexColorBufferID);
 	glEnableVertexAttribArray(colorLoc);
 	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);

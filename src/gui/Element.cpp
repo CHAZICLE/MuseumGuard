@@ -1,3 +1,4 @@
+#include "util/Globals.hpp"
 #include "util/gl.h"
 #include "render/BasicShapes.hpp"
 #include "render/shaders/ShaderUtils.hpp"
@@ -77,10 +78,8 @@ Element *Element::setSize(float x, float y, float width, float height)
 }
 bool Element::isInside(float x, float y)
 {
-	return this->getX()<=x
-		&& this->getX()+this->getWidth()>=x
-		&& this->getY()<=y
-		&& this->getY()+this->getHeight()>=y;
+	return this->x<=x && this->x+this->width>=x
+	    && this->y<=y && this->y+this->height>=y;
 }
 void Element::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {

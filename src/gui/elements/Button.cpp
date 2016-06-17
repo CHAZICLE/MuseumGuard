@@ -12,7 +12,7 @@
 using namespace render;
 
 render::Font *Button::buttonFont = 0;
-Button::Button(std::string text)
+Button::Button(std::string text) : Element()
 {
 	setSize(0, 0, 60, 10);
 	this->selectedBackgroundColor = glm::vec4(RGBf(140, 167, 246), 1.f);

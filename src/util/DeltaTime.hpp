@@ -8,12 +8,13 @@
 
 namespace util {
 	class DeltaTime {
-		double targetFramerate,currentTime,deltaTime,framerate;
+		double targetFramerate,currentTime,deltaTime,framerate,offsetTime;
 		bool vsync;
 		public:
 			DeltaTime(bool vsync, double targetFramerate);
 			~DeltaTime();
 			void postTime(double time);
+			void setOffsetTime(double offsetTime);
 			double getTime();
 			double getTimeDelta();
 			double getFramerate();

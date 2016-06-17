@@ -1,10 +1,15 @@
 #include "util/StreamUtils.hpp"
+#include "util/Globals.hpp"
+#include "render/DDSImage.hpp"
+#include "util/AssetUtils.hpp"
+#include "render/shaders/ShaderProgram.hpp"
 
 #include "render/MaterialLibrary.hpp"
 
 #define readFloat3(v,x) do { v[0] = readFloat(x); v[1]= readFloat(x); v[2] = readFloat(x); } while(0);
 
 using namespace render;
+using namespace render::shaders;
 using namespace util::StreamUtils;
 
 MaterialLibrary::MaterialLibrary(int assetId, std::istream &fp) : Asset(assetId)
@@ -55,6 +60,68 @@ Material *MaterialLibrary::getMaterial(int materialId)
 {
 	return &this->materials[materialId];
 }
+#define SET_SHADER_VEC3(name) do { \
+	int shaderLoc = shader->getShaderLocation(true, SHADERVAR_material_##name); \
+	if(shaderLoc!=-1) \
+	{ \
+		if(mat->flags&MATERIAL_MASK_##name) \
+		{ \
+			glUniform3f(shaderLoc, mat->name[0], mat->name[1], mat->name[2]); \
+		} \
+		else \
+			util::Globals::fatalError("Material is missing field for shader uniform "#name); \
+	} \
+} while(0);
+#define SET_SHADER_VALUE(name, gltype) do { \
+	int shaderLoc = shader->getShaderLocation(true, SHADERVAR_material_##name); \
+	if(shaderLoc!=-1) \
+	{ \
+		if(mat->flags&MATERIAL_MASK_##name) \
+		{ \
+			glUniform##gltype(shaderLoc, mat->name); \
+		} \
+		else \
+			util::Globals::fatalError("Material is missing field for shader uniform "#name); \
+	} \
+} while(0);
+#define SET_SHADER_TEXTURE(name) do { \
+	int texLoc = shader->getShaderLocation(true, SHADERVAR_material_##name); \
+	if(texLoc!=-1) \
+	{ \
+		if(mat->flags&MATERIAL_MASK_##name) \
+		{ \
+			glActiveTexture(GL_TEXTURE0+t); \
+			util::AssetUtils::bindTexture(mat->name); \
+			glUniform1i(texLoc, t); \
+			t++; \
+		} \
+		else \
+			util::Globals::fatalError("Material is missing field for shader uniform "#name); \
+	} \
+} while(0);
+void MaterialLibrary::updateShader(shaders::ShaderProgram *shader, int materialId)
+{
+	Material *mat = getMaterial(materialId);
+	int t = 0;
+
+	SET_SHADER_VEC3(Ka);
+	SET_SHADER_VEC3(Kd);
+	SET_SHADER_VEC3(Ks);
+	SET_SHADER_VEC3(Tf);
+	SET_SHADER_VALUE(d, 1f);
+	SET_SHADER_VALUE(Ns, 1f);
+	SET_SHADER_VALUE(Ni, 1f);
+	SET_SHADER_VALUE(illum, 1i);
+	SET_SHADER_VALUE(sharpness, 1i);
+	SET_SHADER_TEXTURE(map_Ka);
+	SET_SHADER_TEXTURE(map_Kd);
+	SET_SHADER_TEXTURE(map_Ks);
+	SET_SHADER_TEXTURE(map_Ns);
+	SET_SHADER_TEXTURE(map_d);
+	SET_SHADER_TEXTURE(disp);
+	SET_SHADER_TEXTURE(decal);
+	SET_SHADER_TEXTURE(bump);
+}
 void MaterialLibrary::postload()
 {
 
@@ -80,4 +147,12 @@ std::ostream &operator<<(std::ostream &ost, const render::Material &m)
 	if(m.flags&MATERIAL_MASK_decal		) ost << ", decal="<< m.decal;
 	if(m.flags&MATERIAL_MASK_bump		) ost << ", bump="<< m.bump;
 	return ost << ")";
+}
+bool operator==(MaterialAsset &a, MaterialAsset &b)
+{
+	return a.assetId==b.assetId && a.materialId==b.materialId;
+}
+bool operator!=(MaterialAsset &a, MaterialAsset &b)
+{
+	return !(a==b);
 }

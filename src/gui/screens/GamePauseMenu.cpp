@@ -19,15 +19,15 @@ using namespace screens;
 
 GamePauseMenu::GamePauseMenu() : Screen()
 {
-	this->playButton = new Button("Play");
+	this->resumeButton = new Button("Resume");
 	this->pathTestButton = new Button("???");
 	this->exitButton = new Button("Quit");
 
-	this->playButton->setY(20);
+	this->resumeButton->setY(20);
 	this->pathTestButton->setY(10);
 	//this->exitButton->setY(0);
 
-	this->addElement(this->playButton);
+	this->addElement(this->resumeButton);
 	this->addElement(this->pathTestButton);
 	this->addElement(this->exitButton);
 }
@@ -44,9 +44,9 @@ bool GamePauseMenu::onControlEvent(Control control, int action)
 	}
 	if((action&CONTROL_MOUSEBUTTONACTION_PRESS) && control==CONTROL_GUI_SELECT)
 	{
-		if(this->selectedElement==this->playButton)
+		if(this->selectedElement==this->resumeButton)
 		{
-			this->manager->openRootScreen(new GameView());
+			this->manager->closeScreen(this);
 			return true;
 		}
 		else if(this->selectedElement==this->pathTestButton)
