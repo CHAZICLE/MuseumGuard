@@ -5,7 +5,7 @@
 #include "render/BasicShapes.hpp"
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/RenderManager.hpp"
-#include "render/OBJModel.hpp"
+#include "render/StaticModel.hpp"
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 
@@ -111,7 +111,7 @@ void World::render(render::RenderManager &rManager)
 	rManager.markMDirty();
 
 	rManager.disableCullFace();
-	((render::OBJModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_3YPWORLD2_OBJ))->render(rManager, SHADER_UVTest);
+	((render::StaticModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_3YPWORLD2_OBJ))->render(rManager, SHADER_UVTest);
 	rManager.enableCullFace();
 
 	//((render::SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->render(rManager);
@@ -119,16 +119,8 @@ void World::render(render::RenderManager &rManager)
 	
 	//((render::SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_HELLKNIGHT_MD5MESH))->debugRender(rManager, true, true);
 
-#define RENDER_OBJ(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::OBJModel *>(a)->render(rManager, shaders::program_solidcolor_vertexPosition); } } while(0);
+#define RENDER_STATIC(x) do { util::Asset *a = util::AssetManager::getAssetManager()->getAsset(x); if(a!=0) { dynamic_cast<render::StaticModel *>(a)->render(rManager, shaders::program_solidcolor_vertexPosition); } } while(0);
 
-//	util::Asset *a = util::AssetManager::getAssetManager()->getAsset(ASSET_WEIRDSHAPE_OBJ);
-//	if(a!=0)
-//		((render::OBJModel *)a)->render(rManager, shaders::program_solidcolor_vertexPosition);
-
-	//RENDER_OBJ(ASSET_WEIRDSHAPE_OBJ);
-	//RENDER_OBJ(ASSET_WORLD_OBJ);
-	//RENDER_OBJ(ASSET_CUBE_OBJ);
-	
 	rManager.disableDepth();
 	rManager.disableCullFace();
 

@@ -9,12 +9,12 @@
 #include "render/MaterialLibrary.hpp"
 #include "util/AssetUtils.hpp"
 
-#include "OBJModel.hpp"
+#include "StaticModel.hpp"
 
 using namespace render;
 using namespace util::StreamUtils;
 
-OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
+StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
 
@@ -72,7 +72,7 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 	temp_totalVertexCount = 0;
 	for(int i=0;i<lenObjects;i++)
 	{
-		OBJObject *o = new OBJObject;
+		StaticModelObject *o = new StaticModelObject;
 		// Load the wavefront object
 		o->name = readString(fp);
 		o->mtlAsset = readInt(fp);
@@ -124,11 +124,11 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 		this->objects.push_back(o);
 	}
 }
-OBJModel::~OBJModel()
+StaticModel::~StaticModel()
 {
 	
 }
-void OBJModel::postload()
+void StaticModel::postload()
 {
 	// Load
 	glGenVertexArrays(1, &this->vertexArrayID);
@@ -145,14 +145,14 @@ void OBJModel::postload()
 	glBindBuffer(GL_ARRAY_BUFFER, this->tempColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, temp_totalVertexCount*3*sizeof(GLfloat), colors, GL_STATIC_DRAW);
 
-	for(OBJObject *object : this->objects)
+	for(StaticModelObject *object : this->objects)
 	{
 		glGenBuffers(1, &object->indexBufferID);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*3*sizeof(GLuint), object->indecies, GL_STATIC_DRAW);
 	}
 }
-void OBJModel::render(render::RenderManager &rManager, int shader)
+void StaticModel::render(render::RenderManager &rManager, int shader)
 {
 	shaders::ShaderProgram *proc = rManager.useShader(shader);
 	if(proc==0)
@@ -170,7 +170,7 @@ void OBJModel::render(render::RenderManager &rManager, int shader)
 	proc->setVertexAttributePointer(SHADERVAR_vertex_normal, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(this->dataBufferNormalsOffset*sizeof(GLfloat)));
 	proc->setVertexAttributePointer(SHADERVAR_vertex_color, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(this->dataBufferColorsOffset*sizeof(GLfloat)));
 	
-	for(OBJObject *object : this->objects)
+	for(StaticModelObject *object : this->objects)
 	{
 		if(object->mtlAsset!=0)
 			proc->setMaterial({object->mtlAsset, object->materialId});
@@ -179,13 +179,13 @@ void OBJModel::render(render::RenderManager &rManager, int shader)
 		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_UNSIGNED_INT, 0);
 	}
 }
-void OBJModel::write(std::ostream &ost) const
+void StaticModel::write(std::ostream &ost) const
 {
 	ost << "[" << this->getAssetID() << ":" << this->getName() << ".obj] " << this->dataBuffer.size()/this->dataBufferStride << " verticies by " << this->dataBufferStride << " attributes (" << this->dataBuffer.size() << " dbuf size), " << this->objects.size() << " objects:" << std::endl;
-	for(render::OBJObject *o : this->objects)
+	for(render::StaticModelObject *o : this->objects)
 		ost << *o << std::endl;
 }
-std::ostream &operator<<(std::ostream &ost, const render::OBJObject &o)
+std::ostream &operator<<(std::ostream &ost, const render::StaticModelObject &o)
 {
 	return ost << "	" << o.name << ": Material [" << o.mtlAsset << ":" << o.materialId << "]" << ", Shading: " << o.s << ", " << o.numPrimitives << " primitives (" << (o.numPrimitives*3) << " verticies) ";
 }

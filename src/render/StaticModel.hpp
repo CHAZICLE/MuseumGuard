@@ -1,12 +1,12 @@
-#ifndef __OBJMODEL_H_INCLUDED__
-#define __OBJMODEL_H_INCLUDED__
+#ifndef __STATICMODEL_H_INCLUDED__
+#define __STATICMODEL_H_INCLUDED__
 
 namespace render {
 	struct FaceKey;
 	struct FaceKeyHasher;
-	typedef struct OBJObject OBJObject;
+	typedef struct StaticModelObject StaticModelObject;
 	class RenderManager;
-	class OBJModel;
+	class StaticModel;
 }
 
 #include <vector>
@@ -14,8 +14,8 @@ namespace render {
 #include "util/AssetManager.hpp"
 #include "util/gl.h"
 
-std::ostream &operator<<(std::ostream &ost, const render::OBJModel &model);
-std::ostream &operator<<(std::ostream &ost, const render::OBJObject &o);
+std::ostream &operator<<(std::ostream &ost, const render::StaticModel &model);
+std::ostream &operator<<(std::ostream &ost, const render::StaticModelObject &o);
 
 namespace render {
 	struct FaceKey {
@@ -36,7 +36,7 @@ namespace render {
 			return ((std::hash<int>()(k.vertexPositionIndex)^ (std::hash<int>()(k.vertexTextureIndex) << 1)) >> 1) ^ (std::hash<int>()(k.vertexNormalIndex) << 1);
 		}
 	};
-	struct OBJObject {
+	struct StaticModelObject {
 		std::string name;
 		int mtlAsset;
 		int materialId;
@@ -46,11 +46,11 @@ namespace render {
 		GLuint *indecies;//length = numVerticies
 		GLuint indexBufferID;
 	};
-	class OBJModel : public util::Asset {
-		friend std::ostream &::operator<<(std::ostream &ost, const render::OBJModel &model);
+	class StaticModel : public util::Asset {
+		friend std::ostream &::operator<<(std::ostream &ost, const render::StaticModel &model);
 		public:
-			OBJModel(int assetId, std::istream &fp);
-			virtual ~OBJModel();
+			StaticModel(int assetId, std::istream &fp);
+			virtual ~StaticModel();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
 			void render(render::RenderManager &rManager, int shader);
@@ -59,7 +59,7 @@ namespace render {
 			int dataBufferNormalsOffset;
 			int dataBufferColorsOffset;
 			std::vector<GLfloat> dataBuffer;
-			std::list<OBJObject *> objects;
+			std::list<StaticModelObject *> objects;
 			GLuint vertexArrayID,vertexDataBufferID,tempColorBuffer;
 
 			int temp_totalVertexCount;

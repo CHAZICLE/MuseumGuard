@@ -4,7 +4,7 @@
 #include <boost/iostreams/filter/gzip.hpp>
 #include "util/StreamUtils.hpp"
 #include "render/MaterialLibrary.hpp"
-#include "render/OBJModel.hpp"
+#include "render/StaticModel.hpp"
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 #include "render/DDSImage.hpp"
@@ -54,7 +54,7 @@ void AssetManager::run()
 	Asset *asset;
 	int assetType = 0, assetId = 0;
 	render::MaterialLibrary *mtlib = 0;
-	render::OBJModel *wvModel = 0;
+	render::StaticModel *wvModel = 0;
 	render::SkeletalModel *md5Model = 0;
 	render::SkeletalAnimation *md5anim = 0;
 	render::DDSImage *ddsImage = 0;
@@ -71,7 +71,7 @@ void AssetManager::run()
 				asset = mtlib;
 				break;
 			case ASSET_WAVEFRONT:
-				wvModel = new render::OBJModel(assetId, fp);
+				wvModel = new render::StaticModel(assetId, fp);
 				asset = wvModel;
 				break;
 			case ASSET_MD5MESH:
