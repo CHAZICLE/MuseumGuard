@@ -159,7 +159,7 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
     #print((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
     if verbose>=1:
         print("	"+str(len(v))+" vertecies, "+str(len(vt))+" texture coordinates, "+str(len(vn))+" normal coordinates, "+str(len(objects))+" objects")
-    return (len(v), v, len(vt), vt, len(vn), vn, len(objects), objects)
+    return (len(v), v, len(vt), vt, len(vn), vn, 0, [], len(objects), objects)
 
 def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
     # Data to load and store

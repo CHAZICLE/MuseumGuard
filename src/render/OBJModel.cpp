@@ -21,37 +21,47 @@ OBJModel::OBJModel(int assetId, std::istream &fp) : Asset(assetId)
 	
 	// int dataBufferStride = 0; - Field
 	dataBufferStride = 3;
-	dataBufferTexturesOffset = 0;
 	dataBufferNormalsOffset = 0;
+	dataBufferColorsOffset = 0;
 	int vertexStride = 1;
 	int vertexTexturesOffset = 0;
 	int vertexNormalsOffset = 0;
 	//std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], vn[1], vn[2]]...]
 	std::unordered_map<struct FaceKey, int, FaceKeyHasher> assocMap;//[v index, vt index, vn index] : [faceIndex]
 	
-	//v
+	//vertex positions
 	int lenVertexPositions = readInt(fp);
 	float *vertexPositions = new float[lenVertexPositions*3];
 	fp.read((char *)vertexPositions, sizeof(float)*lenVertexPositions*3);
-	//vt
+	//vertex textures
 	int lenVertexTextures = readInt(fp);
 	float *vertexTextures = new float[lenVertexTextures*2];
 	if(lenVertexTextures>0)//enableTextures
 	{
 		fp.read((char *)vertexTextures, sizeof(float)*lenVertexTextures*2);
 		dataBufferStride += 2;
-		dataBufferTexturesOffset = 2;
 		vertexStride += 1;
 		vertexTexturesOffset = 1;
 	}
-	//vn
+	//vertex normals
 	int lenVertexNormals = readInt(fp);
 	float *vertexNormals = new float[lenVertexNormals*3];
 	if(lenVertexNormals>0)//enableNormals
 	{
 		fp.read((char *)vertexNormals, sizeof(float)*lenVertexNormals*3);
+		dataBufferNormalsOffset = dataBufferStride;
 		dataBufferStride += 3;
-		dataBufferNormalsOffset = 3+dataBufferTexturesOffset;
+		vertexStride += 1;
+		vertexNormalsOffset = vertexTexturesOffset+1;
+	}
+	//vertex colors
+	int lenVertexColors = readInt(fp);
+	float *vertexColors = new float[lenVertexColors*3];
+	if(lenVertexColors>0)//enableNormals
+	{
+		fp.read((char *)vertexColors, sizeof(float)*lenVertexColors*3);
+		dataBufferColorsOffset = dataBufferStride;
+		dataBufferStride += 3;
 		vertexStride += 1;
 		vertexNormalsOffset = vertexTexturesOffset+1;
 	}
@@ -144,45 +154,29 @@ void OBJModel::postload()
 }
 void OBJModel::render(render::RenderManager &rManager, int shader)
 {
-	shader = SHADER_modelTexture;
-	rManager.useShader(shader);
-	shaders::ShaderProgram *proc = shaders::ShaderProgram::getShader(shader);
+	shaders::ShaderProgram *proc = rManager.useShader(shader);
 	if(proc==0)
 	{
 		util::Globals::fatalError("Failed to find shader");
 	}
-	int sp = proc->getShaderLocation(false, SHADERVAR_vertex_position);
-	int tp = proc->getShaderLocation(false, SHADERVAR_vertex_texture);
-	glUniform1i(proc->getShaderLocation(true, SHADERVAR_material_map_Kd), 0);
-	//int vc = proc->getShaderLocation(true, SHADER_fuzzyModel_vertex_color);
-	if(sp==-1)
-	{
-		util::Globals::fatalError("Failed to find shader var");
-	}
-	if(tp==-1)
-	{
-		util::Globals::fatalError("Failed to find shader var");
-	}
-	glBindVertexArray(this->vertexArrayID);
-	
-	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
-	glEnableVertexAttribArray(sp);
-	glVertexAttribPointer(sp, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
-	glEnableVertexAttribArray(tp);
-	glVertexAttribPointer(tp, 2, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+	//glUniform1i(proc->getShaderLocation(true, SHADERVAR_material_map_Kd), 0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, this->tempColorBuffer);
-	//glEnableVertexAttribArray(vc);
-	//glVertexAttribPointer(vc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	glBindVertexArray(this->vertexArrayID);
+	glBindBuffer(GL_ARRAY_BUFFER, this->vertexDataBufferID);
+
+	// Push the vertex attributes
+	proc->setVertexAttributePointer(SHADERVAR_vertex_position, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), 0);
+	proc->setVertexAttributePointer(SHADERVAR_vertex_texture, 2, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(3*sizeof(GLfloat)));
+	proc->setVertexAttributePointer(SHADERVAR_vertex_normal, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(this->dataBufferNormalsOffset*sizeof(GLfloat)));
+	proc->setVertexAttributePointer(SHADERVAR_vertex_color, 3, GL_FLOAT, GL_FALSE, dataBufferStride*sizeof(GLfloat), (void*)(this->dataBufferColorsOffset*sizeof(GLfloat)));
 	
 	for(OBJObject *object : this->objects)
 	{
-		glActiveTexture(GL_TEXTURE0);
-		util::AssetUtils::bindTexture(util::AssetUtils::getMaterial(object->mtlAsset, object->materialId)->map_Kd);
+		if(object->mtlAsset!=0)
+			proc->setMaterial({object->mtlAsset, object->materialId});
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
 		glDrawElements(GL_TRIANGLES, object->numPrimitives*3, GL_UNSIGNED_INT, 0);
-		
 	}
 }
 void OBJModel::write(std::ostream &ost) const
