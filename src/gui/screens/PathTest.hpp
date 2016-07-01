@@ -1,7 +1,7 @@
 #ifndef __PATHTEST_H_INCLUDED__
 #define __PATHTEST_H_INCLUDED__
 
-#include "ai/path/PathHolder.hpp"
+#include "ai/path/DebugPathHolder.hpp"
 #include "ai/path/PathFinder.hpp"
 #include "gui/Screen.hpp"
 namespace util {
@@ -16,7 +16,7 @@ class PathTest : public Screen {
 		PathTest();
 		~PathTest();
 		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
-		PathHolder *pathHolder;
+		ai::path::DebugPathHolder *pathHolder;
 		PathFinder *pathFinder;
 		double lastTime;
 		virtual bool onControlEvent(int control, int action);

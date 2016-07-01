@@ -67,7 +67,7 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	}
 	glfwMakeContextCurrent(this->window);
 	
-#ifdef USE_GLEW
+//#ifdef USE_GLEW
 	// Setup GLEW
 	glewExperimental = GL_TRUE;
 	if(glewInit())
@@ -75,7 +75,7 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 		std::cerr << "GLEW initialization failed" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-#endif
+//#endif
 	
 	// Print info
 	Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [INIT] OpenGL version: "+std::string((const char *)glGetString(GL_VERSION)));

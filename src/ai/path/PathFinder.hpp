@@ -2,7 +2,6 @@
 #define __PATHFINDER_H_INCLUDED__
 
 #include "PathCommon.h"
-#include "PathHolder.hpp"
 #include <set>
 #include <map>
 
@@ -15,17 +14,17 @@ struct StoredPathNode {
 
 class PathFinder {
 	private:
-		struct StoredPathNode *start,*end,*c;
+		StoredPathNode *start,*end,*c;
 	public:
 		int iterations;
-		std::map<int, struct StoredPathNode *> storedPathNodes;
-		std::set<struct StoredPathNode *> openSet;
-		std::set<struct StoredPathNode *> closedSet;
-		PathFinder(PathHolder *holder, struct PathNode *start, struct PathNode *end);
+		std::map<int, StoredPathNode *> storedPathNodes;
+		std::set<StoredPathNode *> openSet;
+		std::set<StoredPathNode *> closedSet;
+		PathFinder(PathNode *start, PathNode *end);
 		~PathFinder();
 		bool tick(int i);
-		struct StoredPathNode *getStoredNode(struct PathNode *node);
-		struct PathNode *getCurrentNode();
+		StoredPathNode *getStoredNode(PathNode *node);
+		PathNode *getCurrentNode();
 		bool done;
 
 };

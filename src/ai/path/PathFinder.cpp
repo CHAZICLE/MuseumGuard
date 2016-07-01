@@ -1,6 +1,6 @@
 #include "PathFinder.hpp"
 
-PathFinder::PathFinder(PathHolder *holder, struct PathNode *start, struct PathNode *end)
+PathFinder::PathFinder(PathNode *start, PathNode *end)
 {
 	this->iterations = 0;
 	// Remember the algorithm works backwards
@@ -38,9 +38,9 @@ bool PathFinder::tick(int ticks)
 	if(!this->openSet.empty())
 	{
 		int min = std::numeric_limits<int>::max();
-		for(std::set<struct StoredPathNode *>::iterator openSetIterator = this->openSet.begin(); openSetIterator != this->openSet.end(); openSetIterator++)
+		for(std::set<StoredPathNode *>::iterator openSetIterator = this->openSet.begin(); openSetIterator != this->openSet.end(); openSetIterator++)
 		{
-			struct StoredPathNode *s_node = *openSetIterator;
+			StoredPathNode *s_node = *openSetIterator;
 			if(s_node->f<min)
 			{
 				min = s_node->f;
@@ -67,15 +67,15 @@ bool PathFinder::tick(int ticks)
 	c->node->closed = true;
 	float newNeighbourG;
 	// Add its parents to the open set
-	for(std::vector<struct PathNodeLink *>::iterator pnLinkIt = c->node->links.begin(); pnLinkIt!=c->node->links.end(); ++pnLinkIt)
+	for(std::vector<PathNodeLink *>::iterator pnLinkIt = c->node->links.begin(); pnLinkIt!=c->node->links.end(); ++pnLinkIt)
 	{
-		struct PathNodeLink *pnLink = *pnLinkIt;
+		PathNodeLink *pnLink = *pnLinkIt;
 		// Get neighbour
-		struct PathNode *otherNode = pnLink->a;
+		PathNode *otherNode = pnLink->a;
 		if(otherNode==c->node)
 			otherNode = pnLink->b;
 		// Get neighbour node
-		struct StoredPathNode *neighbourNode = getStoredNode(otherNode);
+		StoredPathNode *neighbourNode = getStoredNode(otherNode);
 		// Skip neighbours in closed set
 		if(this->closedSet.find(neighbourNode)!=this->closedSet.end())
 			continue;
@@ -101,12 +101,12 @@ bool PathFinder::tick(int ticks)
 	}
 	return false;
 }
-struct StoredPathNode *PathFinder::getStoredNode(struct PathNode *node)
+StoredPathNode *PathFinder::getStoredNode(PathNode *node)
 {
-	struct StoredPathNode *s_node = this->storedPathNodes[node->id];
+	StoredPathNode *s_node = this->storedPathNodes[node->id];
 	if(s_node==0)
 	{
-		s_node = new struct StoredPathNode;
+		s_node = new StoredPathNode;
 		s_node->parent = 0;
 		s_node->node = node;
 		s_node->f = 0;
@@ -116,7 +116,7 @@ struct StoredPathNode *PathFinder::getStoredNode(struct PathNode *node)
 	}
 	return s_node;
 }
-struct PathNode *PathFinder::getCurrentNode()
+PathNode *PathFinder::getCurrentNode()
 {
 	if(this->c==0)
 		return 0;

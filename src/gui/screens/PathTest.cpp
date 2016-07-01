@@ -3,13 +3,16 @@
 #include "input/Controls.hpp"
 #include "gui/screens/MainMenu.hpp"
 #include "gui/ScreenManager.hpp"
+#include "ai/path/DebugPathHolder.hpp"
 
 #include "PathTest.hpp"
 
+using namespace ai::path;
+
 PathTest::PathTest() : Screen()
 {
-	this->pathHolder = new PathHolder();
-	this->pathFinder = new PathFinder(this->pathHolder, this->pathHolder->nodes.at(0), this->pathHolder->nodes.at(50*50-1));
+	this->pathHolder = new DebugPathHolder();
+	this->pathFinder = new PathFinder(this->pathHolder->nodes.at(0), this->pathHolder->nodes.at(50*50-1));
 	this->lastTime = 0;
 }
 PathTest::~PathTest()

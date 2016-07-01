@@ -1,30 +1,20 @@
 #ifndef __WORLD_H_INCLUDED__
 #define __WORLD_H_INCLUDED__
 
-#include <glm/vec3.hpp>
 #include <list>
-#include "input/ControlScheme.hpp"
-#include "input/Controls.hpp"
 #include "render/StaticModel.hpp"
 
-namespace world {
-	class World;
-	namespace entities {
-		class Enemy;
-		class Player;
-		class SecurityCamera;
-		class Turret;
-	}
-}
-namespace render {
-	class RenderManager;
-}
-namespace util {
-	class DeltaTime;
-}
-namespace controls {
-	class ControlScheme;
-}
+#include "world/entities/Enemy.hpp"
+#include "world/entities/Player.hpp"
+#include "world/entities/Turret.hpp"
+#include "world/entities/SecurityCamera.hpp"
+
+#include "render/RenderManager.hpp"
+
+#include "util/DeltaTime.hpp"
+
+#include "input/Controls.hpp"
+#include "input/ControlScheme.hpp"
 
 #define SELECTOR_OFF 0
 #define SELECTOR_SECURITY_CAMERA 1

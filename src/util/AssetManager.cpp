@@ -3,6 +3,7 @@
 #include <boost/iostreams/filtering_streambuf.hpp>
 #include <boost/iostreams/filter/gzip.hpp>
 #include "util/StreamUtils.hpp"
+#include "util/Globals.hpp"
 #include "render/MaterialLibrary.hpp"
 #include "render/StaticModel.hpp"
 #include "render/SkeletalModel.hpp"
@@ -102,8 +103,10 @@ void AssetManager::run()
 				ddsImage = new render::DDSImage(assetId, fp);
 				asset = ddsImage;
 				break;
+			case ASSET_NAVMESH:
+				break;
 			default:
-				std::cerr << "ERROR: Unknown asset type " << assetType << std::endl;
+				util::Globals::fatalError("Unknown asset type "+std::to_string(assetType));
 				return;
 		}
 		this->assets[assetId] = asset;

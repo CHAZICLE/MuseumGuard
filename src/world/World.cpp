@@ -1,3 +1,5 @@
+#include <cmath>
+
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
 #include <iostream>
@@ -28,6 +30,7 @@
 #include "world/collisions/StaticMesh.hpp"
 #include <glm/gtx/quaternion.hpp>
 //debug end
+//
 
 #include "World.hpp"
 

@@ -15,6 +15,7 @@ namespace render {
 #define ASSET_MD5MESH 2
 #define ASSET_MD5ANIM 3
 #define ASSET_DDS 4
+#define ASSET_NAVMESH 5
 
 #include <mutex>
 #include <list>

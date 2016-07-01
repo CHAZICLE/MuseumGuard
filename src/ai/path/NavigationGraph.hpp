@@ -5,18 +5,14 @@
 
 #include <vector>
 
-namespace util {
-class DeltaTime;
-}
-namespace render {
-class RenderManager;
-}
+#include "util/DeltaTime.hpp"
+#include "render/RenderManager.hpp"
 
-class PathHolder {
+class NavigationGraph {
 	public:
 		std::vector<struct PathNode *> nodes;
-		PathHolder();
-		~PathHolder();
+		NavigationGraph();
+		~NavigationGraph();
 		void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 };
 

@@ -63,144 +63,147 @@
 // addAsset(8,res/obj/workd_interactive.obj)
 #define ASSET_WORKD_INTERACTIVE_OBJ 8
 
-// addAsset(9,res/md5/test.md5mesh)
-#define ASSET_TEST_MD5MESH 9
+// addAsset(9,res/obj/world_navmesh.nav.obj)
+#define ASSET_WORLD_NAVMESH_NAV_OBJ 9
 
-// addAsset(10,res/md5/security_camera.md5mesh)
-#define ASSET_SECURITY_CAMERA_MD5MESH 10
+// addAsset(10,res/md5/test.md5mesh)
+#define ASSET_TEST_MD5MESH 10
 
-// addAsset(11,res/md5/bob.md5mesh)
-#define ASSET_BOB_MD5MESH 11
+// addAsset(11,res/md5/security_camera.md5mesh)
+#define ASSET_SECURITY_CAMERA_MD5MESH 11
 
-// addAsset(12,res/md5/turret.md5mesh)
-#define ASSET_TURRET_MD5MESH 12
+// addAsset(12,res/md5/bob.md5mesh)
+#define ASSET_BOB_MD5MESH 12
 
-// addAsset(13,res/md5/hellknight.md5mesh)
-#define ASSET_HELLKNIGHT_MD5MESH 13
+// addAsset(13,res/md5/turret.md5mesh)
+#define ASSET_TURRET_MD5MESH 13
 
-// addAsset(14,res/md5/drone_mk2.md5mesh)
-#define ASSET_DRONE_MK2_MD5MESH 14
+// addAsset(14,res/md5/hellknight.md5mesh)
+#define ASSET_HELLKNIGHT_MD5MESH 14
 
-// addAsset(15,res/md5/turret.md5anim)
-#define ASSET_TURRET_MD5ANIM 15
+// addAsset(15,res/md5/drone_mk2.md5mesh)
+#define ASSET_DRONE_MK2_MD5MESH 15
 
-// addAsset(16,res/md5/hellknight_idle2.md5anim)
-#define ASSET_HELLKNIGHT_IDLE2_MD5ANIM 16
+// addAsset(16,res/md5/turret.md5anim)
+#define ASSET_TURRET_MD5ANIM 16
 
-// addAsset(17,res/md5/security_camera.md5anim)
-#define ASSET_SECURITY_CAMERA_MD5ANIM 17
+// addAsset(17,res/md5/hellknight_idle2.md5anim)
+#define ASSET_HELLKNIGHT_IDLE2_MD5ANIM 17
 
-// addAsset(18,res/md5/bob.md5anim)
-#define ASSET_BOB_MD5ANIM 18
+// addAsset(18,res/md5/security_camera.md5anim)
+#define ASSET_SECURITY_CAMERA_MD5ANIM 18
 
-// addAsset(19,res/md5/drone_mk2.md5anim)
-#define ASSET_DRONE_MK2_MD5ANIM 19
+// addAsset(19,res/md5/bob.md5anim)
+#define ASSET_BOB_MD5ANIM 19
 
-// addAsset(20,res/md5/lantern_top_local.tga)
-#define ASSET_LANTERN_TOP_LOCAL_TGA 20
-// addTexture(20,res/md5/lantern_top_local.tga)
+// addAsset(20,res/md5/drone_mk2.md5anim)
+#define ASSET_DRONE_MK2_MD5ANIM 20
 
-// addAsset(21,res/md5/bob_head_h.tga)
-#define ASSET_BOB_HEAD_H_TGA 21
-// addTexture(21,res/md5/bob_head_h.tga)
+// addAsset(21,res/md5/lantern_top_local.tga)
+#define ASSET_LANTERN_TOP_LOCAL_TGA 21
+// addTexture(21,res/md5/lantern_top_local.tga)
 
-// addAsset(22,res/md5/bob_head_local.tga)
-#define ASSET_BOB_HEAD_LOCAL_TGA 22
-// addTexture(22,res/md5/bob_head_local.tga)
+// addAsset(22,res/md5/bob_head_h.tga)
+#define ASSET_BOB_HEAD_H_TGA 22
+// addTexture(22,res/md5/bob_head_h.tga)
 
-// addAsset(23,res/md5/bob_head.tga)
-#define ASSET_BOB_HEAD_TGA 23
-// addTexture(23,res/md5/bob_head.tga)
+// addAsset(23,res/md5/bob_head_local.tga)
+#define ASSET_BOB_HEAD_LOCAL_TGA 23
+// addTexture(23,res/md5/bob_head_local.tga)
 
-// addAsset(24,res/md5/bob_helmet_h.tga)
-#define ASSET_BOB_HELMET_H_TGA 24
-// addTexture(24,res/md5/bob_helmet_h.tga)
+// addAsset(24,res/md5/bob_head.tga)
+#define ASSET_BOB_HEAD_TGA 24
+// addTexture(24,res/md5/bob_head.tga)
 
-// addAsset(25,res/md5/bob_helmet_s.tga)
-#define ASSET_BOB_HELMET_S_TGA 25
-// addTexture(25,res/md5/bob_helmet_s.tga)
+// addAsset(25,res/md5/bob_helmet_h.tga)
+#define ASSET_BOB_HELMET_H_TGA 25
+// addTexture(25,res/md5/bob_helmet_h.tga)
 
-// addAsset(26,res/md5/lantern_h.tga)
-#define ASSET_LANTERN_H_TGA 26
-// addTexture(26,res/md5/lantern_h.tga)
+// addAsset(26,res/md5/bob_helmet_s.tga)
+#define ASSET_BOB_HELMET_S_TGA 26
+// addTexture(26,res/md5/bob_helmet_s.tga)
 
-// addAsset(27,res/md5/test.tga)
-#define ASSET_TEST_TGA 27
-// addTexture(27,res/md5/test.tga)
+// addAsset(27,res/md5/lantern_h.tga)
+#define ASSET_LANTERN_H_TGA 27
+// addTexture(27,res/md5/lantern_h.tga)
 
-// addAsset(28,res/md5/bob_helmet.tga)
-#define ASSET_BOB_HELMET_TGA 28
-// addTexture(28,res/md5/bob_helmet.tga)
+// addAsset(28,res/md5/test.tga)
+#define ASSET_TEST_TGA 28
+// addTexture(28,res/md5/test.tga)
 
-// addAsset(29,res/md5/bob_body.tga)
-#define ASSET_BOB_BODY_TGA 29
-// addTexture(29,res/md5/bob_body.tga)
+// addAsset(29,res/md5/bob_helmet.tga)
+#define ASSET_BOB_HELMET_TGA 29
+// addTexture(29,res/md5/bob_helmet.tga)
 
-// addAsset(30,res/md5/lantern_top_h.tga)
-#define ASSET_LANTERN_TOP_H_TGA 30
-// addTexture(30,res/md5/lantern_top_h.tga)
+// addAsset(30,res/md5/bob_body.tga)
+#define ASSET_BOB_BODY_TGA 30
+// addTexture(30,res/md5/bob_body.tga)
 
-// addAsset(31,res/md5/lantern_top.tga)
-#define ASSET_LANTERN_TOP_TGA 31
-// addTexture(31,res/md5/lantern_top.tga)
+// addAsset(31,res/md5/lantern_top_h.tga)
+#define ASSET_LANTERN_TOP_H_TGA 31
+// addTexture(31,res/md5/lantern_top_h.tga)
 
-// addAsset(32,res/md5/bob_body_s.tga)
-#define ASSET_BOB_BODY_S_TGA 32
-// addTexture(32,res/md5/bob_body_s.tga)
+// addAsset(32,res/md5/lantern_top.tga)
+#define ASSET_LANTERN_TOP_TGA 32
+// addTexture(32,res/md5/lantern_top.tga)
 
-// addAsset(33,res/md5/lantern_local.tga)
-#define ASSET_LANTERN_LOCAL_TGA 33
-// addTexture(33,res/md5/lantern_local.tga)
+// addAsset(33,res/md5/bob_body_s.tga)
+#define ASSET_BOB_BODY_S_TGA 33
+// addTexture(33,res/md5/bob_body_s.tga)
 
-// addAsset(34,res/md5/bob_body_local.tga)
-#define ASSET_BOB_BODY_LOCAL_TGA 34
-// addTexture(34,res/md5/bob_body_local.tga)
+// addAsset(34,res/md5/lantern_local.tga)
+#define ASSET_LANTERN_LOCAL_TGA 34
+// addTexture(34,res/md5/lantern_local.tga)
 
-// addAsset(35,res/md5/lantern.tga)
-#define ASSET_LANTERN_TGA 35
-// addTexture(35,res/md5/lantern.tga)
+// addAsset(35,res/md5/bob_body_local.tga)
+#define ASSET_BOB_BODY_LOCAL_TGA 35
+// addTexture(35,res/md5/bob_body_local.tga)
 
-// addAsset(36,res/md5/bob_helmet_local.tga)
-#define ASSET_BOB_HELMET_LOCAL_TGA 36
-// addTexture(36,res/md5/bob_helmet_local.tga)
+// addAsset(36,res/md5/lantern.tga)
+#define ASSET_LANTERN_TGA 36
+// addTexture(36,res/md5/lantern.tga)
 
-// addAsset(37,res/md5/bob_body_h.tga)
-#define ASSET_BOB_BODY_H_TGA 37
-// addTexture(37,res/md5/bob_body_h.tga)
+// addAsset(37,res/md5/bob_helmet_local.tga)
+#define ASSET_BOB_HELMET_LOCAL_TGA 37
+// addTexture(37,res/md5/bob_helmet_local.tga)
 
-// addAsset(38,res/md5/bob_head_s.tga)
-#define ASSET_BOB_HEAD_S_TGA 38
-// addTexture(38,res/md5/bob_head_s.tga)
+// addAsset(38,res/md5/bob_body_h.tga)
+#define ASSET_BOB_BODY_H_TGA 38
+// addTexture(38,res/md5/bob_body_h.tga)
 
-// addAsset(39,res/md5/test.png)
-#define ASSET_TEST_PNG 39
-// addTexture(39,res/md5/test.png)
+// addAsset(39,res/md5/bob_head_s.tga)
+#define ASSET_BOB_HEAD_S_TGA 39
+// addTexture(39,res/md5/bob_head_s.tga)
 
-// addAsset(40,res/obj/skybox.png)
-#define ASSET_SKYBOX_PNG 40
-// addTexture(40,res/obj/skybox.png)
+// addAsset(40,res/md5/test.png)
+#define ASSET_TEST_PNG 40
+// addTexture(40,res/md5/test.png)
 
-// addAsset(41,res/obj/TexturesCom_DoorsWoodSingleOld0226_M.jpg)
-#define ASSET_TEXTURESCOM_DOORSWOODSINGLEOLD0226_M_JPG 41
-// addTexture(41,res/obj/TexturesCom_DoorsWoodSingleOld0226_M.jpg)
+// addAsset(41,res/obj/skybox.png)
+#define ASSET_SKYBOX_PNG 41
+// addTexture(41,res/obj/skybox.png)
 
-// addAsset(42,res/obj/Tiles35_COL_VAR1_1K.jpg)
-#define ASSET_TILES35_COL_VAR1_1K_JPG 42
-// addTexture(42,res/obj/Tiles35_COL_VAR1_1K.jpg)
+// addAsset(42,res/obj/TexturesCom_DoorsWoodSingleOld0226_M.jpg)
+#define ASSET_TEXTURESCOM_DOORSWOODSINGLEOLD0226_M_JPG 42
+// addTexture(42,res/obj/TexturesCom_DoorsWoodSingleOld0226_M.jpg)
 
-// addAsset(43,res/obj/TexturesCom_MarbleTiles0152_1_S.jpg)
-#define ASSET_TEXTURESCOM_MARBLETILES0152_1_S_JPG 43
-// addTexture(43,res/obj/TexturesCom_MarbleTiles0152_1_S.jpg)
+// addAsset(43,res/obj/Tiles35_COL_VAR1_1K.jpg)
+#define ASSET_TILES35_COL_VAR1_1K_JPG 43
+// addTexture(43,res/obj/Tiles35_COL_VAR1_1K.jpg)
 
-// addAsset(44,res/obj/WoodPlanksWorn33_COL_VAR1_1K.jpg)
-#define ASSET_WOODPLANKSWORN33_COL_VAR1_1K_JPG 44
-// addTexture(44,res/obj/WoodPlanksWorn33_COL_VAR1_1K.jpg)
+// addAsset(44,res/obj/TexturesCom_MarbleTiles0152_1_S.jpg)
+#define ASSET_TEXTURESCOM_MARBLETILES0152_1_S_JPG 44
+// addTexture(44,res/obj/TexturesCom_MarbleTiles0152_1_S.jpg)
 
-// addAsset(45,res/obj/Tiles20_COL_VAR1_1K.jpg)
-#define ASSET_TILES20_COL_VAR1_1K_JPG 45
-// addTexture(45,res/obj/Tiles20_COL_VAR1_1K.jpg)
+// addAsset(45,res/obj/WoodPlanksWorn33_COL_VAR1_1K.jpg)
+#define ASSET_WOODPLANKSWORN33_COL_VAR1_1K_JPG 45
+// addTexture(45,res/obj/WoodPlanksWorn33_COL_VAR1_1K.jpg)
 
-#define ASSETS_COUNT 46
+// addAsset(46,res/obj/Tiles20_COL_VAR1_1K.jpg)
+#define ASSET_TILES20_COL_VAR1_1K_JPG 46
+// addTexture(46,res/obj/Tiles20_COL_VAR1_1K.jpg)
+
+#define ASSETS_COUNT 47
 #define ASSETS_MTL_COUNT 5
 #define ASSETS_OBJ_COUNT 4
 #define ASSETS_MD5MESH_COUNT 6

@@ -6,11 +6,11 @@
 #include "util/DeltaTime.hpp"
 #include <set>
 
-#include "PathHolder.hpp"
+#include "NavigationGraph.hpp"
 
 using namespace render;
 
-inline struct PathNode *getNode(PathHolder *h, int x, int y)
+inline struct PathNode *getNode(NavigationGraph *h, int x, int y)
 {
 	unsigned long i = x*50+y;
 	if(x>=50 || y>=50 || i>=h->nodes.size())
@@ -29,7 +29,7 @@ inline void linkNodes(struct PathNode *a, struct PathNode *b)
 	b->links.push_back(pnLink);
 }
 
-PathHolder::PathHolder()
+NavigationGraph::NavigationGraph()
 {
 	int id = 0;
 	// Create node grid
@@ -60,7 +60,7 @@ PathHolder::PathHolder()
 		}
 	}
 }
-PathHolder::~PathHolder()
+NavigationGraph::~NavigationGraph()
 {
 	std::set<struct PathNodeLink *> links;
 	for(auto &n : this->nodes)
@@ -75,7 +75,7 @@ PathHolder::~PathHolder()
 		delete n;
 	}
 }
-void PathHolder::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
+void NavigationGraph::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 {
 	glEnable(GL_BLEND);
 	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_solidColor);
