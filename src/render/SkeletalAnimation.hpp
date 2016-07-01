@@ -9,6 +9,7 @@ namespace render {
 
 #include "render/SkeletalModel.hpp"
 #include "util/AssetManager.hpp"
+#include "util/Boundaries.hpp"
 
 namespace render {
 	struct SkeletalAnimationJoint {
@@ -17,23 +18,26 @@ namespace render {
 		int flags;
 		int startIndex;
 	};
-	struct SkeletalAnimationBound {
-		float minX,minY,minZ,maxX,maxY,maxZ;
-	};
 	class SkeletalAnimation : public util::Asset {
 		public:
 			SkeletalAnimation(int assetId, std::istream &fp);
 			~SkeletalAnimation();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
-			void render(render::RenderManager &manager, SkeletalModel &model, float time);
+			void renderBounds(RenderManager &rManager, double time);
+			double getAnimationDuration();
+			int getFrame(double time);
+			Skeleton getFrameSkeleton(int frame);
+			util::Boundaries::AABB &getFrameBounds(int frame);
+			Skeleton getInterpolatedSkeleton(int firstFrame);
+			Skeleton getSkeleton(double time);
 		private:
 			int numFrames;
 			int numJoints;
 			int frameRate;
 			int numAnimatedComponents;
 			std::vector<SkeletalAnimationJoint> hierarchy;
-			std::vector<SkeletalAnimationBound> bounds;
+			std::vector<util::Boundaries::AABB *> bounds;
 			Skeleton baseFrame;
 			std::vector<Skeleton> frames;
 			float *frameData;

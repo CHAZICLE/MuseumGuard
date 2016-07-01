@@ -8,16 +8,18 @@
 #include "render/shaders/ShaderProgram.hpp"
 #include "render/MaterialLibrary.hpp"
 #include "util/AssetUtils.hpp"
+#include "util/Boundaries.hpp"
 
 #include "StaticModel.hpp"
 
 using namespace render;
 using namespace util::StreamUtils;
+using namespace util::Boundaries;
 
 StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 {
 	this->setName(readString(fp));
-
+	this->bounds = new AABB();
 	
 	// int dataBufferStride = 0; - Field
 	dataBufferStride = 3;
@@ -26,18 +28,19 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 	int vertexStride = 1;
 	int vertexTexturesOffset = 0;
 	int vertexNormalsOffset = 0;
+	float *vertexPositions,*vertexTextures,*vertexNormals,*vertexColors;
 	//std::vector<float> dataBuffer;//[[v[0], v[1], v[2], vt[0], vt[1], vn[0], vn[1], vn[2]]...]
 	std::unordered_map<struct FaceKey, int, FaceKeyHasher> assocMap;//[v index, vt index, vn index] : [faceIndex]
 	
 	//vertex positions
-	int lenVertexPositions = readInt(fp);
-	float *vertexPositions = new float[lenVertexPositions*3];
+	lenVertexPositions = readInt(fp);
+	vertexPositions = new float[lenVertexPositions*3];
 	fp.read((char *)vertexPositions, sizeof(float)*lenVertexPositions*3);
 	//vertex textures
 	int lenVertexTextures = readInt(fp);
-	float *vertexTextures = new float[lenVertexTextures*2];
 	if(lenVertexTextures>0)//enableTextures
 	{
+		vertexTextures = new float[lenVertexTextures*2];
 		fp.read((char *)vertexTextures, sizeof(float)*lenVertexTextures*2);
 		dataBufferStride += 2;
 		vertexStride += 1;
@@ -45,9 +48,9 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 	}
 	//vertex normals
 	int lenVertexNormals = readInt(fp);
-	float *vertexNormals = new float[lenVertexNormals*3];
 	if(lenVertexNormals>0)//enableNormals
 	{
+		vertexNormals = new float[lenVertexNormals*3];
 		fp.read((char *)vertexNormals, sizeof(float)*lenVertexNormals*3);
 		dataBufferNormalsOffset = dataBufferStride;
 		dataBufferStride += 3;
@@ -56,9 +59,9 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 	}
 	//vertex colors
 	int lenVertexColors = readInt(fp);
-	float *vertexColors = new float[lenVertexColors*3];
 	if(lenVertexColors>0)//enableNormals
 	{
+		vertexColors = new float[lenVertexColors*3];
 		fp.read((char *)vertexColors, sizeof(float)*lenVertexColors*3);
 		dataBufferColorsOffset = dataBufferStride;
 		dataBufferStride += 3;
@@ -70,6 +73,12 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 	struct FaceKey faceKey;
 	int currentVertexIndex = 0;
 	temp_totalVertexCount = 0;
+	float minX = NAN;
+	float minY = NAN;
+	float minZ = NAN;
+	float maxX = NAN;
+	float maxY = NAN;
+	float maxZ = NAN;
 	for(int i=0;i<lenObjects;i++)
 	{
 		StaticModelObject *o = new StaticModelObject;
@@ -99,10 +108,21 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 				assocMap[faceKey] = currentVertexIndex;
 				o->indecies[v] = currentVertexIndex;
 				currentVertexIndex++;
+				// Get the vertex data
+				float &vX = vertexPositions[faceKey.vertexPositionIndex*3+0];
+				float &vY = vertexPositions[faceKey.vertexPositionIndex*3+1];
+				float &vZ = vertexPositions[faceKey.vertexPositionIndex*3+2];
+				// Update the min/max
+				if(minX!=minX || vX<minX) minX = vX-0.001f;
+				if(minY!=minY || vY<minY) minY = vY-0.001f;
+				if(minZ!=minZ || vZ<minZ) minZ = vZ-0.001f;
+				if(maxX!=maxX || vX>maxX) maxX = vX+0.001f;
+				if(maxY!=maxY || vY>maxY) maxY = vY+0.001f;
+				if(maxZ!=maxZ || vZ>maxZ) maxZ = vZ+0.001f;
+				dataBuffer.push_back(vX);
+				dataBuffer.push_back(vY);
+				dataBuffer.push_back(vZ);
 				// Put the vertex data into the vertex buffer
-				dataBuffer.push_back(vertexPositions[faceKey.vertexPositionIndex*3+0]);
-				dataBuffer.push_back(vertexPositions[faceKey.vertexPositionIndex*3+1]);
-				dataBuffer.push_back(vertexPositions[faceKey.vertexPositionIndex*3+2]);
 				if(lenVertexTextures>0)
 				{
 					dataBuffer.push_back(vertexTextures[faceKey.vertexTextureIndex*2+0]);
@@ -121,8 +141,23 @@ StaticModel::StaticModel(int assetId, std::istream &fp) : Asset(assetId)
 				o->indecies[v] = findFace->second;
 			}
 		}
+		delete [] objectIndecies;
 		this->objects.push_back(o);
 	}
+	this->bounds->boxCenter[0] = (maxX+minX)/2.f;
+	this->bounds->boxCenter[1] = (maxY+minY)/2.f;
+	this->bounds->boxCenter[2] = (maxZ+minZ)/2.f;
+	this->bounds->boxHalfSize[0] = this->bounds->boxCenter[0]-minX;
+	this->bounds->boxHalfSize[1] = this->bounds->boxCenter[1]-minY;
+	this->bounds->boxHalfSize[2] = this->bounds->boxCenter[2]-minZ;
+	//cleanup
+	delete [] vertexPositions;
+	if(lenVertexTextures>0)
+		delete [] vertexTextures;
+	if(lenVertexNormals>0)
+		delete [] vertexNormals;
+	if(lenVertexColors>0)
+		delete [] vertexColors;
 }
 StaticModel::~StaticModel()
 {
@@ -144,6 +179,7 @@ void StaticModel::postload()
 	glGenBuffers(1, &tempColorBuffer);
 	glBindBuffer(GL_ARRAY_BUFFER, this->tempColorBuffer);
 	glBufferData(GL_ARRAY_BUFFER, temp_totalVertexCount*3*sizeof(GLfloat), colors, GL_STATIC_DRAW);
+	delete [] colors;
 
 	for(StaticModelObject *object : this->objects)
 	{
@@ -151,6 +187,10 @@ void StaticModel::postload()
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, object->indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, object->numPrimitives*3*sizeof(GLuint), object->indecies, GL_STATIC_DRAW);
 	}
+}
+AABB &StaticModel::getBounds()
+{
+	return *this->bounds;
 }
 void StaticModel::render(render::RenderManager &rManager, int shader)
 {

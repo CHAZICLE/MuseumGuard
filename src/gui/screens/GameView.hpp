@@ -1,8 +1,9 @@
 #ifndef __GAMEVIEW_HPP__
 #define __GAMEVIEW_HPP__
 
+#include "gui/Screen.hpp"
+#include "input/Controls.hpp"
 #include <glm/detail/type_mat.hpp>
-#include "../Screen.hpp"
 
 namespace world {
 	class World;
@@ -32,4 +33,4 @@ namespace screens {
 
 } /* namespace screens */
 
-#endif /* SRC_GUI_SCREENS_GAMEVIEW_HPP_ */
+#endif

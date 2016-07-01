@@ -10,6 +10,7 @@ namespace render {
 #include <glm/matrix.hpp>
 #include <util/gl.h>
 #include "shaders/ShaderPrograms.h"
+#include <glm/gtc/quaternion.hpp>
 
 namespace render {
 
@@ -57,6 +58,11 @@ namespace render {
 		int getHeightPx();
 		float getWidthMM();
 		float getHeightMM();
+
+		// Debug
+		void renderDirectionVector(const glm::vec3 position, const glm::vec3 direction, const glm::vec4 color);
+		void renderDirectionVectors(const glm::vec3 position, const glm::vec3 directionForward, const glm::vec3 direction2, const glm::vec4 direction2_color);
+		void renderOrientation(const glm::vec3 position, const glm::quat q);
 	};
 
 }

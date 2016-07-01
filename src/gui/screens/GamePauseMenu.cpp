@@ -33,7 +33,9 @@ GamePauseMenu::GamePauseMenu() : Screen()
 }
 GamePauseMenu::~GamePauseMenu()
 {
-	
+	delete this->resumeButton;
+	delete this->pathTestButton;
+	delete this->exitButton;
 }
 bool GamePauseMenu::onControlEvent(Control control, int action)
 {

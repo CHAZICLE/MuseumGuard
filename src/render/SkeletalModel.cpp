@@ -61,6 +61,7 @@ SkeletalModel::SkeletalModel(int assetId, std::istream &fp) : Asset(assetId)
 		mesh.mtlAssetId = readInt(fp);
 		mesh.materialId = readInt(fp);
 		int numverts = readInt(fp);
+		mesh.indecies.clear();
 		//verts.append((vertIndex, tex, startWeight, countWeight))
 		for(int i=0;i<numverts;i++)
 		{
@@ -96,6 +97,14 @@ SkeletalModel::SkeletalModel(int assetId, std::istream &fp) : Asset(assetId)
 		}
 		meshes.push_back(mesh);
 	}
+	this->vertexArrayID = 0;
+	for(auto &mesh : this->meshes)
+	{
+		mesh.vertexBufferID = 0;
+		mesh.vertexTextureBufferID = 0;
+		mesh.vertexColorBufferID = 0;
+		mesh.indexBufferID = 0;
+	}
 }
 SkeletalModel::~SkeletalModel()
 {
@@ -121,7 +130,6 @@ void SkeletalModel::write(std::ostream &ost) const
 }
 void SkeletalModel::postload()
 {
-
 	glGenVertexArrays(1, &this->vertexArrayID);
 	glBindVertexArray(this->vertexArrayID);
 	for(render::MD5Mesh &mesh : this->meshes)
@@ -129,14 +137,13 @@ void SkeletalModel::postload()
 		glGenBuffers(1, &mesh.vertexBufferID);
 		glGenBuffers(1, &mesh.vertexTextureBufferID);
 		glGenBuffers(1, &mesh.indexBufferID);
+		glGenBuffers(1, &mesh.vertexColorBufferID);
 
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexTextureBufferID);
 		glBufferData(GL_ARRAY_BUFFER, mesh.textureUVs.size()*sizeof(GLfloat), &mesh.textureUVs[0], GL_STATIC_DRAW);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.indexBufferID);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indecies.size()*sizeof(GLuint), &mesh.indecies[0], GL_STATIC_DRAW);
-
-
 
 		GLfloat *vertexColorData = new GLfloat[mesh.verts.size()*3*sizeof(GLfloat)];
 		for(int v=0;v<(int)mesh.verts.size();v++)
@@ -146,16 +153,16 @@ void SkeletalModel::postload()
 			vertexColorData[v*3+2] = (float)(std::rand()%1000)/1000;
 		}
 
-		glGenBuffers(1, &mesh.vertexColorBufferID);
 		glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexColorBufferID);
 		glBufferData(GL_ARRAY_BUFFER, mesh.verts.size()*3*sizeof(GLfloat), vertexColorData, GL_STATIC_DRAW);
+		delete [] vertexColorData;
 	}
 }
 //#ifdef ENABLE_DEBUG_RENDER_MD5JOINT
-void SkeletalModel::renderSkeleton(render::RenderManager &manager, const Skeleton &skeleton)
+void SkeletalModel::renderSkeleton(render::RenderManager &rManager, const Skeleton &skeleton)
 {
-	manager.disableDepth();
-	manager.useShader(SHADER_solidColor);
+	rManager.disableDepth();
+	rManager.useShader(SHADER_solidColor);
 	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_solidColor);
 	GLint loc = shader->getShaderLocation(true, SHADER_solidColor_solidColor);
 	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
@@ -169,13 +176,13 @@ void SkeletalModel::renderSkeleton(render::RenderManager &manager, const Skeleto
 		}
 		f += 1/(float)this->joints.size();
 	}
-	manager.enableDepth();
+	rManager.enableDepth();
 }
-void SkeletalModel::renderWeights(render::RenderManager &manager, const Skeleton &skeleton)
+void SkeletalModel::renderWeights(render::RenderManager &rManager, const Skeleton &skeleton)
 {
-	manager.disableDepth();
+	rManager.disableDepth();
 	float f = 0;
-	manager.useShader(SHADER_solidColor);
+	rManager.useShader(SHADER_solidColor);
 	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_solidColor);
 	GLint loc = shader->getShaderLocation(true, SHADER_solidColor_solidColor);
 	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
@@ -191,26 +198,27 @@ void SkeletalModel::renderWeights(render::RenderManager &manager, const Skeleton
 		}
 		f+=1/(float)this->meshes.size();
 	}
-	manager.enableDepth();
+	rManager.enableDepth();
 }
 //#endif
-void SkeletalModel::render(render::RenderManager &manager)
+void SkeletalModel::render(render::RenderManager &rManager)
 {
-	this->render(manager, this->bindPoseSkeleton);
+	this->render(rManager, this->bindPoseSkeleton);
 }
 void SkeletalModel::render(render::RenderManager &rManager, const Skeleton &skeleton)
 {
 	glBindVertexArray(this->vertexArrayID);
-	shaders::ShaderProgram *shader = rManager.useShader(SHADER_fuzzyModel);
+	rManager.useShader(SHADER_fuzzyModel);
+	//shaders::ShaderProgram *shader = rManager.useShader(SHADER_fuzzyModel);
 	//GLint loc = shader->getShaderLocation(true, SHADER_solidColor_solidColor);
 	//glUniform4f(loc, 0.f, 0.0f, 1.f, 1.0f);
 	for(MD5Mesh &mesh : this->meshes) {
 		this->render(rManager, skeleton, mesh, 0);
 	}
 }
-void SkeletalModel::render(render::RenderManager &manager, const Skeleton &skeleton, MD5Mesh &mesh, const Material *material)
+void SkeletalModel::render(render::RenderManager &rManager, const Skeleton &skeleton, MD5Mesh &mesh, const Material *material)
 {
-	GLfloat *vertexData = new GLfloat[mesh.verts.size()*3*sizeof(GLfloat)];
+	GLfloat *vertexPositionData = new GLfloat[mesh.verts.size()*3*sizeof(GLfloat)];
 	for(int v=0;v<(int)mesh.verts.size();v++)
 	{
 		MD5Vertex &vertex = mesh.verts[v];
@@ -224,22 +232,27 @@ void SkeletalModel::render(render::RenderManager &manager, const Skeleton &skele
 			const MD5Bone &bone = skeleton[weight.joint];
 			vect += ( bone.pos + bone.ori*weight.pos)*weight.bias;
 		}
-		vertexData[v*3+0] = vect.x;
-		vertexData[v*3+1] = vect.y;
-		vertexData[v*3+2] = vect.z;
+		vertexPositionData[v*3+0] = vect.x;
+		vertexPositionData[v*3+1] = vect.y;
+		vertexPositionData[v*3+2] = vect.z;
 	}
 	// vertex position
-	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexBufferID);
-	glBufferData(GL_ARRAY_BUFFER, mesh.verts.size()*3*sizeof(GLfloat), vertexData, GL_DYNAMIC_DRAW);
 	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_fuzzyModel);
-	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
-	glEnableVertexAttribArray(vploc);
-	glVertexAttribPointer(vploc, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-	GLint colorLoc = shader->getShaderLocation(false, SHADERVAR_vertex_color);
+	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexBufferID);
+	glBufferData(GL_ARRAY_BUFFER, mesh.verts.size()*3*sizeof(GLfloat), vertexPositionData, GL_DYNAMIC_DRAW);
+	shader->setVertexAttributePointer(SHADERVAR_vertex_position, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, mesh.normalBufferID);
+	//glBufferData(GL_ARRAY_BUFFER, mesh.verts.size()*3*sizeof(GLfloat), normalVertexData, GL_DYNAMIC_DRAW);
+	//shader->setVertexAttributePointer(SHADERVAR_vertex_normal, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexTextureBufferID);
+	//shader->setVertexAttributePointer(SHADERVAR_vertex_texture, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
 	glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexColorBufferID);
-	glEnableVertexAttribArray(colorLoc);
-	glVertexAttribPointer(colorLoc, 3, GL_FLOAT, GL_FALSE, 0, 0);
+	shader->setVertexAttributePointer(SHADERVAR_vertex_color, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
 
 	//glActiveTexture(GL_TEXTURE0);
 	//int materialLocation = ((MaterialLibrary *)util::AssetManager::getAssetManager()->getAsset(mesh.mtlAssetId))->getMaterial(mesh.materialId)->map_Kd;
@@ -247,14 +260,14 @@ void SkeletalModel::render(render::RenderManager &manager, const Skeleton &skele
 
 	//glUniform1i(shaders::program_modelTexture_myTextureSampler, 0);
 
-	//glBindBuffer(GL_ARRAY_BUFFER, mesh.vertexTextureBufferID);
-	//glEnableVertexAttribArray(uvloc);
 	//glVertexAttribPointer(uvloc, 2, GL_FLOAT, GL_FALSE, 0, 0);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh.indexBufferID);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, mesh.indecies.size()*sizeof(GLuint), &mesh.indecies[0], GL_DYNAMIC_DRAW);
-
+	glCullFace(GL_FRONT);
 	glDrawElements(GL_TRIANGLES, mesh.indecies.size(), GL_UNSIGNED_INT, 0);
+	glCullFace(GL_BACK);
+
+	delete [] vertexPositionData;
 }
 std::ostream &operator<<(std::ostream &ost, const render::MD5Joint &joint)
 {

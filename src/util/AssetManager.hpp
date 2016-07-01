@@ -29,6 +29,7 @@ namespace util {
 	class Asset {
 		public:
 			Asset(int assetId);
+			virtual ~Asset();
 			int getAssetID() const;
 			std::string getName() const;
 			virtual void write(std::ostream &ost) const;
@@ -41,8 +42,11 @@ namespace util {
 	};
 	class AssetManager {
 		public:
+			AssetManager();
+			~AssetManager();
 			static AssetManager *getAssetManager();
 			void init();
+			void cleanup();
 			void run();
 			bool postload();
 			float getProgress();

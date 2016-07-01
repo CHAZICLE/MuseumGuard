@@ -8,13 +8,15 @@ namespace world {
 	class Entity;
 }
 
+#include <glm/glm.hpp>
+
 namespace controls {
 	class ControlScheme {
 		protected:
 			world::Entity *controlEntity;
 		public:
 			ControlScheme(world::Entity *controlEntity);
-			~ControlScheme();
+			virtual ~ControlScheme();
 			virtual void tick(util::DeltaTime &deltaTime);
 	};
 };

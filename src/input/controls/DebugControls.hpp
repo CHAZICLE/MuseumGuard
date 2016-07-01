@@ -14,7 +14,7 @@ namespace controls {
 			bool lastCursor;
 		public:
 			DebugControls(world::Entity *entity);
-			~DebugControls();
+			virtual ~DebugControls();
 			virtual void tick(util::DeltaTime &deltaTime);
 	};
 }

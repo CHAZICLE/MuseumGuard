@@ -12,7 +12,7 @@ if __name__=="__main__":
         metaFile = sys.argv[2]
         fileToConvert = sys.argv[3]
         fileToPlace = sys.argv[4]
-        ext = getFileExtension(fileToConvert)
+        ext = fileToConvert[fileToConvert.find("."):]
         verbose = 1
         meta = getMetadata(metaFile)
         filepath = getFilePath(fileToConvert)

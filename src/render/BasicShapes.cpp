@@ -9,6 +9,7 @@ GLuint BasicShapes::unitMeshArrayID = 0;
 GLuint BasicShapes::unitMeshVertexPositionBufferID = 0;
 GLuint BasicShapes::unitSquareIndexBufferID = 0;
 GLuint BasicShapes::unitCubeIndexBufferID = 0;
+GLuint BasicShapes::unitCubeFrameIndexBufferID = 0;
 GLuint BasicShapes::lineVertexArrayID = 0;
 GLuint BasicShapes::lineVertexBufferID = 0;
 
@@ -18,21 +19,22 @@ void BasicShapes::init()
 	glGenBuffers(1, &BasicShapes::unitMeshVertexPositionBufferID);
 	glGenBuffers(1, &BasicShapes::unitSquareIndexBufferID);
 	glGenBuffers(1, &BasicShapes::unitCubeIndexBufferID);
+	glGenBuffers(1, &BasicShapes::unitCubeFrameIndexBufferID);
 
 	glGenVertexArrays(1, &BasicShapes::lineVertexArrayID);
 	glGenBuffers(1, &BasicShapes::lineVertexBufferID);
 	
 	GLubyte unitMesh[] = {
 		// Unit square/Close face of Cube
-		0,	0,	0,
-		0,	1,	0,
-		1,	1,	0,
-		1,	0,	0,
+		0,	0,	0,// 0
+		0,	1,	0,// 1
+		1,	1,	0,// 2
+		1,	0,	0,// 3
 		// Far face of Cube
-		0,	0,	1,//8
-		0,	1,	1,//9
-		1,	1,	1,//10
-		1,	0,	1,//11
+		0,	0,	1,// 4
+		0,	1,	1,// 5
+		1,	1,	1,// 6
+		1,	0,	1,// 7
 		/*
 		 * 9  10
 		 * 8  11
@@ -55,6 +57,26 @@ void BasicShapes::init()
 	};
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitSquareIndexBufferID);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitSquareIndicies), unitSquareIndicies, GL_STATIC_DRAW);
+
+	GLubyte unitCubeFrameIndecies[] = {
+		// Front
+		0,1,
+		0,3,
+		2,1,
+		2,3,
+		// Back
+		4,5,
+		4,7,
+		6,5,
+		6,7,
+		// Depth
+		0,4,
+		1,5,
+		2,6,
+		3,7
+	};
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, BasicShapes::unitCubeFrameIndexBufferID);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unitCubeFrameIndecies), unitCubeFrameIndecies, GL_STATIC_DRAW);
 	
 	GLubyte unitCubeIndicies[] = {
 		// Back
@@ -127,6 +149,13 @@ void BasicShapes::renderUnitCube(GLuint vertexPositionPointer)
 	bindUnitMesh(vertexPositionPointer);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, unitCubeIndexBufferID);
 	glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_BYTE, (void  *)0);
+}
+void BasicShapes::renderUnitCubeFrame(GLuint vertexPositionPointer)
+{
+	glEnableVertexAttribArray(vertexPositionPointer);
+	bindUnitMesh(vertexPositionPointer);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, unitCubeFrameIndexBufferID);
+	glDrawElements(GL_LINES, 24, GL_UNSIGNED_BYTE, (void  *)0);
 }
 void BasicShapes::bindUnitMesh(GLuint vertexPositionPointer)
 {

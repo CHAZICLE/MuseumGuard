@@ -1,18 +1,21 @@
-#include <world/World.hpp>
+#include "world/World.hpp"
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
 #include "input/Controls.hpp"
+
 #include "gui/ScreenManager.hpp"
 #include "gui/screens/MainMenu.hpp"
 #include "gui/screens/GamePauseMenu.hpp"
+
 #include <glm/gtc/matrix_transform.hpp>
+
+//debug
 #include <iostream>
 
 #include "GameView.hpp"
 
 using namespace world;
-
-namespace screens {
+using namespace screens;
 
 GameView::GameView() {
 	this->world = new World();
@@ -33,20 +36,14 @@ void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager
 	{
 		wasSurface = isSurface;
 		if(!isSurface)
-		{
 			pauseStartTime = deltaTime.getTime();
-			std::cout << "Paused at " << pauseStartTime << std::endl;
-		}
 		else
-		{
 			pauseOffsetTime += deltaTime.getTime()-pauseStartTime;
-			std::cout << "Resumed at " << deltaTime.getTime() << " (Offset now at " << pauseOffsetTime << ")" << std::endl;
-		}
 	}
 	util::DeltaTime dt2 = deltaTime;
 	dt2.setOffsetTime(-pauseOffsetTime);
 	this->world->tick(dt2, isSurface);
-	this->world->render(gameRenderManager);
+	this->world->render(gameRenderManager, isSurface);
 }
 bool GameView::onControlEvent(Control control, int action)
 {
@@ -55,13 +52,12 @@ bool GameView::onControlEvent(Control control, int action)
 		this->manager->openScreen(new GamePauseMenu());
 		return true;
 	}
-	return false;
+	this->world->onDebugControl(control, action);
+	return true;
 }
 void GameView::onScreenResize() {
 }
 
 bool GameView::supportsCursor() {
 	return false;
-}
-
 }

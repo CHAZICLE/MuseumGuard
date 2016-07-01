@@ -13,6 +13,7 @@ namespace render {
 #include <glm/glm.hpp>
 #include "util/AssetManager.hpp"
 #include "util/gl.h"
+#include "world/collisions/StaticMesh.hpp"
 
 std::ostream &operator<<(std::ostream &ost, const render::StaticModel &model);
 std::ostream &operator<<(std::ostream &ost, const render::StaticModelObject &o);
@@ -47,17 +48,21 @@ namespace render {
 		GLuint indexBufferID;
 	};
 	class StaticModel : public util::Asset {
+		friend class world::collisions::StaticMesh;
 		friend std::ostream &::operator<<(std::ostream &ost, const render::StaticModel &model);
 		public:
 			StaticModel(int assetId, std::istream &fp);
 			virtual ~StaticModel();
 			virtual void write(std::ostream &ost) const;
 			virtual void postload();
+			util::Boundaries::AABB &getBounds();
 			void render(render::RenderManager &rManager, int shader);
 		private:
+			util::Boundaries::AABB *bounds;
 			int dataBufferStride;
 			int dataBufferNormalsOffset;
 			int dataBufferColorsOffset;
+			int lenVertexPositions;
 			std::vector<GLfloat> dataBuffer;
 			std::list<StaticModelObject *> objects;
 			GLuint vertexArrayID,vertexDataBufferID,tempColorBuffer;

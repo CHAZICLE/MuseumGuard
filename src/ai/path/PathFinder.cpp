@@ -17,7 +17,8 @@ PathFinder::PathFinder(PathHolder *holder, struct PathNode *start, struct PathNo
 }
 PathFinder::~PathFinder()
 {
-	
+	for(auto &a : this->storedPathNodes)
+		delete a.second;
 }
 bool PathFinder::tick(int ticks)
 {

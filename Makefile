@@ -5,9 +5,10 @@ RESSRCDIR=res
 RESBINDIR=bin/res
 HOOKSDIR=hooks
 CXX=g++ -fPIC -g
-CXXFLAGS=-Wall -ansi -DUSE_GLEW -std=c++11 -Isrc -I/usr/include/freetype2
+CXXFLAGS=-Wall -ansi -DUSE_GLEW -std=c++11 -Isrc -I/usr/include/freetype2 -include util/SuperDebug.h
 LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
 BIN=Three
+SUPERGLOBAL=$(SRCDIR)/util/SuperDebug.h
 
 SOURCES = $(shell find $(SRCDIR) -type f -name '*.cpp')
 OBJECTS = $(patsubst $(SRCDIR)/%.cpp, $(BINDIR)/%.o, $(SOURCES))
@@ -77,12 +78,12 @@ $(SHADER_VARIABLES_OUT) $(SHADER_HEADER) $(SHADER_LOADER): $(SHADER_VARIABLES_IN
 ### Files
 
 # C++ Source => Objects
-$(BINDIR)/%.o: $(SRCDIR)/%.cpp
+$(BINDIR)/%.o: $(SRCDIR)/%.cpp $(SUPERGLOBAL)
 	@mkdir -p "$(@D)"
 	$(CXX) $(CXXFLAGS) -c -o "$@" "$<"
 
 # C++ Source => Depend
-$(DEPDIR)/%.d: $(SRCDIR)/%.cpp
+$(DEPDIR)/%.d: $(SRCDIR)/%.cpp $(SUPERGLOBAL)
 	@mkdir -p "$(@D)"
 	$(CXX) $(CXXFLAGS) -DSKIP_DEPEND_TREE -MM "$<" -MF "$@" -MT "$(patsubst src/%.cpp,bin/%.o, $(<)) $@"
 

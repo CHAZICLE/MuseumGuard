@@ -42,6 +42,7 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->supportedCursorInit = true;
 	this->unsupportedCursorInit = true;
 	this->skipNextEvent = false;
+	this->didSupportCursor = false;
 
 	WindowScreenManager::eventHandler = this;
 	glfwSetErrorCallback(WindowScreenManager::onError);
@@ -150,6 +151,7 @@ void WindowScreenManager::run()
 		glfwPollEvents();
 		loop++;
 	}
+	std::cout << "CLEAN EXIT" << std::endl;
 }
 void WindowScreenManager::close()
 {
@@ -214,34 +216,38 @@ void WindowScreenManager::onScrollEvent(GLFWwindow* window, double dx, double dy
 }
 void WindowScreenManager::onSurfaceScreenChanged(Screen *screen)
 {
-	if(screen->supportsCursor())
+	if(screen->supportsCursor()!=this->didSupportCursor)
 	{
-		double x = this->supportedCursorLastX;
-		double y = this->supportedCursorLastY;
-		if(this->supportedCursorInit)
+		if(screen->supportsCursor())
 		{
-			this->supportedCursorInit = false;
-			x = this->windowHeightPx/2;
-			y = this->windowHeightPx/2;
+			double x = this->supportedCursorLastX;
+			double y = this->supportedCursorLastY;
+			if(this->supportedCursorInit)
+			{
+				this->supportedCursorInit = false;
+				x = this->windowHeightPx/2;
+				y = this->windowHeightPx/2;
+			}
+
+			glfwGetCursorPos(this->window, &this->unsupportedCursorLastX, &this->unsupportedCursorLastY);
+			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+			glfwSetCursorPos(this->window, x, y);
+
+			y = this->windowHeightPx-y;
+			x = x*this->monitorWidthPx/this->modeWidthPx/this->scale;
+			y = y*this->monitorHeightPx/this->modeHeightPx/this->scale;
+			this->onControlEvent(CONTROL_ACTION_MOUSE, x, y, 0, 0);
+			this->skipNextEvent = true;
+			this->lastX = x;
+			this->lastY = y;
 		}
-
-		glfwGetCursorPos(this->window, &this->unsupportedCursorLastX, &this->unsupportedCursorLastY);
-		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-		glfwSetCursorPos(this->window, x, y);
-
-		y = this->windowHeightPx-y;
-		x = x*this->monitorWidthPx/this->modeWidthPx/this->scale;
-		y = y*this->monitorHeightPx/this->modeHeightPx/this->scale;
-		this->onControlEvent(CONTROL_ACTION_MOUSE, x, y, 0, 0);
-		this->skipNextEvent = true;
-		this->lastX = x;
-		this->lastY = y;
-	}
-	else
-	{
-		glfwGetCursorPos(this->window, &this->supportedCursorLastX, &this->supportedCursorLastY);
-		glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		glfwSetCursorPos(this->window, this->unsupportedCursorLastX, this->unsupportedCursorLastY);
+		else
+		{
+			glfwGetCursorPos(this->window, &this->supportedCursorLastX, &this->supportedCursorLastY);
+			glfwSetInputMode(this->window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			glfwSetCursorPos(this->window, this->unsupportedCursorLastX, this->unsupportedCursorLastY);
+		}
 	}
 	ScreenManager::onSurfaceScreenChanged(screen);
+	this->didSupportCursor = screen->supportsCursor();
 }

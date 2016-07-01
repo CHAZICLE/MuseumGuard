@@ -20,35 +20,34 @@ MaterialLibrary::MaterialLibrary(int assetId, std::istream &fp) : Asset(assetId)
 
 	for(int i=0;i<nMats;i++)
 	{
-		Material *m = new Material;
+		Material m;
 
-		m->name = readString(fp);
-		m->flags = readInt(fp);
+		m.name = readString(fp);
+		m.flags = readInt(fp);
 
-		if(m->flags&MATERIAL_MASK_Ka) readFloat3(m->Ka, fp);
-		if(m->flags&MATERIAL_MASK_Kd) readFloat3(m->Kd, fp);
-		if(m->flags&MATERIAL_MASK_Ks) readFloat3(m->Ks, fp);
-		if(m->flags&MATERIAL_MASK_Tf) readFloat3(m->Tf, fp);
-		if(m->flags&MATERIAL_MASK_d) m->d = readFloat(fp);
-		if(m->flags&MATERIAL_MASK_Ns) m->Ns = readFloat(fp);
-		if(m->flags&MATERIAL_MASK_Ni) m->Ni = readFloat(fp);
-		if(m->flags&MATERIAL_MASK_illum) m->illum = readInt(fp);
-		if(m->flags&MATERIAL_MASK_sharpness) m->sharpness = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_Ka) m->map_Ka = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_Kd) m->map_Kd = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_Ks) m->map_Ks = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_Ns) m->map_Ns = readInt(fp);
-		if(m->flags&MATERIAL_MASK_map_d) m->map_d = readInt(fp);
-		if(m->flags&MATERIAL_MASK_disp) m->disp = readInt(fp);
-		if(m->flags&MATERIAL_MASK_decal) m->decal = readInt(fp);
-		if(m->flags&MATERIAL_MASK_bump) m->bump = readInt(fp);
+		if(m.flags&MATERIAL_MASK_Ka) readFloat3(m.Ka, fp);
+		if(m.flags&MATERIAL_MASK_Kd) readFloat3(m.Kd, fp);
+		if(m.flags&MATERIAL_MASK_Ks) readFloat3(m.Ks, fp);
+		if(m.flags&MATERIAL_MASK_Tf) readFloat3(m.Tf, fp);
+		if(m.flags&MATERIAL_MASK_d) m.d = readFloat(fp);
+		if(m.flags&MATERIAL_MASK_Ns) m.Ns = readFloat(fp);
+		if(m.flags&MATERIAL_MASK_Ni) m.Ni = readFloat(fp);
+		if(m.flags&MATERIAL_MASK_illum) m.illum = readInt(fp);
+		if(m.flags&MATERIAL_MASK_sharpness) m.sharpness = readInt(fp);
+		if(m.flags&MATERIAL_MASK_map_Ka) m.map_Ka = readInt(fp);
+		if(m.flags&MATERIAL_MASK_map_Kd) m.map_Kd = readInt(fp);
+		if(m.flags&MATERIAL_MASK_map_Ks) m.map_Ks = readInt(fp);
+		if(m.flags&MATERIAL_MASK_map_Ns) m.map_Ns = readInt(fp);
+		if(m.flags&MATERIAL_MASK_map_d) m.map_d = readInt(fp);
+		if(m.flags&MATERIAL_MASK_disp) m.disp = readInt(fp);
+		if(m.flags&MATERIAL_MASK_decal) m.decal = readInt(fp);
+		if(m.flags&MATERIAL_MASK_bump) m.bump = readInt(fp);
 
-		this->materials.push_back(*m);
+		this->materials.push_back(m);
 	}
 }
 MaterialLibrary::~MaterialLibrary()
 {
-	
 }
 void MaterialLibrary::write(std::ostream &ost) const
 {

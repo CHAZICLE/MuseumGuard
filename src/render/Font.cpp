@@ -4,7 +4,7 @@
 
 using namespace render;
 
-FT_Library Font::library;
+FT_Library Font::library = 0;
 shaders::ShaderProgram *Font::shader = 0;
 GLint Font::vertexPositionAttribute = 0;
 GLint Font::vertexTextureAttribute = 0;

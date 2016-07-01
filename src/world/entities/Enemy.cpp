@@ -46,7 +46,9 @@ void Enemy::render(render::RenderManager &rManager)
 	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5MESH);
 	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5ANIM);
 
-	drone_anim->render(rManager, *drone, animTime);
+	//drone_anim->render(rManager, *drone, animTime);
+	drone->render(rManager, drone_anim->getSkeleton(animTime));
+	drone_anim->renderBounds(rManager, animTime);
 
 	rManager.popMatrixM();
 }

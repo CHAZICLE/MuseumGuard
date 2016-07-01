@@ -18,7 +18,9 @@ std::string StreamUtils::readString(std::istream &fp)
 #ifdef ENABLE_STREAMUTILS_DEBUG
 	std::cout << "[" << file << ":" << line << "]readString(fp): " << buf << std::endl;
 #endif
-	return std::string(buf);
+	std::string s = std::string(buf);
+	delete [] buf;
+	return s;
 }
 #ifdef ENABLE_STREAMUTILS_DEBUG
 int StreamUtils::readInt(const char *file, int line, std::istream &fp)

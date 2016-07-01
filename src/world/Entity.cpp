@@ -1,17 +1,36 @@
 #include "render/shaders/ShaderUtils.hpp"
 #include "render/BasicShapes.hpp"
 
+//debug
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include "Entity.hpp"
 
 using namespace world;
+using namespace util::Boundaries;
 
 Entity::Entity()
 {
-	
+	this->bounds = 0;
 }
 Entity::~Entity()
 {
 	
+}
+
+void Entity::addedToWorld(world::World *world, double spawnTime)
+{
+	this->world = world;
+	this->spawnTime = spawnTime;
+}
+World &Entity::getWorld()
+{
+	return *this->world;
+}
+double Entity::getSpawnTime()
+{
+	return this->spawnTime;
 }
 glm::vec3 Entity::getPosition()
 {
@@ -33,27 +52,21 @@ void Entity::setOrientation(glm::quat rotation)
 {
 	this->orientation = rotation;
 }
+AABB *Entity::getBounds()
+{
+	return this->bounds;
+}
 void Entity::tick(util::DeltaTime &deltaTime)
 {
-	
 }
 void Entity::render(render::RenderManager &rManager)
 {
 	
 }
-void Entity::renderDebug(render::RenderManager &rManager, bool renderPosition, bool renderOrientation)
+void Entity::renderDebug(render::RenderManager &rManager, bool renderPositionMarker, bool renderBounds)
 {
-	rManager.M = glm::mat4(1.0f);
-	rManager.markMDirty();
-	render::shaders::ShaderProgram *shader = rManager.useShader(SHADER_solidColor);
-	GLint loc = shader->getShaderLocation(true, SHADER_solidColor_solidColor);
-	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
-
-	// Draw the player orientation
-	glm::vec3 playerDirection = this->getOrientation()*glm::vec3(0, 1, 0);
-	glUniform4f(loc, 0.0f, 1.0f, 0.0f, 1.0f);
-	render::BasicShapes::drawLine(this->getPosition(), this->getPosition()+playerDirection, vploc);
-
-	glUniform4f(loc, 0.0f, 0.0f, 1.0f, 1.0f);
-	render::BasicShapes::drawLine(this->getPosition()+playerDirection, this->getPosition()+playerDirection+this->getOrientation()*glm::vec3(0, 0, 0.2), vploc);
+	if(renderPositionMarker)
+		rManager.renderOrientation(this->getPosition(), this->getOrientation());
+	if(renderBounds && this->getBounds()!=0)
+		this->getBounds()->translate(this->getPosition())->render(rManager, glm::vec4(1.f, 1.f, 0.f, 1.f), false);
 }

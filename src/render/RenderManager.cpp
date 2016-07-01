@@ -1,6 +1,7 @@
 #include "util/Globals.hpp"
 #include "util/gl.h"
 #include "shaders/ShaderProgram.hpp"
+#include "render/BasicShapes.hpp"
 
 #include "RenderManager.hpp"
 
@@ -114,14 +115,20 @@ void RenderManager::disableDepth() {
 	glDisable(GL_DEPTH_TEST);
 }
 void RenderManager::enableCullFace() {
-	this->doCullFace = true;
-	glCullFace(GL_FRONT);
-	glFrontFace(GL_CCW);
-	glEnable(GL_CULL_FACE);
+	if(!this->doCullFace)
+	{
+		this->doCullFace = true;
+		glCullFace(GL_BACK);
+		glFrontFace(GL_CCW);
+		glEnable(GL_CULL_FACE);
+	}
 }
 void RenderManager::disableCullFace() {
-	this->doCullFace = false;
-	glDisable(GL_CULL_FACE);
+	if(this->doCullFace)
+	{
+		this->doCullFace = false;
+		glDisable(GL_CULL_FACE);
+	}
 }
 void RenderManager::enableTransparency() {
 	glEnable(GL_BLEND);
@@ -152,4 +159,24 @@ float RenderManager::getWidthMM() {
 }
 float RenderManager::getHeightMM() {
 	return this->heightMM;
+}
+
+void RenderManager::renderDirectionVector(const glm::vec3 position, const glm::vec3 direction, const glm::vec4 color)
+{
+	this->pushMatrixM();
+	this->M = glm::mat4(1.0f);
+	this->markMDirty();
+	render::shaders::ShaderProgram *prog = this->useShader(SHADER_solidColor);
+	glUniform4f(prog->getShaderLocation(true, SHADER_solidColor_solidColor), color.r, color.g, color.b, color.a);
+	BasicShapes::drawLine(position, position+direction, getVertexPosition());
+	this->popMatrixM();
+}
+void RenderManager::renderDirectionVectors(const glm::vec3 position, const glm::vec3 directionForward, const glm::vec3 direction2, const glm::vec4 direction2_color)
+{
+	this->renderDirectionVector(position, directionForward, glm::vec4(0.f, 1.f, 0.f, 1.f));
+	this->renderDirectionVector(position+directionForward, direction2*0.2f, direction2_color);
+}
+void RenderManager::renderOrientation(const glm::vec3 position, const glm::quat q)
+{
+	this->renderDirectionVectors(position, q*glm::vec3(0,1,0), q*glm::vec3(0,0,1), glm::vec4(0.f, 0.f, 1.f, 1.f));
 }

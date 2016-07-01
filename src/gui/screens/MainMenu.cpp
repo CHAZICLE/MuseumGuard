@@ -1,15 +1,7 @@
-#include "gui/elements/Button.hpp"
-#include "input/Controls.hpp"
 #include "gui/ScreenManager.hpp"
 #include "gui/screens/PathTest.hpp"
 #include "gui/screens/GameView.hpp"
-
-#include "render/BasicShapes.hpp"
-#include "render/shaders/ShaderUtils.hpp"
-#include "render/RenderManager.hpp"
-#include "util/gl.h"
-#include <glm/gtc/matrix_transform.hpp>
-#include <glm/matrix.hpp>
+#include "gui/elements/Button.hpp"
 
 #include "MainMenu.hpp"
 
@@ -31,9 +23,11 @@ MainMenu::MainMenu() : Screen()
 }
 MainMenu::~MainMenu()
 {
-	
+	delete this->playButton;
+	delete this->pathTestButton;
+	delete this->exitButton;
 }
-bool MainMenu::onControlEvent(int control, int action)
+bool MainMenu::onControlEvent(Control control, int action)
 {
 	if((action&CONTROL_MOUSEBUTTONACTION_PRESS) && control==CONTROL_GUI_SELECT)
 	{

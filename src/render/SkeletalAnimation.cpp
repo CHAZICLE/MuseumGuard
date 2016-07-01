@@ -11,6 +11,7 @@
 
 using namespace render;
 using namespace util::StreamUtils;
+using namespace util::Boundaries;
 
 SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(assetId)
 {
@@ -32,14 +33,13 @@ SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(asse
 	// bounds
 	for(int i=0;i<numFrames;i++)
 	{
-		SkeletalAnimationBound bound;
-		bound.minX = readFloat(fp);
-		bound.minY = readFloat(fp);
-		bound.minZ = readFloat(fp);
-		bound.maxX = readFloat(fp);
-		bound.maxY = readFloat(fp);
-		bound.maxZ = readFloat(fp);
-		this->bounds.push_back(bound);
+		float a0 = readFloat(fp);
+		float a1 = readFloat(fp);
+		float a2 = readFloat(fp);
+		float a3 = readFloat(fp);
+		float a4 = readFloat(fp);
+		float a5 = readFloat(fp);
+		this->bounds.push_back(AABB::fromMinMax(a0, a1, a2, a3, a4, a5));
 	}
 	// base frame
 	for(int i=0;i<numJoints;i++)
@@ -103,6 +103,7 @@ void SkeletalAnimation::postload()
 {
 	
 }
+/*
 #include "render/BasicShapes.hpp"
 bool renderSkel = false;
 bool renderWeights = false;
@@ -128,18 +129,50 @@ void SkeletalAnimation::render(render::RenderManager &manager, SkeletalModel &mo
 	if(glfwGetKey(WindowScreenManager::eventHandler->window, GLFW_KEY_F6))
 		renderWeights = !renderWeights;
 
-	/*
-	manager.disableCullFace();
-	SkeletalAnimationBound &aabb = this->bounds[frame];
-	manager.M = glm::mat4(1.0f);
-	manager.M = glm::translate(manager.M, glm::vec3(aabb.minX, aabb.minY, aabb.minZ));
-	manager.M = glm::scale(manager.M, glm::vec3(aabb.maxX-aabb.minX, aabb.maxY-aabb.minY, aabb.maxZ-aabb.minZ));
-	manager.markMDirty();
-	manager.setMVPMatrix(shaders::program_solidcolor_MVP);
-	BasicShapes::renderUnitCube(shaders::program_solidcolor_vertexPosition);
-	manager.enableCullFace();
-	*/
+	/ *
+	* /
 
 	manager.V = tempV;
 	manager.markVDirty();
+}*/
+void SkeletalAnimation::renderBounds(RenderManager &rManager, double time)
+{
+	AABB *aabb = this->bounds[(int)std::fmod((float)this->frameRate*time,numFrames)];
+	rManager.M = glm::translate(rManager.M, glm::vec3(aabb->minX(), aabb->minY(), aabb->minZ()));
+	rManager.M = glm::scale(rManager.M, glm::vec3(aabb->boxHalfSize[0], aabb->boxHalfSize[1], aabb->boxHalfSize[2]));
+	rManager.markMDirty();
+	render::shaders::ShaderProgram *sp = rManager.useShader(SHADER_solidColor);
+	glUniform4f(sp->getShaderLocation(false, SHADER_solidColor_solidColor), 0.f, 1.f, 1.f, 0.3f);
+	rManager.enableTransparency();
+	BasicShapes::renderUnitCube(sp->getShaderLocation(false, SHADERVAR_vertex_position));
+	rManager.disableTransparency();
+}
+
+double SkeletalAnimation::getAnimationDuration()
+{
+	return (float)this->numFrames/this->frameRate;
+}
+int SkeletalAnimation::getFrame(double time)
+{
+	return (int)std::fmod((float)this->frameRate*time,numFrames);
+}
+Skeleton SkeletalAnimation::getFrameSkeleton(int frame)
+{
+	if(frame<0)
+		frame += this->frames.size();
+	return this->frames[frame];
+}
+AABB &SkeletalAnimation::getFrameBounds(int frame)
+{
+	if(frame<0)
+		frame += this->frames.size();
+	return *this->bounds[frame];
+}
+Skeleton SkeletalAnimation::getInterpolatedSkeleton(int firstFrame)
+{
+	return this->baseFrame;//TODO
+}
+Skeleton SkeletalAnimation::getSkeleton(double time)
+{
+	return this->getFrameSkeleton(this->getFrame(time));
 }

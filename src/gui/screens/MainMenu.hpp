@@ -4,13 +4,14 @@
 class Button;
 
 #include "gui/Screen.hpp"
+#include "input/Controls.hpp"
 
 class MainMenu : public Screen {
 	public:
 		MainMenu();
-		~MainMenu();
+		virtual ~MainMenu();
 		Button *exitButton,*playButton,*pathTestButton;
-		virtual bool onControlEvent(int control, int action);
+		virtual bool onControlEvent(Control control, int action);
 };
 
 #endif

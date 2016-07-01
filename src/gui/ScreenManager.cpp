@@ -13,7 +13,12 @@ ScreenManager::ScreenManager()
 }
 ScreenManager::~ScreenManager()
 {
-	
+	while(!this->screens.empty())
+	{
+		Screen *screen = this->screens.front();
+		delete screen;
+		this->screens.pop_front();
+	}
 }
 void ScreenManager::openRootScreen(Screen *screen)
 {

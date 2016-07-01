@@ -161,6 +161,19 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
         print("	"+str(len(v))+" vertecies, "+str(len(vt))+" texture coordinates, "+str(len(vn))+" normal coordinates, "+str(len(objects))+" objects")
     return (len(v), v, len(vt), vt, len(vn), vn, 0, [], len(objects), objects)
 
+def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
+    v = []
+    l = []
+    for line in source_fp:
+        line = line[:-1]
+        tv = parse3f(None, line, "v")
+        if tv!=None:
+            v.append(tv)
+        tl = parse2i(None, line, "l")
+        if tl!=None:
+            l.append(tl)
+    return (len(verticies), verticies, len(lines), lines)
+
 def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
     # Data to load and store
     numJoints = 0

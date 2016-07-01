@@ -40,7 +40,7 @@ flags = [
 '-Werror',
 #'-Wno-long-long',
 #'-Wno-variadic-macros',
-#'-Wno-unused',
+#'-Wno-unusptions
 '-fexceptions',
 '-DNDEBUG',
 # THIS IS IMPORTANT! Without a "-std=<something>" flag, clang won't know which
@@ -57,14 +57,13 @@ flags = [
 # For a C project, you would set this to 'c' instead of 'c++'.
 '-x',
 'c++',
-'-L/usr/lib',
-'-I.',
-'-I~/git/Year3Coursework/FinalYearProject/src',
-'-I/usr/include',
-'-I/usr/include/freetype2',
-'-lglfw',
-'-lGL'
+'-include','src/util/SuperDebug.h',
+'-I','.',
+'-I','src',
+'-I','/usr/include',
+'-I','/usr/include/freetype2'
 ]
+
 
 
 # Set this to the absolute path to the folder (NOT the file!) containing the
@@ -157,10 +156,10 @@ def FlagsForFile( filename, **kwargs ):
     # NOTE: This is just for YouCompleteMe; it's highly likely that your project
     # does NOT need to remove the stdlib flag. DO NOT USE THIS IN YOUR
     # ycm_extra_conf IF YOU'RE NOT 100% SURE YOU NEED IT.
-    try:
-      final_flags.remove( '-stdlib=libc++' )
-    except ValueError:
-      pass
+    #try:
+    #  final_flags.remove( '-stdlib=libc++' )
+    #except ValueError:
+    #  pass
   else:
     relative_to = DirectoryOfThisScript()
     final_flags = MakeRelativePathsInFlagsAbsolute( flags, relative_to )

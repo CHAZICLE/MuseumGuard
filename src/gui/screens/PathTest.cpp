@@ -14,7 +14,8 @@ PathTest::PathTest() : Screen()
 }
 PathTest::~PathTest()
 {
-	
+	delete this->pathHolder;
+	delete this->pathFinder;
 }
 void PathTest::render(util::DeltaTime &deltaTime, render::RenderManager &manager)
 {

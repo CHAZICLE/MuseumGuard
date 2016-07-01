@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
+#include <set>
 
 #include "PathHolder.hpp"
 
@@ -61,7 +62,18 @@ PathHolder::PathHolder()
 }
 PathHolder::~PathHolder()
 {
-	
+	std::set<struct PathNodeLink *> links;
+	for(auto &n : this->nodes)
+	{
+		for(auto &nLink : n->links)
+			links.insert(nLink);
+	}
+	for(auto &n : links)
+		delete n;
+	for(auto &n : this->nodes)
+	{
+		delete n;
+	}
 }
 void PathHolder::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 {

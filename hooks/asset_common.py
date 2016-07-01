@@ -84,10 +84,16 @@ def writeType(fp, thetype):
     return True
 
 def parse1i(current, line, key):
-    m = re.search("^"+key+"\s(-?\d+)$", line);
+    m = re.search("^"+key+"\s"+REGEX_INT_CLASS+"$", line);
     if not m:
         return current
     return int(m.group(1))
+
+def parse2i(current, line, key):
+    m = re.search("^"+key+"\s"+REGEX_INT_CLASS+"\s"+REGEX_INT_CLASS+"$", line);
+    if not m:
+        return current
+    return (int(m.group(1)), int(m.group(2)))
 
 def parse1s(current, line, key):
     m = re.search("^"+key+"\s(.+?)$", line);
@@ -102,16 +108,16 @@ def parse1f(current, line, key):
     return float(m.group(1))
 
 def parse2f(current, line, key):
-    m = re.search("^"+key+"\s(-?\d+\.{0,1}\d+)\s(-?\d+\.{0,1}\d+)$", line);
+    m = re.search("^"+key+"\s"+REGEX_FLOAT_CLASS+"\s"+REGEX_FLOAT_CLASS+"$", line);
     if not m:
         return current
-    return [float(m.group(1)), float(m.group(2))]
+    return (float(m.group(1)), float(m.group(2)))
 
 def parse3f(current, line, key):
-    m = re.search("^"+key+"\s(-?\d+\.{0,1}\d+)\s(-?\d+\.{0,1}\d+)\s(-?\d+\.{0,1}\d+)$", line);
+    m = re.search("^"+key+"\s"+REGEX_FLOAT_CLASS+"\s"+REGEX_FLOAT_CLASS+"\s"+REGEX_FLOAT_CLASS+"$", line);
     if not m:
         return current
-    return [float(m.group(1)), float(m.group(2)), float(m.group(3))]
+    return (float(m.group(1)), float(m.group(2)), float(m.group(3)))
 
 if __name__=="__main__":
     pass

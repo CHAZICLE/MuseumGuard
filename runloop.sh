@@ -8,7 +8,7 @@ tmux rename-window "Run"
 
 while true; do
 	clear
-	make
+	make -j 8
 	MAKE_RC=$?
 	if [ -n "$runloop_target" ]; then
 		[ $MAKE_RC -eq 0 ] && rsync assets.gz ./Three charles@sandybridge:~/in/ && ssh -t "$runloop_target" 'cd ~/in; DISPLAY=:0.0 gdb -q --eval-command=run --eval-command=quit ./Three'

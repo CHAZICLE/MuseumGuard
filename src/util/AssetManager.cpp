@@ -28,14 +28,30 @@ AssetManager *AssetManager::getAssetManager()
 	}
 	return AssetManager::instance;
 }
+AssetManager::AssetManager()
+{
+	instance = 0;
+	progress_current = 0;
+	progress_total = 0;
+	memset(assets, 0, sizeof(assets));
+	assetManagerThread = 0;
+	preload_complete = 0;
+	postload_complete = 0;
+}
+AssetManager::~AssetManager()
+{
+	for(auto a : this->assets)
+		delete a;
+}
 void AssetManager::init()
 {
-	this->progress_current = 0;
-	this->progress_total = 0;
 	this->assetManagerThread = new std::thread(assetManagerThreadRun);
-	this->preload_complete = false;
-	this->postload_complete = false;
-	memset(assets, 0, sizeof(assets));
+}
+void AssetManager::cleanup()
+{
+	this->assetManagerThread->join();
+	delete this->assetManagerThread;
+	delete AssetManager::instance;
 }
 void AssetManager::run()
 {
@@ -126,6 +142,10 @@ Asset *AssetManager::getAsset(int assetId)
 Asset::Asset(int assetId)
 {
 	this->_assetId = assetId;
+}
+Asset::~Asset()
+{
+	
 }
 int Asset::getAssetID() const
 {

@@ -1,0 +1,14 @@
+player -> Sphere
+world -> StaticMesh
+drone -> DMesh
+camera -> OBB
+bullet -> ray
+
+StaticMesh(world):
+	Raycast(bullet, placement)
+	Sphere(player)
+	OBB(camera)
+
+DMesh(drone):
+	Raycast(bullet)
+	Sphere
