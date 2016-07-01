@@ -12,12 +12,11 @@ if __name__=="__main__":
         metaFile = sys.argv[2]
         fileToConvert = sys.argv[3]
         fileToPlace = sys.argv[4]
-        ext = fileToConvert[fileToConvert.find("."):]
+        ext = fileToConvert[fileToConvert.find(".")+1:]
         verbose = 1
         meta = getMetadata(metaFile)
         filepath = getFilePath(fileToConvert)
         filename = fileToConvert[fileToConvert.rfind("/")+1:]
-
 
         object_fp = open_objectfile(fileToPlace)
 
