@@ -12,7 +12,7 @@ if __name__=="__main__":
         metaFile = sys.argv[2]
         fileToConvert = sys.argv[3]
         fileToPlace = sys.argv[4]
-        ext = fileToConvert[fileToConvert.find(".")+1:]
+        ext = getFileExtension(fileToConvert)
         verbose = 1
         meta = getMetadata(metaFile)
         filepath = getFilePath(fileToConvert)
@@ -30,7 +30,6 @@ if __name__=="__main__":
                 convertImage(fileToConvert, object_fp)
             else:
                 source_fp = open_sourcefile(fileToConvert)
-
                 if ext=="mtl":
                     mtl = parseMTL(filepath, filename, source_fp, meta, verbose)
                     object_fp.write(bytes([0]))
@@ -49,6 +48,12 @@ if __name__=="__main__":
                 elif ext=="md5anim":
                     mtl = parseMD5Anim(filepath, filename, source_fp, meta, verbose)
                     object_fp.write(bytes([3]))
+                    writeType(object_fp, getFileName(fileToConvert))
+                    result = writeType(object_fp, mtl)
+                # 4: Image
+                elif ext=="nav.obj":
+                    mtl = parseNAVOBJ(filepath, filename, source_fp, meta, verbose)
+                    object_fp.write(bytes([5]))
                     writeType(object_fp, getFileName(fileToConvert))
                     result = writeType(object_fp, mtl)
 

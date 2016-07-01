@@ -172,7 +172,7 @@ def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
         tl = parse2i(None, line, "l")
         if tl!=None:
             l.append(tl)
-    return (len(verticies), verticies, len(lines), lines)
+    return (len(v), v, len(l), l)
 
 def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
     # Data to load and store

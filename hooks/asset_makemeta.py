@@ -33,7 +33,7 @@ if __name__=="__main__":
         fn = getFileName(sources[i])
         ext = getFileExtension(sources[i])
         print("\n// addAsset("+str(i)+","+sources[i]+")", file=meta_fp)
-        print("#define ASSET_"+fn.upper()+"_"+ext.upper()+" "+str(i), file=meta_fp)
+        print("#define ASSET_"+fn.upper()+"_"+ext.upper().replace(".", "_")+" "+str(i), file=meta_fp)
         if ext=="mtl":
             mtl_count += 1
             printMaterials(sources[i], meta_fp, str(i), sources[i])

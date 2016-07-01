@@ -27,10 +27,10 @@ def getFilePath(filepath):
     return filepath[0:filepath.rfind("/")]
 
 def getFileExtension(filename):
-    return filename[filename.rfind(".")+1:]
+    return filename[filename.find(".")+1:]
 
 def getFileName(filename):
-    return filename[filename.rfind("/")+1:filename.rfind(".")]
+    return filename[filename.rfind("/")+1:filename.find(".")]
 
 def getMetadata(metafile):
     assetId = 0
