@@ -70,6 +70,8 @@ namespace render {
 		GLuint vertexColorBufferID;//debug
 	};
 
+	void calculateQuaternionW(glm::quat &q);
+
 	//joints.append((name, parent, pos, ori))
 	//meshes.append((shader_name, numverts, verts, numtris, tris, numweights, weights))
 

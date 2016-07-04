@@ -1,6 +1,5 @@
 #include <iostream>
 #include "util/StreamUtils.hpp"
-#include "util/QuaternionUtils.hpp"
 
 //#ifdef ENABLE_DEBUG_RENDER_MD5JOINT
 #include "render/BasicShapes.hpp"
@@ -17,6 +16,19 @@
 using namespace util;
 using namespace util::StreamUtils;
 using namespace render;
+
+void render::calculateQuaternionW(glm::quat &q)
+{
+	float t = 1.0f - (q.x*q.x)-(q.y*q.y)-(q.z*q.z);
+	if(t<0.0f)
+	{
+		q.w = 0.f;
+	}
+	else
+	{
+		q.w = -std::sqrt(t);
+	}
+}
 
 SkeletalModel::SkeletalModel(int assetId, std::istream &fp) : Asset(assetId)
 {
@@ -37,7 +49,7 @@ SkeletalModel::SkeletalModel(int assetId, std::istream &fp) : Asset(assetId)
 		bone.ori.x = readFloat(fp);
 		bone.ori.y = readFloat(fp);
 		bone.ori.z = readFloat(fp);
-		QuaternionUtils::calculateQuaternionW(bone.ori);
+		calculateQuaternionW(bone.ori);
 		joints.push_back(joint);
 		bindPoseSkeleton.push_back(bone);
 	}

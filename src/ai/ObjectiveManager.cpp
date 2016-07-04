@@ -1,7 +1,12 @@
 #include "ObjectiveManager.hpp"
 
-ObjectiveManager::ObjectiveManager()
+using namespace ai;
+
+ObjectiveManager::ObjectiveManager(world::World *world, world::Entity *entity, ai::path::PathExecuter *pathExecuter)
 {
+	this->world = world;
+	this->entity = entity;
+	this->pathExecuter = pathExecuter;
 	this->currentObjective = OBJECTIVE_ENTER_MUSEUM;
 }
 ObjectiveManager::~ObjectiveManager()

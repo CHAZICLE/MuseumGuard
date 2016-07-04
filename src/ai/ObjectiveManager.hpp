@@ -10,18 +10,21 @@
 #define OBJECTIVE_ATTACK_PLAYER 5
 #define OBJECTIVE_ATTACK_TURRET 6
 
-class Path;
-class Entity;
+#include "ai/path/PathExecuter.hpp"
+#include "world/Entity.hpp"
 
-class ObjectiveManager {
-	private:
-		int currentObjective;
-		Entity *player;
-		Entity *enemy;
-	public:
-		ObjectiveManager();
-		~ObjectiveManager();
-		void tick();
-};
+namespace ai {
+	class ObjectiveManager {
+		private:
+			int currentObjective;
+			world::World *world;
+			world::Entity *entity;
+			ai::path::PathExecuter *pathExecuter;
+		public:
+			ObjectiveManager(world::World *world, world::Entity *entity, ai::path::PathExecuter *pathExecuter);
+			~ObjectiveManager();
+			void tick();
+	};
+}
 
 #endif

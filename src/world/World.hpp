@@ -16,6 +16,8 @@
 #include "input/Controls.hpp"
 #include "input/ControlScheme.hpp"
 
+#include "ai/path/NavigationGraph.hpp"
+
 #define SELECTOR_OFF 0
 #define SELECTOR_SECURITY_CAMERA 1
 #define SELECTOR_TURRET 2
@@ -48,6 +50,7 @@ namespace world {
 		double vertAngle, horizAngle, lastX, lastY;
 		glm::vec3 viewDirection, viewUp;
 	public:
+		ai::path::NavigationGraph *world_navigation_graph;
 		World();
 		~World();
 		void add(Entity *ent, glm::vec3 location);

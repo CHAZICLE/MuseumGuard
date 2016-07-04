@@ -39,7 +39,7 @@ bool AABB::checkInside(const glm::vec3 v)
 {
 	return
 		this->minX()<=v.x && this->maxX()>=v.x &&
-		this->minZ()<=v.y && this->maxZ()>=v.y &&
+		this->minY()<=v.y && this->maxY()>=v.y &&
 		this->minZ()<=v.z && this->maxZ()>=v.z
 	;
 }

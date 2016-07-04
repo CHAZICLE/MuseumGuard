@@ -9,6 +9,7 @@ namespace util {
 		glm::quat rotationBetweenVectors(const glm::vec3 &u0, const glm::vec3 &u1);
 		glm::quat rotationBetween(const glm::vec3 &u0, const glm::vec3 &v0, const glm::vec3 &u1, const glm::vec3 &v1);
 		glm::vec3 rotate(glm::vec3 v, glm::quat q);
+		void calculateQuaternionW(glm::quat &q);
 	}
 }
 

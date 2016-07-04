@@ -1,4 +1,5 @@
 #include "util/StreamUtils.hpp"
+#include "util/QuaternionUtils.hpp"
 
 //d
 #include <iostream>
@@ -9,9 +10,10 @@
 
 #include "SkeletalAnimation.hpp"
 
-using namespace render;
+using namespace util;
 using namespace util::StreamUtils;
 using namespace util::Boundaries;
+using namespace render;
 
 SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(assetId)
 {
@@ -51,7 +53,7 @@ SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(asse
 		bone.ori.x = readFloat(fp);
 		bone.ori.y = readFloat(fp);
 		bone.ori.z = readFloat(fp);
-		calculateQuaternionW(bone.ori);
+		QuaternionUtils::calculateQuaternionW(bone.ori);
 		baseFrame.push_back(bone);
 	}
 	// frames
@@ -75,7 +77,7 @@ SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(asse
 			if(joint.flags&16) bone.ori.y = currentFrameData[joint.startIndex + (j++)];
 			if(joint.flags&32) bone.ori.z = currentFrameData[joint.startIndex + (j++)];
 			if(joint.flags&(8|16|32))
-				calculateQuaternionW(bone.ori);
+				QuaternionUtils::calculateQuaternionW(bone.ori);
 			if(joint.parent>=0)
 			{
 				MD5Bone &parentBone = skeleton[joint.parent];

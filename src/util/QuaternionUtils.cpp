@@ -35,3 +35,15 @@ vec3 util::QuaternionUtils::rotate(vec3 v, quat q)
 	glm::vec3 t = 2.f * cross(glm::vec3(q.x, q.y, q.z), v);
 	return v + q.w * t + cross(qv, t);
 }
+void util::QuaternionUtils::calculateQuaternionW(glm::quat &q)
+{
+	float t = 1.0f - (q.x*q.x)-(q.y*q.y)-(q.z*q.z);
+	if(t<0.0f)
+	{
+		q.w = 0.f;
+	}
+	else
+	{
+		q.w = -std::sqrt(t);
+	}
+}

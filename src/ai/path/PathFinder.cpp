@@ -59,6 +59,13 @@ bool PathFinder::tick(int ticks)
 	{
 		// Done: Complete path
 		this->done = true;
+		//DEBUG
+		c = this->end;
+		while(c!=this->start)
+		{
+			c->node->current = true;
+			c = c->parent;
+		}
 		return true;
 	}
 	this->openSet.erase(c);

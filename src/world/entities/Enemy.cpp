@@ -1,23 +1,24 @@
-#include "Enemy.hpp"
-
+#include <glm/gtc/matrix_transform.hpp>
+#include <iostream>
 #include "util/gl.h"
-#include "render/RenderManager.hpp"
-#include "render/shaders/ShaderUtils.hpp"
-#include "render/BasicShapes.hpp"
 
+#include "render/RenderManager.hpp"
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 
-#include <glm/gtc/matrix_transform.hpp>
-#include <iostream>
+#include "Enemy.hpp"
 
-using namespace world;
-using namespace entities;
 using namespace render;
+using namespace world;
+using namespace world::entities;
+using namespace ai;
+using namespace ai::path;
 
 Enemy::Enemy() : super()
 {
 	this->animTime = 0;
+	this->pathExecuter = new PathExecuter(this);
+	this->objectiveManager = new ObjectiveManager(0, this, this->pathExecuter);
 }
 Enemy::~Enemy()
 {

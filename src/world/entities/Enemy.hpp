@@ -3,10 +3,15 @@
 
 #include "world/Entity.hpp"
 
+#include "ai/ObjectiveManager.hpp"
+#include "ai/path/PathExecuter.hpp"
+
 namespace world {
 	namespace entities {
 		typedef Entity super;
 		class Enemy : public Entity {
+			ai::ObjectiveManager *objectiveManager;
+			ai::path::PathExecuter *pathExecuter;
 			double animTime;
 			public:
 				Enemy();

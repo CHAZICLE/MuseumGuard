@@ -23,9 +23,13 @@ def parseMTL(filepath, filename, source_fp, meta, verbose=0):
                     final_data.append(data[i])
                 final_data[1] = final_data[1]|(1<<i)
         if verbose==1:
+            print(material_name, end=" ")
+        if verbose==2:
             print("\t"+material_name+": Flags="+str(final_data[1])+ap)
         return final_data
 
+    if verbose==1:
+        print("\t", end="")
     materials = []
     current_material_name = None
     # Color/Illumination
@@ -79,6 +83,8 @@ def parseMTL(filepath, filename, source_fp, meta, verbose=0):
     #Ka, Kd, Ks, Tf, d, Ns, Ni, illum, sharpness, map_Ka, map_Kd, map_Ks, map_Ns, map_d, disp, decal, bump
 
     materials.append(flattenArray(current_material_name, [Ka, Kd, Ks, Tf, d, Ns, Ni, illum, sharpness, map_Ka, map_Kd, map_Ks, map_Ns, map_d, disp, decal, bump]))
+    if verbose==1:
+        print()
     return [len(materials)]+materials
 
 def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
@@ -172,6 +178,10 @@ def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
         tl = parse2i(None, line, "l")
         if tl!=None:
             l.append(tl)
+    if verbose==1:
+        print("\t"+str(len(v))+" verticies, "+str(len(l))+" links")
+    elif verbose==2:
+        print("")
     return (len(v), v, len(l), l)
 
 def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):

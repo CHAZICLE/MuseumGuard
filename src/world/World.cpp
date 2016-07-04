@@ -1,10 +1,14 @@
 #include <cmath>
-
+#include <iostream>
 #include <glm/glm.hpp>
 #include <glm/vec3.hpp>
-#include <iostream>
-#include "util/gl.h"
 #include <glm/gtc/matrix_transform.hpp>
+
+#include "util/gl.h"
+#include "util/DeltaTime.hpp"
+#include "util/AssetManager.hpp"
+#include "util/Boundaries.hpp"
+#include "util/QuaternionUtils.hpp"
 
 #include "render/BasicShapes.hpp"
 #include "render/shaders/ShaderUtils.hpp"
@@ -12,11 +16,6 @@
 #include "render/StaticModel.hpp"
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
-
-#include "util/DeltaTime.hpp"
-#include "util/AssetManager.hpp"
-#include "util/Boundaries.hpp"
-#include "util/QuaternionUtils.hpp"
 
 #include "world/entities/Enemy.hpp"
 #include "world/entities/Player.hpp"
@@ -29,8 +28,8 @@
 #include "input/controls/DebugControls.hpp"
 #include "world/collisions/StaticMesh.hpp"
 #include <glm/gtx/quaternion.hpp>
+#include "ai/path/PathFinder.hpp"
 //debug end
-//
 
 #include "World.hpp"
 
@@ -39,6 +38,7 @@ using namespace world;
 using namespace entities;
 using namespace render;
 using namespace util::Boundaries;
+using namespace ai::path;
 
 AABB aabb;
 
@@ -47,6 +47,8 @@ float distance = 5.f;
 float size = 0.5f;
 bool debug_renderEntityMarkers = false;
 bool debug_renderEntityBounds = false;
+PathNode *a=0,*b=0;
+PathFinder *f=0;
 //dbend
 
 
@@ -56,6 +58,7 @@ World::World()
 	this->world_aesthetic_model = 0;
 	this->world_skybox = (render::StaticModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SKYBOX_OBJ);
 	this->world_interactive_collision = new collisions::StaticMesh();
+	this->world_navigation_graph = (NavigationGraph *)util::AssetManager::getAssetManager()->getAsset(ASSET_WORLD_NAVMESH_NAV_OBJ);
 
 	this->selector = SELECTOR_OFF;
 	this->enableSelector = true;
@@ -188,7 +191,20 @@ void World::tick(util::DeltaTime &deltaTime, bool surface)
 			}
 		}
 	}
+	///////////////////
+	// DEBUG TICKING //
+	///////////////////
+	
+	glm::vec3 boxCent = this->player->getPosition()+this->viewDirection*5.f;
+	
+	aabb.boxCenter[0] = boxCent.x;
+	aabb.boxCenter[1] = boxCent.y;
+	aabb.boxCenter[2] = boxCent.z;
+	aabb.boxHalfSize[0] = size/2;
+	aabb.boxHalfSize[1] = size/2;
+	aabb.boxHalfSize[2] = size/2;
 }
+double d = 0;
 void World::render(render::RenderManager &rManager, bool isSurface)
 {
 	// Setup rendering
@@ -242,15 +258,6 @@ void World::render(render::RenderManager &rManager, bool isSurface)
 
 	if(debug_renderEntityMarkers || debug_renderEntityBounds)
 	{
-		if(debug_renderEntityMarkers)
-		{
-			// Draw world origin marker
-			rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3(10, 0, 0), glm::vec4(1.f, 0.f, 0.f, 1.f));
-			rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3( 0,10, 0), glm::vec4(0.f, 1.f, 0.f, 1.f));
-			rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3( 0, 0,10), glm::vec4(0.f, 0.f, 1.f, 1.f));
-		}
-
-		//rManager.renderOrientation(this->player->getPosition(), this->player->getOrientation());
 		for(auto ent : this->entities)
 		{
 			if(ent!=this->player)
@@ -259,6 +266,20 @@ void World::render(render::RenderManager &rManager, bool isSurface)
 			}
 		}
 	}
+	if(debug_renderEntityMarkers)
+	{
+		// Draw world origin marker
+		rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3(10, 0, 0), glm::vec4(1.f, 0.f, 0.f, 1.f));
+		rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3( 0,10, 0), glm::vec4(0.f, 1.f, 0.f, 1.f));
+		rManager.renderDirectionVector(glm::vec3(0,0,0), glm::vec3( 0, 0,10), glm::vec4(0.f, 0.f, 1.f, 1.f));
+		//rManager.renderOrientation(this->player->getPosition(), this->player->getOrientation());
+	}
+	if(debug_renderEntityBounds)
+	{
+		aabb.render(rManager, glm::vec4(1.0f, 0.0f, 0.0f, 0.8f), false);
+	}
+
+	this->world_navigation_graph->render(rManager);
 
 	//rManager.renderDirectionVector(this->selectorCamera->getPosition(), debug_rightVector, glm::vec4(0.f,1.f,1.f,1.f));
 	//rManager.renderDirectionVector(this->selectorCamera->getPosition(), debug_relUpVector, glm::vec4(1.f,0.f,1.f,1.f));
@@ -270,17 +291,27 @@ void World::render(render::RenderManager &rManager, bool isSurface)
 
 	//glm::vec3 boxCent;
 
-	/*aabb.boxCenter[0] = boxCent.x;
-	aabb.boxCenter[1] = boxCent.y;
-	aabb.boxCenter[2] = boxCent.z;
-	aabb.boxHalfSize[0] = size/2;
-	aabb.boxHalfSize[1] = size/2;
-	aabb.boxHalfSize[2] = size/2;
-	aabb.render(rManager, glm::vec4(1.0f, 0.0f, 0.0f, 0.8f), false);*/
 
 	//world_model->getBounds().render(rManager, glm::vec4(0.f, 0.f, 1.f, 1.f), false);
 	//sm->render(rManager, raycast);
 	//sm->render(rManager, aabb);
+	double j = glfwGetTime();
+	if(f!=0)// && j>d)
+	{
+		d = j;
+		f->tick(5);
+	}
+	else
+	{
+		for(int i=0;i<this->world_navigation_graph->numNodes;i++)
+		{
+			PathNode *n = this->world_navigation_graph->nodes[i];
+			if(aabb.checkInside(n->position))
+				n->current = true;
+			else
+				n->current = false;
+		}
+	}
 }
 void World::onDebugControl(Control control, int action)
 {
@@ -288,10 +319,61 @@ void World::onDebugControl(Control control, int action)
 		PRINT_CONTROL("A", control, action);
 
 	// Debug config
-	if(control==GLFW_KEY_F5 && action==CONTROL_KEYACTION_RELEASE)
-		debug_renderEntityMarkers = !debug_renderEntityMarkers;
-	if(control==GLFW_KEY_F6 && action==CONTROL_KEYACTION_RELEASE)
-		debug_renderEntityBounds = !debug_renderEntityBounds;
+	if(action==CONTROL_KEYACTION_RELEASE)
+	{
+		if(control==GLFW_KEY_F5)
+			debug_renderEntityMarkers = !debug_renderEntityMarkers;
+		if(control==GLFW_KEY_F6)
+			debug_renderEntityBounds = !debug_renderEntityBounds;
+		if(control==GLFW_KEY_O)
+		{
+			for(int i=0;i<this->world_navigation_graph->numNodes;i++)
+			{
+				PathNode *n = this->world_navigation_graph->nodes[i];
+				if(aabb.checkInside(n->position))
+				{
+					PRINT_DEBUG("node:" << i);
+					n->current = true;
+					if(a==0)
+						a = n;
+					else
+						b = n;
+				}
+			}
+		}
+//13,84
+		if(control==GLFW_KEY_I)
+		{
+			a = this->world_navigation_graph->nodes[13];
+			b = this->world_navigation_graph->nodes[84];
+		}
+		if(control==GLFW_KEY_P)
+		{
+			PRINT_DEBUG("CLEAR A");
+			f = 0;
+			a = 0;
+			b = 0;
+			for(int i=0;i<this->world_navigation_graph->numNodes;i++)
+			{
+				PathNode *n = this->world_navigation_graph->nodes[i];
+				n->current = false;
+				n->closed = false;
+				n->open = false;
+			}
+		}
+		if(control==GLFW_KEY_LEFT_BRACKET)
+		{
+			if(a!=0 && b!=0)
+			{
+				if(f!=0)
+					delete f;
+				a->current = false;
+				b->current = false;
+				f = new PathFinder(a,b);
+				PRINT_DEBUG("START");
+			}
+		}
+	}
 
 	if(control==GLFW_MOUSE_BUTTON_2 && action==CONTROL_MOUSEBUTTONACTION_RELEASE)
 	{

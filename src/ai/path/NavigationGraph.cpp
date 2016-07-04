@@ -5,85 +5,70 @@
 #include "render/RenderManager.hpp"
 #include "util/DeltaTime.hpp"
 #include <set>
+#include "util/StreamUtils.hpp"
 
 #include "NavigationGraph.hpp"
 
+using namespace ai::path;
+using namespace util::StreamUtils;
 using namespace render;
 
-inline struct PathNode *getNode(NavigationGraph *h, int x, int y)
+NavigationGraph::NavigationGraph(int assetId, std::istream &fp) : Asset(assetId)
 {
-	unsigned long i = x*50+y;
-	if(x>=50 || y>=50 || i>=h->nodes.size())
-		return 0;
-	return h->nodes.at(i);
-}
-inline void linkNodes(struct PathNode *a, struct PathNode *b)
-{
-	if(a==0 || b==0)
-		return;
-	struct PathNodeLink *pnLink = new struct PathNodeLink;
-	pnLink->a = a;
-	pnLink->b = b;
-	pnLink->dist = glm::distance(a->position, b->position);
-	a->links.push_back(pnLink);
-	b->links.push_back(pnLink);
-}
-
-NavigationGraph::NavigationGraph()
-{
-	int id = 0;
-	// Create node grid
-	for(int x=0;x<50;x++)
+	setName(readString(fp));
+	this->numNodes = readInt(fp);
+	this->nodes = new PathNode*[this->numNodes];
+	for(int i=0;i<this->numNodes;i++)
 	{
-		for(int y=0;y<50;y++)
-		{
-			struct PathNode *node = new struct PathNode;
-			node->id = ++id;
-			node->position = glm::vec3(x*5, y*5, 0);
-			this->nodes.push_back(node);
-		}
+		PathNode *(&n) = this->nodes[i];
+		n = new PathNode;
+		n->id = i;
+		n->position.x = readFloat(fp);
+		n->position.y = readFloat(fp);
+		n->position.z = readFloat(fp);
 	}
 	// Create node links
-	for(int x=0;x<50;x++)
+	int numNodeLinks = readInt(fp);
+	for(int i=0;i<numNodeLinks;i++)
 	{
-		for(int y=0;y<50;y++)
-		{
-			if(x>20 && x<30 && y>20 && y<30)
-				continue;
-			struct PathNode *a,*b;
-			a = getNode(this, x, y);
-			b = getNode(this, x+1, y);
-			linkNodes(a,b);
-			
-			b = getNode(this, x, y+1);
-			linkNodes(a,b);
-		}
+		PathNodeLink *pnLink = new PathNodeLink;
+		pnLink->a = this->nodes[readInt(fp)-1];
+		pnLink->b = this->nodes[readInt(fp)-1];
+		pnLink->dist = glm::distance(pnLink->a->position, pnLink->b->position);
+		pnLink->a->links.push_back(pnLink);
+		pnLink->b->links.push_back(pnLink);
 	}
 }
 NavigationGraph::~NavigationGraph()
 {
 	std::set<struct PathNodeLink *> links;
-	for(auto &n : this->nodes)
+	for(int i=0;i<this->numNodes;i++)
 	{
+		auto &n = this->nodes[i];
 		for(auto &nLink : n->links)
 			links.insert(nLink);
 	}
 	for(auto &n : links)
 		delete n;
-	for(auto &n : this->nodes)
-	{
-		delete n;
-	}
+	delete [] this->nodes;
 }
-void NavigationGraph::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
+void NavigationGraph::write(std::ostream &ost) const
+{
+}
+void NavigationGraph::postload()
+{
+}
+void NavigationGraph::render(render::RenderManager &rManager)
 {
 	glEnable(GL_BLEND);
 	shaders::ShaderProgram *shader = shaders::ShaderProgram::getShader(SHADER_solidColor);
 	GLint vploc = shader->getShaderLocation(false, SHADERVAR_vertex_position);
 	GLint loc = shader->getShaderLocation(false, SHADER_solidColor_solidColor);
-	for(std::vector<struct PathNode *>::iterator it = this->nodes.begin(); it != this->nodes.end(); it++)
+	for(int i=0;i<this->numNodes;i++)
+	//for(std::vector<struct PathNode *>::iterator it = this->nodes.begin(); it != this->nodes.end(); it++)
 	{
-		struct PathNode *node = *it;
+		//struct PathNode *node = *it;
+		PathNode *node = this->nodes[i];
 		// Draw all node links
 		for(std::vector<struct PathNodeLink *>::iterator j = node->links.begin(); j != node->links.end(); j++)
 		{

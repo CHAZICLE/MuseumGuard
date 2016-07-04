@@ -9,6 +9,7 @@
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 #include "render/DDSImage.hpp"
+#include "ai/path/NavigationGraph.hpp"
 
 #include "AssetManager.hpp"
 
@@ -70,11 +71,6 @@ void AssetManager::run()
 	
 	Asset *asset;
 	int assetType = 0, assetId = 0;
-	render::MaterialLibrary *mtlib = 0;
-	render::StaticModel *wvModel = 0;
-	render::SkeletalModel *md5Model = 0;
-	render::SkeletalAnimation *md5anim = 0;
-	render::DDSImage *ddsImage = 0;
 	while(!fp.eof())
 	{
 		fp.read((char *)&assetType, 1);
@@ -84,26 +80,22 @@ void AssetManager::run()
 		switch(assetType)
 		{
 			case ASSET_MTLLIB:
-				mtlib = new render::MaterialLibrary(assetId, fp);
-				asset = mtlib;
+				asset = new render::MaterialLibrary(assetId, fp);
 				break;
 			case ASSET_WAVEFRONT:
-				wvModel = new render::StaticModel(assetId, fp);
-				asset = wvModel;
+				asset = new render::StaticModel(assetId, fp);
 				break;
 			case ASSET_MD5MESH:
-				md5Model = new render::SkeletalModel(assetId, fp);
-				asset = md5Model;
+				asset = new render::SkeletalModel(assetId, fp);
 				break;
 			case ASSET_MD5ANIM:
-				md5anim = new render::SkeletalAnimation(assetId, fp);
-				asset = md5anim;
+				asset = new render::SkeletalAnimation(assetId, fp);
 				break;
 			case ASSET_DDS:
-				ddsImage = new render::DDSImage(assetId, fp);
-				asset = ddsImage;
+				asset = new render::DDSImage(assetId, fp);
 				break;
 			case ASSET_NAVMESH:
+				asset = new ai::path::NavigationGraph(assetId, fp);
 				break;
 			default:
 				util::Globals::fatalError("Unknown asset type "+std::to_string(assetType));

@@ -5,15 +5,24 @@
 
 #include <vector>
 
-#include "util/DeltaTime.hpp"
+#include "util/AssetManager.hpp"
+
 #include "render/RenderManager.hpp"
 
-class NavigationGraph {
-	public:
-		std::vector<struct PathNode *> nodes;
-		NavigationGraph();
-		~NavigationGraph();
-		void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
-};
+
+namespace ai {
+	namespace path {
+		class NavigationGraph : public util::Asset {
+			public:
+				int numNodes;
+				PathNode **nodes;
+				NavigationGraph(int assetId, std::istream &fp);
+				virtual ~NavigationGraph();
+				virtual void write(std::ostream &ost) const;
+				virtual void postload();
+				void render(render::RenderManager &manager);
+		};
+}
+}
 
 #endif

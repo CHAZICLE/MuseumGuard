@@ -13,7 +13,7 @@ if __name__=="__main__":
         fileToConvert = sys.argv[3]
         fileToPlace = sys.argv[4]
         ext = getFileExtension(fileToConvert)
-        verbose = 1
+        verbose = 0
         meta = getMetadata(metaFile)
         filepath = getFilePath(fileToConvert)
         filename = fileToConvert[fileToConvert.rfind("/")+1:]
