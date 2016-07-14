@@ -13,7 +13,7 @@ using namespace controls;
 using namespace collisions;
 using namespace util::Boundaries;
 
-AABB *playerBounds;
+Sphere *playerBounds;
 
 PlayerGameControls::PlayerGameControls(Entity *controlEntity, StaticMesh *world) : ControlScheme(controlEntity)
 {
@@ -25,13 +25,15 @@ PlayerGameControls::PlayerGameControls(Entity *controlEntity, StaticMesh *world)
 	this->cursorDeltaY = 0;
 	this->lastCursor = false;
 	this->world = world;
-	playerBounds = new AABB(0,0,0, 0.2f,0.2f,0.2f);
+	//playerBounds = new AABB(0,0,0, 0.2f,0.2f,0.2f);
+	playerBounds = new Sphere;
+	playerBounds->radius = 0.2f;
 }
 PlayerGameControls::~PlayerGameControls()
 {
 	
 }
-void PlayerGameControls::tick2(render::RenderManager &rManager, util::DeltaTime &deltaTime)
+void PlayerGameControls::tick2(render::RenderManager *rManager, util::DeltaTime &deltaTime)
 {
 	float r;
 	glm::vec3 movement = glm::vec3(0,0,0);
@@ -81,7 +83,10 @@ void PlayerGameControls::tick2(render::RenderManager &rManager, util::DeltaTime 
 		orientation *= glm::angleAxis(r, glm::vec3( 0,-1, 0));
 
 	// Movement Controls
-	r = 10.f*deltaTime.getTimeDelta();
+	if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT)==GLFW_PRESS)
+		r = 4.f*deltaTime.getTimeDelta();
+	else
+		r = 1.f*deltaTime.getTimeDelta();
 
 	// Forward/Backward
 	if(glfwGetKey(window, GLFW_KEY_W)==GLFW_PRESS)
@@ -103,16 +108,19 @@ void PlayerGameControls::tick2(render::RenderManager &rManager, util::DeltaTime 
 
 	//glm::vec3 orientationEuler = glm::eulerAngles(orientation);
 	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;
-	//
-	glm::vec3 a = this->controlEntity->getPosition()+movement;
+	this->velocity += movement;
+	this->velocity *= 0.85;
+	glm::vec3 step = this->velocity;
+	glm::vec3 a = this->controlEntity->getPosition();
 
-	playerBounds->boxCenter[0] = a.x;
-	playerBounds->boxCenter[1] = a.y;
-	playerBounds->boxCenter[2] = a.z;
+	playerBounds->center[0] = a.x;
+	playerBounds->center[1] = a.y;
+	playerBounds->center[2] = a.z;
 
-	this->world->checkIntersect(rManager, *playerBounds, &movement);
+
+	this->world->collisionResponse(*playerBounds, &step, &velocity);
 		//std::cout << "INTERSECT" << glfwGetTime() << std::endl;
 
-	this->controlEntity->translate(movement);
+	this->controlEntity->translate(step);
 	this->controlEntity->setOrientation(orientation);
 }

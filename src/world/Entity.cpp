@@ -4,6 +4,7 @@
 //debug
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 
 #include "Entity.hpp"
 
@@ -13,6 +14,7 @@ using namespace util::Boundaries;
 Entity::Entity()
 {
 	this->bounds = 0;
+	this->doRender = true;
 }
 Entity::~Entity()
 {
@@ -68,5 +70,11 @@ void Entity::renderDebug(render::RenderManager &rManager, bool renderPositionMar
 	if(renderPositionMarker)
 		rManager.renderOrientation(this->getPosition(), this->getOrientation());
 	if(renderBounds && this->getBounds()!=0)
-		this->getBounds()->translate(this->getPosition())->render(rManager, glm::vec4(1.f, 1.f, 0.f, 1.f), false);
+	{
+		glm::mat4 a = rManager.M;
+		rManager.M = glm::translate(glm::mat4(), this->getPosition())*glm::toMat4(this->getOrientation());
+		rManager.markMDirty();
+		this->getBounds()->render(rManager, glm::vec4(1.f, 1.f, 0.f, 1.f), false);
+		rManager.M = a;
+	}
 }

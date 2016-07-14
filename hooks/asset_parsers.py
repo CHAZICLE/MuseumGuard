@@ -4,8 +4,15 @@ import re
 
 from asset_common import *
 
+MTL_FILEID = 0
+OBJ_FILEID = 1
+MD5MESH_FILEID = 2
+MD5ANIM_FILEID = 3
+NAVOBJ_FILEID = 5
+
 def parseMTL(filepath, filename, source_fp, meta, verbose=0):
     names = ["Ka", "Kd", "Ks", "Tf", "d", "Ns", "Ni", "illum", "sharpness", "map_Ka", "map_Kd", "map_Ks", "map_Ns", "map_d", "disp", "decal", "bump"]
+    depends = []
     def flattenArray(material_name, data):
         final_data = [material_name, 0]
         if verbose>=1:
@@ -13,6 +20,7 @@ def parseMTL(filepath, filename, source_fp, meta, verbose=0):
         for i in range(len(data)):
             if data[i]!=None:
                 if type(data[i])==str:
+                    depends.append(filepath+"/"+data[i])
                     textureAssetId = meta['textures'][filepath+"/"+data[i].strip()]
                     if verbose==1:
                         ap += ", "+names[i]+"=["+str(textureAssetId)+"]"+str(data[i])
@@ -85,9 +93,10 @@ def parseMTL(filepath, filename, source_fp, meta, verbose=0):
     materials.append(flattenArray(current_material_name, [Ka, Kd, Ks, Tf, d, Ns, Ni, illum, sharpness, map_Ka, map_Kd, map_Ks, map_Ns, map_d, disp, decal, bump]))
     if verbose==1:
         print()
-    return [len(materials)]+materials
+    return MTL_FILEID, None, [len(materials)]+materials, depends
 
 def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
+    depends = []
     enableTextures = None
     enableNormals = None
     numPrimitives = 0
@@ -122,6 +131,7 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
             f = []
         if line.find("mtllib ")>=0:
             mtllib = line.split(" ")[1]
+            depends.append(filepath+"/"+mtllib)
         if line.find("usemtl ")>=0:
             usemtl = line.split(" ")[1]
         if line.find("s ")>=0:
@@ -131,7 +141,7 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
             numPrimitives = numPrimitives+1
             if len(verticies)>3:
                 print("Wavefront file is not triangular!")
-                os.exit(1)
+                sys.exit(1)
             for vertex in verticies:
                 fin = vertex.split("/")
                 faceFinal = [int(fin[0])]
@@ -139,24 +149,24 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
                     if fin[1]=="":
                         if enableTextures==True:
                             print("Textures changed mid file!")
-                            os.exit(1)
+                            sys.exit(1)
                         enableTextures = False
                     else:
                         if enableTextures==False:
                             print("Textures changed mid file!")
-                            os.exit(1)
+                            sys.exit(1)
                         enableTextures = True
                         faceFinal.append(int(fin[1]))
                 if len(fin)>2:
                     if fin[2]=="":
                         if enableNormals==True:
                             print("Textures changed mid file!")
-                            os.exit(1)
+                            sys.exit(1)
                         enableNormals = False
                     else:
                         if enableNormals==False:
                             print("Textures changed mid file!")
-                            os.exit(1)
+                            sys.exit(1)
                         enableNormals = True
                         faceFinal.append(int(fin[2]))
                 f.append(faceFinal)
@@ -165,24 +175,32 @@ def parseOBJ(filepath, filename, source_fp, meta, verbose=0):
     #print((object_name, meta['materials'][filepath+"/"+mtllib+":"+usemtl], s, numPrimitives, f))
     if verbose>=1:
         print("	"+str(len(v))+" vertecies, "+str(len(vt))+" texture coordinates, "+str(len(vn))+" normal coordinates, "+str(len(objects))+" objects")
-    return (len(v), v, len(vt), vt, len(vn), vn, 0, [], len(objects), objects)
+    return OBJ_FILEID, None, (len(v), v, len(vt), vt, len(vn), vn, 0, [], len(objects), objects), depends
 
 def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
+    groups = []
     v = []
     l = []
     for line in source_fp:
         line = line[:-1]
-        tv = parse3f(None, line, "v")
+        group = parse1s(None, line, "g")
+        if group!=None:
+            groups.append(group)
+        tv = parse1i3f(None, line, "v")
         if tv!=None:
             v.append(tv)
         tl = parse2i(None, line, "l")
         if tl!=None:
             l.append(tl)
+    macros = {}
+    for i in range(len(groups)):
+        macros[filename.replace(".", "_")+"_"+groups[i]] = i
     if verbose==1:
         print("\t"+str(len(v))+" verticies, "+str(len(l))+" links")
     elif verbose==2:
-        print("")
-    return (len(v), v, len(l), l)
+        print("\t"+str(len(v))+" verticies, "+str(len(l))+" links")
+        print("\tGroups:"+str(groups))
+    return NAVOBJ_FILEID, {"macros":macros}, (len(groups), len(v), v, len(l), l), None
 
 def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
     # Data to load and store
@@ -311,7 +329,7 @@ def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
             meshes.append((shader_id, numverts, verts, numtris, tris, numweights, weights))
     if verbose>=1:
         print("\t"+str(numJoints)+" joints, "+str(numMeshes)+" meshes")
-    return (numJoints, joints, numMeshes, meshes)
+    return MD5MESH_FILEID, None, (numJoints, joints, numMeshes, meshes), None
 
 def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
         # args
@@ -404,4 +422,4 @@ def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
 
     if(verbose==1):
         print("\t"+str(numFrames)+" frames, "+str(numJoints)+" joints, "+str(numAnimatedComponents)+" Animted Components")
-    return [numFrames, numJoints, frameRate, numAnimatedComponents, hierarchy, bounds, baseframe, frames]
+    return MD5ANIM_FILEID, None, [numFrames, numJoints, frameRate, numAnimatedComponents, hierarchy, bounds, baseframe, frames], None

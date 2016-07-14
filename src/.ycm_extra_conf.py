@@ -35,13 +35,15 @@ import ycm_core
 # compilation database set (by default, one is not set).
 # CHANGE THIS LIST OF FLAGS. YES, THIS IS THE DROID YOU HAVE BEEN LOOKING FOR.
 flags = [
-'-Wall',
-'-Wextra',
-'-Werror',
-'-Wno-long-long',
-'-Wno-variadic-macros',
+'-Weverything',
+#'-Wall',
+#'-Wextra',
+#'-Werror',
+#'-Wno-long-long',
+#'-Wno-variadic-macros',
 '-fexceptions',
 '-DNDEBUG',
+'-DYCM',
 # THIS IS IMPORTANT! Without a "-std=<something>" flag, clang won't know which
 # language to use when compiling headers. So it will guess. Badly. So C++
 # headers will be compiled as C headers. You don't want that so ALWAYS specify
@@ -62,9 +64,10 @@ flags = [
 '-isystem','/usr/include/freetype2',
 '-include','util/SuperDebug.h',
 '-I','.',
-'-I','./src/',
+'-I','../bin/include',
 '-I','~/git/Year3Coursework/FinalYearProject',
 '-I','~/git/Year3Coursework/FinalYearProject/src',
+'-I','~/git/Year3Coursework/FinalYearProject/bin/include',
 ]
 
 

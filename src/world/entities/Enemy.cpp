@@ -1,10 +1,12 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <iostream>
 #include "util/gl.h"
+#include "ai/ObjectiveManager.hpp"
 
 #include "render/RenderManager.hpp"
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
+#include "world/World.hpp"
 
 #include "Enemy.hpp"
 
@@ -14,11 +16,11 @@ using namespace world::entities;
 using namespace ai;
 using namespace ai::path;
 
-Enemy::Enemy() : super()
+Enemy::Enemy(World *world) : super()
 {
 	this->animTime = 0;
-	this->pathExecuter = new PathExecuter(this);
-	this->objectiveManager = new ObjectiveManager(0, this, this->pathExecuter);
+	this->pathExecuter = new PathExecuter(this, world->world_navigation_graph);
+	this->objectiveManager = new ObjectiveManager(world, this, this->pathExecuter, world->world_navigation_graph);
 }
 Enemy::~Enemy()
 {
@@ -28,6 +30,8 @@ Enemy::~Enemy()
 void Enemy::tick(util::DeltaTime &deltaTime)
 {
 	this->animTime = deltaTime.getTime();
+	this->pathExecuter->tick(deltaTime);
+	this->objectiveManager->tick(deltaTime);
 }
 void Enemy::render(render::RenderManager &rManager)
 {
@@ -47,9 +51,17 @@ void Enemy::render(render::RenderManager &rManager)
 	SkeletalModel *drone = (SkeletalModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5MESH);
 	SkeletalAnimation *drone_anim = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_DRONE_MK2_MD5ANIM);
 
+	int frame = drone_anim->getFrame(animTime);
+	drone->render(rManager, drone_anim->getFrameSkeleton(frame));
+	this->bounds = &drone_anim->getFrameBounds(frame);
 	//drone_anim->render(rManager, *drone, animTime);
-	drone->render(rManager, drone_anim->getSkeleton(animTime));
-	drone_anim->renderBounds(rManager, animTime);
 
 	rManager.popMatrixM();
+	//drone_anim->renderBounds(rManager, animTime);
+	//
+	this->objectiveManager->render(rManager);
+}
+void Enemy::setPath(std::vector<int> path)
+{
+	this->pathExecuter->postPath(path);
 }

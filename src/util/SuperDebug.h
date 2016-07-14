@@ -1,16 +1,25 @@
-#ifndef __SUPERDEBUG_H_INCLUDED__
-#define __SUPERDEBUG_H_INCLUDED__
+#ifndef SUPERDEBUG_H_INCLUDED
+#define SUPERDEBUG_H_INCLUDED
 #ifndef DISABLE_DEBUG
 
 #include <iostream>
 #include <glm/glm.hpp>
 #include <glm/gtc/quaternion.hpp>
+#include "util/gl.h"
 
-#define _IOSTREAM_HEADER "DEBUG:[" << __FILE__ << ":" << __LINE__ << " " << __func__ << "] "
+extern std::ostream *debugfile;
+
+extern GLFWwindow *superdebug_window;
+inline bool DEBUG_KEY(int key)
+{
+	return glfwGetKey(superdebug_window, key)==GLFW_PRESS;
+}
+
+#define THREE_IOSTREAM_HEADER "[" << __FILE__ << ":" << __LINE__ << " " << __func__ << "()] "
 
 #define PRINT_CONTROL(message, control, action) PRINT_DEBUG(message << " (Control:" << control << ", Action:" << action << ")")
 
-#define PRINT_DEBUG(msg) std::cout << _IOSTREAM_HEADER << msg << std::endl;
+#define PRINT_DEBUG(msg) *debugfile << THREE_IOSTREAM_HEADER << msg << std::endl;
 
 inline std::ostream &operator<<(std::ostream &ost, const glm::vec3 &a)
 {

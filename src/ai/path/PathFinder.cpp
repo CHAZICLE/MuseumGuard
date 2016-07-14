@@ -1,27 +1,43 @@
 #include "PathFinder.hpp"
 
-PathFinder::PathFinder(PathNode *start, PathNode *end)
+using namespace ai::path;
+
+PathFinder::PathFinder()
 {
-	this->iterations = 0;
-	// Remember the algorithm works backwards
-	this->start = this->getStoredNode(end);
-	this->end = this->getStoredNode(start);
-
-	this->start->f = glm::distance(this->start->node->position, this->end->node->position);
-	this->end->f = 0;
-
-	this->openSet.insert(this->start);
-	start->current = true;
-	end->current = true;
+	this->startPathNode = 0;
+	this->storedPathNodes.clear();
 	this->done = false;
+	this->sucess = false;
 }
 PathFinder::~PathFinder()
 {
 	for(auto &a : this->storedPathNodes)
 		delete a.second;
 }
+void PathFinder::start(PathNode *a, PathNode *b)
+{
+	this->iterations = 0;
+	// Remember the algorithm works backwards
+	PRINT_DEBUG("a");
+	this->startPathNode = this->getStoredNode(b);
+	this->endPathNode = this->getStoredNode(a);
+	PRINT_DEBUG("b");
+
+	this->startPathNode->f = glm::distance(this->startPathNode->node->position, this->endPathNode->node->position);
+	this->endPathNode->f = 0;
+
+	this->openSet.clear();
+	this->closedSet.clear();
+	this->openSet.insert(this->startPathNode);
+	a->current = true;
+	b->current = true;
+	this->done = false;
+	this->sucess = false;
+}
 bool PathFinder::tick(int ticks)
 {
+	if(this->startPathNode==0)
+		return false;
 	if(this->done)
 		return true;
 	if(ticks!=1)
@@ -53,15 +69,16 @@ bool PathFinder::tick(int ticks)
 	{
 		// Done: Failed
 		this->done = true;
+		this->sucess = false;
 		return true;
 	}
-	if(c==this->end)
+	if(c==this->endPathNode)
 	{
 		// Done: Complete path
 		this->done = true;
-		//DEBUG
-		c = this->end;
-		while(c!=this->start)
+		this->sucess = true;
+		c = this->endPathNode;
+		while(c!=this->startPathNode)
 		{
 			c->node->current = true;
 			c = c->parent;
@@ -86,7 +103,7 @@ bool PathFinder::tick(int ticks)
 		// Skip neighbours in closed set
 		if(this->closedSet.find(neighbourNode)!=this->closedSet.end())
 			continue;
-		newNeighbourG = c->g+pnLink->dist/10;
+		newNeighbourG = c->g+pnLink->dist/4;
 		// Add to open set if not already in
 		if(this->openSet.find(neighbourNode)==this->openSet.end())
 		{
@@ -103,25 +120,37 @@ bool PathFinder::tick(int ticks)
 		neighbourNode->parent = c;
 		neighbourNode->parentLink = pnLink;
 		neighbourNode->g = newNeighbourG;
-		neighbourNode->h = glm::distance(neighbourNode->node->position, this->end->node->position);
+		neighbourNode->h = glm::distance(neighbourNode->node->position, this->endPathNode->node->position);
 		neighbourNode->f = neighbourNode->g+neighbourNode->h;
 	}
 	return false;
 }
+std::vector<int> PathFinder::getPath()
+{
+	std::vector<int> path;
+	this->c = this->endPathNode;
+	path.push_back(this->c->node->id);
+	while(this->c!=this->startPathNode)
+	{
+		this->c = this->c->parent;
+		path.push_back(this->c->node->id);
+	}
+	return path;
+}
 StoredPathNode *PathFinder::getStoredNode(PathNode *node)
 {
-	StoredPathNode *s_node = this->storedPathNodes[node->id];
-	if(s_node==0)
+	if(this->storedPathNodes.find(node->id)==this->storedPathNodes.end())
 	{
+		StoredPathNode *s_node;
 		s_node = new StoredPathNode;
 		s_node->parent = 0;
 		s_node->node = node;
 		s_node->f = 0;
 		s_node->g = 0;
-		s_node->h = 0;
 		this->storedPathNodes[node->id] = s_node;
+		return s_node;
 	}
-	return s_node;
+	return this->storedPathNodes[node->id];
 }
 PathNode *PathFinder::getCurrentNode()
 {

@@ -76,10 +76,14 @@ namespace world {
 				util::Boundaries::RaycastResult rayCast(util::Boundaries::Raycast &raycast);
 
 				// Intersection functions
-				bool checkIntersect(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, glm::vec3 *velocity);
-				bool checkIntersectCellChildren(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, const StaticMeshCell &parent, glm::vec3 *velocity);
-				
-				bool checkIntersect(const util::Boundaries::RBB &rbb);
+				bool collisionResponse(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, glm::vec3 *velocity);
+				bool collisionResponseCellChildren(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, const StaticMeshCell &parent, glm::vec3 *velocity);
+
+				bool collisionResponse(const util::Boundaries::Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity);
+				bool collisionResponseCellChildren(const util::Boundaries::Sphere &sphere, const StaticMeshCell &parent, glm::vec3 *step, glm::vec3 *velocity);
+				bool collisionResponseCellTriangles(const util::Boundaries::Sphere &sphere, const StaticMeshCell &cell, glm::vec3 *step, glm::vec3 *velocity);
+				bool collisionResponseCellTriangleEdge(const util::Boundaries::Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity, const glm::vec3 &V0, const glm::vec3 &V1, const glm::vec3 &P1);
+				bool collisionResponseCellTriangleVertex(const util::Boundaries::Sphere &sphere, const glm::vec3 &P1, const glm::vec3 &V, float &enter, float &exit);
 		};
 	}
 }

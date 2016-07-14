@@ -4,12 +4,8 @@
 #include "ai/path/DebugPathHolder.hpp"
 #include "ai/path/PathFinder.hpp"
 #include "gui/Screen.hpp"
-namespace util {
-class DeltaTime;
-}
-namespace render {
-class RenderManager;
-}
+#include "render/RenderManager.hpp"
+#include "util/DeltaTime.hpp"
 
 class PathTest : public Screen {
 	public:
@@ -17,7 +13,7 @@ class PathTest : public Screen {
 		~PathTest();
 		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		ai::path::DebugPathHolder *pathHolder;
-		PathFinder *pathFinder;
+		ai::path::PathFinder *pathFinder;
 		double lastTime;
 		virtual bool onControlEvent(int control, int action);
 };

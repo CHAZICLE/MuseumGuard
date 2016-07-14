@@ -41,7 +41,7 @@ SkeletalAnimation::SkeletalAnimation(int assetId, std::istream &fp) : Asset(asse
 		float a3 = readFloat(fp);
 		float a4 = readFloat(fp);
 		float a5 = readFloat(fp);
-		this->bounds.push_back(AABB::fromMinMax(a0, a1, a2, a3, a4, a5));
+		this->bounds.push_back(new AABB(glm::vec3(a0, a1, a2), glm::vec3(a3, a4, a5)));
 	}
 	// base frame
 	for(int i=0;i<numJoints;i++)

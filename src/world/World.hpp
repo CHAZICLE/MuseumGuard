@@ -48,6 +48,7 @@ namespace world {
 		controls::ControlScheme *controlScheme;
 		
 		double vertAngle, horizAngle, lastX, lastY;
+		float selectorYaw;
 		glm::vec3 viewDirection, viewUp;
 	public:
 		ai::path::NavigationGraph *world_navigation_graph;
@@ -57,6 +58,7 @@ namespace world {
 		void tick(util::DeltaTime &deltaTime, bool surface);
 		void render(render::RenderManager &manager, bool isSurface);
 		void onDebugControl(Control control, int action);
+		void onRayHit(glm::vec3 rayOrigin, float distance, glm::vec3 normal);
 		int remainingTurrets;
 		int remainingCameras;
 	};

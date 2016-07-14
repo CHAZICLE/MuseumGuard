@@ -3,7 +3,10 @@
 
 #include "world/Entity.hpp"
 
-#include "ai/ObjectiveManager.hpp"
+//#include "ai/ObjectiveManager.hpp"
+namespace ai {
+	class ObjectiveManager;
+}
 #include "ai/path/PathExecuter.hpp"
 
 namespace world {
@@ -14,10 +17,11 @@ namespace world {
 			ai::path::PathExecuter *pathExecuter;
 			double animTime;
 			public:
-				Enemy();
+				Enemy(world::World *world);
 				virtual ~Enemy();
 				virtual void tick(util::DeltaTime &deltaTime);
 				virtual void render(render::RenderManager &rManager);
+				void setPath(std::vector<int> path);
 		};
 	}
 }

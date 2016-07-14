@@ -14,11 +14,12 @@ namespace controls {
 			double lastCursorX,lastCursorY,cursorX,cursorY,cursorDeltaX,cursorDeltaY;
 			bool lastCursor;
 			world::collisions::StaticMesh *world;
+			glm::vec3 velocity;
 		public:
 			PlayerGameControls(world::Entity *entity, world::collisions::StaticMesh *staticMesh);
 			virtual ~PlayerGameControls();
 			//virtual void tick(util::DeltaTime &deltaTime);
-			void tick2(render::RenderManager &rManager, util::DeltaTime &deltaTime);
+			void tick2(render::RenderManager *rManager, util::DeltaTime &deltaTime);
 	};
 }
 

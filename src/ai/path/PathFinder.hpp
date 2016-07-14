@@ -4,29 +4,34 @@
 #include "PathCommon.h"
 #include <set>
 #include <map>
+#include <mutex>
 
-struct StoredPathNode {
-	struct PathNodeLink *parentLink;
-	struct StoredPathNode *parent;
-	struct PathNode *node;
-	float f,g,h;
-};
-
-class PathFinder {
-	private:
-		StoredPathNode *start,*end,*c;
-	public:
-		int iterations;
-		std::map<int, StoredPathNode *> storedPathNodes;
-		std::set<StoredPathNode *> openSet;
-		std::set<StoredPathNode *> closedSet;
-		PathFinder(PathNode *start, PathNode *end);
-		~PathFinder();
-		bool tick(int i);
-		StoredPathNode *getStoredNode(PathNode *node);
-		PathNode *getCurrentNode();
-		bool done;
-
-};
+namespace ai {
+	namespace path {
+		struct StoredPathNode {
+			struct PathNodeLink *parentLink;
+			struct StoredPathNode *parent;
+			struct PathNode *node;
+			float f,g,h;
+		};
+		class PathFinder {
+			private:
+				StoredPathNode *startPathNode,*endPathNode,*c;
+			public:
+				int iterations;
+				std::map<int, StoredPathNode *> storedPathNodes;
+				std::set<StoredPathNode *> openSet;
+				std::set<StoredPathNode *> closedSet;
+				PathFinder();
+				~PathFinder();
+				void start(PathNode *a, PathNode *b);
+				bool tick(int i);
+				std::vector<int> getPath();
+				StoredPathNode *getStoredNode(PathNode *node);
+				PathNode *getCurrentNode();
+				bool done,sucess;
+		};
+	}
+}
 
 #endif

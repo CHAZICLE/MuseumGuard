@@ -21,6 +21,8 @@ namespace world {
 		protected:
 			util::Boundaries::AABB *bounds;
 		public:
+			bool doRender;
+
 			Entity();
 			virtual ~Entity();
 			virtual void addedToWorld(world::World *world, double spawnTime);

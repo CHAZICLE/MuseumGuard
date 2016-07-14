@@ -21,6 +21,8 @@ using util::AssetManager;
 
 using namespace render;
 
+GLFWwindow *superdebug_window = 0;
+
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
 WindowScreenManager::WindowScreenManager() : ScreenManager()
 {
@@ -59,6 +61,8 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);*/
 	// Create window
 	this->window = glfwCreateWindow(800, 600, "FYP", NULL, NULL);
+	//TODO: remove debug
+	superdebug_window = window;
 	if(!this->window)
 	{
 		std::cerr << "Window creation failed" << std::endl;

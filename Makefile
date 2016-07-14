@@ -3,44 +3,25 @@ BINDIR=bin
 RESDIR=res
 HOOKSDIR=hooks
 
-CPPSRCDIR=$(SRCDIR)
-CPPBINDIR=$(BINDIR)/cpp
-CPPDEPDIR=$(BINDIR)/depend/cpp
-
-RESSRCDIR=$(RESDIR)
-RESBINDIR=$(BINDIR)/res
-
-CXX=g++
-CXXFLAGS=-g -fPIE -Wall -ansi -std=c++11 -Isrc -I/usr/include/freetype2 -include util/SuperDebug.h
-LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
-BIN=Three
-SUPERGLOBAL=$(SRCDIR)/util/SuperDebug.h
-
-CPPSRCS = $(shell find $(CPPSRCDIR) -type f -name '*.cpp')
-CPPBINS = $(patsubst $(CPPSRCDIR)/%.cpp, $(CPPBINDIR)/%.o, $(CPPSRCS))
-CPPDEPS = $(patsubst $(CPPSRCDIR)/%.cpp, $(CPPDEPDIR)/%.d, $(CPPSRCS))
-
-# Shaders
-SHADER_HOOK = $(HOOKSDIR)/shaders_convert.py
-SHADER_VARIABLES_IN = $(SRCDIR)/render/shaders/shader_variables.txt
-SHADER_VARIABLES_OUT = $(SRCDIR)/render/shaders/ShaderVariables.h
-SHADER_FOLDER = $(SRCDIR)/render/shaders/code/
-SHADER_DESC = $(SRCDIR)/render/shaders/shaders.txt
-SHADER_HEADER = $(SRCDIR)/render/shaders/ShaderPrograms.h
-SHADER_LOADER = $(SRCDIR)/render/shaders/ShaderLoader.c
-
-SHADER_PROGRAMS = $(shell find $(SHADER_FOLDER) -type f -name '*.c')
-
-#parseShaders(sys.argv[2], sys.argv[4], sys.argv[6], sys.argv[8], sys.argv[10], sys.argv[12])
+all: assets.gz Three
 
 ### Assets
-ASSETS_FILE = assets.gz
+
+RESBIN=assets.gz
+RESSRCDIR=$(RESDIR)
+RESBINDIR=$(BINDIR)/o/res
+RESDEPDIR=$(BINDIR)/depend/res
+RESINCDIR=$(BINDIR)/include
+
 ASSETS_META_HOOK = $(HOOKSDIR)/asset_makemeta.py
 ASSETS_META_FILE = $(SRCDIR)/util/AssetsMeta.h
-ASSETS_CONVERT_HOOK = $(HOOKSDIR)/asset_convert.py
-ASSETS_IMAGE_SCRIPT = $(HOOKSDIR)/asset_convert_image.py
-ASSETS_COMMON_HOOK = $(HOOKSDIR)/asset_common.py
-ASSETS_PARSER_HOOK = $(HOOKSDIR)/asset_parsers.py
+
+ASSETS_HOOK_CONVERT = $(HOOKSDIR)/asset_convert.py
+ASSETS_HOOK_CONVERT_IMAGE = $(HOOKSDIR)/asset_convert_image.py
+ASSETS_HOOK_COMMON = $(HOOKSDIR)/asset_common.py
+ASSETS_HOOK_PARSER = $(HOOKSDIR)/asset_parsers.py
+ASSETS_CONVERT_DEPS = $(ASSETS_HOOK_CONVERT) $(ASSETS_HOOK_CONVERT_IMAGE) $(ASSETS_HOOK_COMMON) $(ASSETS_HOOK_PARSER)
+ASSETS_CONVERT_FLAGS=--global-meta "$(ASSETS_META_FILE)" --verbose 2
 
 # MTL Files
 ASSETS_MTL = $(shell find $(RESSRCDIR) -type f -name '*.mtl')
@@ -53,34 +34,45 @@ ASSETS_MD5ANIM = $(shell find $(RESSRCDIR) -type f -name '*.md5anim')
 # Textures
 ASSETS_TEXTURES = $(shell find $(RESSRCDIR) -type f -name '*.tga') $(shell find $(RESSRCDIR) -type f -name '*.png') $(shell find $(RESSRCDIR) -type f -name '*.jpg')
 
-ASSETS = $(ASSETS_MTL) $(ASSETS_OBJ) $(ASSETS_MD5MESH) $(ASSETS_MD5ANIM) $(ASSETS_TEXTURES) 
-ASSETS_O = $(patsubst $(RESSRCDIR)/%,$(RESBINDIR)/%.o.gz,$(ASSETS))
+RESSRCS = $(ASSETS_MTL) $(ASSETS_OBJ) $(ASSETS_MD5MESH) $(ASSETS_MD5ANIM) $(ASSETS_TEXTURES) 
+RESINCS = $(patsubst $(RESSRCDIR)/%,$(RESBINDIR)/%.h,$(RESSRCS))
+RESBINS = $(patsubst $(RESSRCDIR)/%,$(RESBINDIR)/%.o,$(RESSRCS))
+RESDEPS = $(patsubst $(RESSRCDIR)/%,$(RESBINDIR)/%.d,$(RESSRCS))
 
-### Main
+-include $(RESDEPS)
 
-all: $(ASSETS_FILE) $(BIN)
+$(RESBIN): $(ASSETS_META_FILE) $(RESBINS)
+	cat $(RESBINS) > "$@"
 
-$(ASSETS_FILE): $(ASSETS_META_FILE) $(ASSETS_O)
-	cat $(ASSETS_O) > "$@"
+$(ASSETS_META_FILE): $(RESSRCS) $(ASSETS_META_HOOK)
+	$(ASSETS_META_HOOK) --source $(RESSRCS) --meta "$@"
 
-$(ASSETS_META_FILE): $(ASSETS) $(ASSETS_META_HOOK)
-	$(ASSETS_META_HOOK) --source $(ASSETS) --meta "$@"
+$(RESBINDIR)/%.o $(RESINCDIR)/%.h: $(RESSRCDIR)/%  $(ASSETS_CONVERT_DEPS)
+	@mkdir -p "$(@D)"
+	@mkdir -p "$(patsubst $(RESBINDIR)%,$(RESINCDIR)%, $(@D))"
+	@mkdir -p "$(patsubst $(RESBINDIR)%,$(RESDEPDIR)%, $(@D))"
+	$(ASSETS_HOOK_CONVERT) $(ASSETS_CONVERT_FLAGS) --meta "$(patsubst $(RESSRCDIR)%,$(RESINCDIR)%, $(<)).h" --depend "$(patsubst $(RESSRCDIR)%,$(RESDEPDIR)%, $(<)).d" --src "$<" --out "$@"
 
+### CPP Vars
 
-$(BIN):  $(CPPBINS)
-	$(CXX) $(LDFLAGS) -o $(BIN) $(CPPBINS)
+CPPSRCDIR=$(SRCDIR)
+CPPBINDIR=$(BINDIR)/o/cpp
+CPPDEPDIR=$(BINDIR)/depend/cpp
 
-clean:
-	@rm -vf $(BIN) $(ASSETS_FILE)
-	@rm -vrf $(BINDIR)
+CXX=g++
+CXXFLAGS=-g -fPIE -Wall -ansi -std=c++11 -Isrc -I$(RESINCDIR) -I/usr/include/freetype2 -include util/SuperDebug.h
+LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
+CPPBIN=Three
+SUPERGLOBAL=$(SRCDIR)/util/SuperDebug.h
+
+CPPSRCS = $(shell find $(CPPSRCDIR) -type f -name '*.cpp')
+CPPBINS = $(patsubst $(CPPSRCDIR)/%.cpp, $(CPPBINDIR)/%.o, $(CPPSRCS))
+CPPDEPS = $(patsubst $(CPPSRCDIR)/%.cpp, $(CPPDEPDIR)/%.d, $(CPPSRCS))
 
 -include $(CPPDEPS)
 
-### Shaders
-$(SHADER_VARIABLES_OUT) $(SHADER_HEADER) $(SHADER_LOADER): $(SHADER_VARIABLES_IN) $(SHADER_DESC) $(SHADER_PROGRAMS) $(SHADER_HOOK)
-	$(SHADER_HOOK) --variables-in $(SHADER_VARIABLES_IN) --variables-out $(SHADER_VARIABLES_OUT) --shaders-folder $(SHADER_FOLDER) --shaders-desc $(SHADER_DESC) --shaders-header $(SHADER_HEADER) --shaders-loader $(SHADER_LOADER)
-
-### Files
+$(CPPBIN):  $(CPPBINS)
+	$(CXX) $(LDFLAGS) -o $(CPPBIN) $(CPPBINS)
 
 # C++ Source => Objects
 $(CPPBINDIR)/%.o: $(CPPSRCDIR)/%.cpp $(SUPERGLOBAL)
@@ -92,7 +84,23 @@ $(CPPBINDIR)/%.o: $(CPPSRCDIR)/%.cpp $(SUPERGLOBAL)
 	@sed -e 's/.*://' -e 's/\\$$//' < $(patsubst $(CPPBINDIR)/%.o,$(CPPDEPDIR)/%.d, $(@)).tmp | fmt -1 | sed -e 's/^ *//' -e 's/$$/:/' >> $(patsubst $(CPPBINDIR)/%.o,$(CPPDEPDIR)/%.d, $(@))
 	@rm -f $(patsubst $(CPPBINDIR)/%.o,$(CPPDEPDIR)/%.d, $(@)).tmp
 
-# Assets
-$(RESBINDIR)/%.o.gz: $(RESSRCDIR)/% $(ASSETS_CONVERT_HOOK) $(ASSETS_COMMON_HOOK) $(ASSETS_META_FILE) $(ASSETS_PARSER_HOOK)
-	@mkdir -p "$(@D)"
-	$(ASSETS_CONVERT_HOOK) --meta "$(ASSETS_META_FILE)" "$<" "$@"
+### Shaders
+
+SHADER_HOOK = $(HOOKSDIR)/shaders_convert.py
+SHADER_VARIABLES_IN = $(SRCDIR)/render/shaders/shader_variables.txt
+SHADER_VARIABLES_OUT = $(SRCDIR)/render/shaders/ShaderVariables.h
+SHADER_FOLDER = $(SRCDIR)/render/shaders/code/
+SHADER_DESC = $(SRCDIR)/render/shaders/shaders.txt
+SHADER_HEADER = $(SRCDIR)/render/shaders/ShaderPrograms.h
+SHADER_LOADER = $(SRCDIR)/render/shaders/ShaderLoader.c
+
+SHADER_PROGRAMS = $(shell find $(SHADER_FOLDER) -type f -name '*.c')
+
+$(SHADER_VARIABLES_OUT) $(SHADER_HEADER) $(SHADER_LOADER): $(SHADER_VARIABLES_IN) $(SHADER_DESC) $(SHADER_PROGRAMS) $(SHADER_HOOK)
+	$(SHADER_HOOK) --variables-in $(SHADER_VARIABLES_IN) --variables-out $(SHADER_VARIABLES_OUT) --shaders-folder $(SHADER_FOLDER) --shaders-desc $(SHADER_DESC) --shaders-header $(SHADER_HEADER) --shaders-loader $(SHADER_LOADER)
+
+### Main
+
+clean:
+	@rm -vrf $(BINDIR)
+	@rm -vf $(CPPBIN) $(RESBIN)
