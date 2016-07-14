@@ -1,4 +1,4 @@
-#ifndef __MAIN_H_INCLUDED__
-#define __MAIN_H_INCLUDED__
+#ifndef 3YP_MAIN_HPP_
+#define 3YP_MAIN_HPP_
 
 #endif

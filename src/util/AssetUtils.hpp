@@ -1,5 +1,5 @@
-#ifndef __ASSETUTILS_H_INCLUDED__
-#define __ASSETUTILS_H_INCLUDED__
+#ifndef 3YP_UTIL_ASSETUTILS_HPP_
+#define 3YP_UTIL_ASSETUTILS_HPP_
 
 #include "render/MaterialLibrary.hpp"
 

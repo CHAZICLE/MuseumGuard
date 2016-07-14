@@ -1,5 +1,5 @@
-#ifndef __STATICMODEL_H_INCLUDED__
-#define __STATICMODEL_H_INCLUDED__
+#ifndef 3YP_RENDER_STATICMODEL_HPP_
+#define 3YP_RENDER_STATICMODEL_HPP_
 
 namespace render {
 	struct FaceKey;

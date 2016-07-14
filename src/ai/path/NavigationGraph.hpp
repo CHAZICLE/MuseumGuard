@@ -1,5 +1,5 @@
-#ifndef __PATHHOLDER_H_INCLUDED__
-#define __PATHHOLDER_H_INCLUDED__
+#ifndef 3YP_AI_PATH_NAVIGATIONGRAPH_HPP_
+#define 3YP_AI_PATH_NAVIGATIONGRAPH_HPP_
 
 #include "PathCommon.h"
 

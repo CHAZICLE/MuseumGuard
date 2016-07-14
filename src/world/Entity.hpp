@@ -1,5 +1,5 @@
-#ifndef __ENTITY_H_INCLUDED__
-#define __ENTITY_H_INCLUDED__
+#ifndef 3YP_WORLD_ENTITY_HPP_
+#define 3YP_WORLD_ENTITY_HPP_
 
 namespace world {
 	class World;

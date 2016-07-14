@@ -1,5 +1,5 @@
-#ifndef __CONSOLE_H_INCLUDED__
-#define __CONSOLE_H_INCLUDED__
+#ifndef 3YP_UTIL_CONSOLE_HPP_
+#define 3YP_UTIL_CONSOLE_HPP_
 
 #define CONSOLE_TAG_MAIN 0
 

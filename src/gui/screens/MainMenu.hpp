@@ -1,5 +1,5 @@
-#ifndef __MAINMENU_H_INCLUDED__
-#define __MAINMENU_H_INCLUDED__
+#ifndef 3YP_GUI_SCREENS_MAINMENU_HPP_
+#define 3YP_GUI_SCREENS_MAINMENU_HPP_
 
 class Button;
 

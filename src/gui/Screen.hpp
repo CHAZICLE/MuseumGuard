@@ -1,5 +1,5 @@
-#ifndef __SCREEN_H_INCLUDED__
-#define __SCREEN_H_INCLUDED__
+#ifndef 3YP_GUI_SCREEN_HPP_
+#define 3YP_GUI_SCREEN_HPP_
 
 #include <list>
 #include "../util/DeltaTime.hpp"

@@ -1,5 +1,5 @@
-#ifndef __SECURITYCAMERA_H_INCLUDED__
-#define __SECURITYCAMERA_H_INCLUDED__
+#ifndef 3YP_WORLD_ENTITIES_SECURITYCAMERA_HPP_
+#define 3YP_WORLD_ENTITIES_SECURITYCAMERA_HPP_
 
 #include "world/Entity.hpp"
 #include "render/SkeletalModel.hpp"

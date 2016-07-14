@@ -1,5 +1,5 @@
-#ifndef __STATICMESH_H_INCLUDED__
-#define __STATICMESH_H_INCLUDED__
+#ifndef 3YP_WORLD_COLLISIONS_STATICMESH_HPP_
+#define 3YP_WORLD_COLLISIONS_STATICMESH_HPP_
 
 namespace world {
 	namespace collisions {

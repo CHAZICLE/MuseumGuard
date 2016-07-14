@@ -1,5 +1,5 @@
-#ifndef __GAMEVIEW_HPP__
-#define __GAMEVIEW_HPP__
+#ifndef 3YP_GUI_SCREENS_GAMEVIEW_HPP_
+#define 3YP_GUI_SCREENS_GAMEVIEW_HPP_
 
 #include "gui/Screen.hpp"
 #include "input/Controls.hpp"

@@ -1,5 +1,5 @@
-#ifndef __PATHHELPER_H_INCLUDED__
-#define __PATHHELPER_H_INCLUDED__
+#ifndef 3YP_AI_PATH_PATHHELPER_HPP_
+#define 3YP_AI_PATH_PATHHELPER_HPP_
 
 class PathHelper {
 	public:

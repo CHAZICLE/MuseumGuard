@@ -1,5 +1,5 @@
-#ifndef __PATHEXECUTER_H_INCLUDED__
-#define __PATHEXECUTER_H_INCLUDED__
+#ifndef 3YP_AI_PATH_PATHEXECUTER_HPP_
+#define 3YP_AI_PATH_PATHEXECUTER_HPP_
 
 #include <vector>
 #include "world/Entity.hpp"

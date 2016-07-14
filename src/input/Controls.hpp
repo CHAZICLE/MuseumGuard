@@ -1,5 +1,5 @@
-#ifndef __CONTROLS_H_INCLUDED__
-#define __CONTROLS_H_INCLUDED__
+#ifndef 3YP_INPUT_CONTROLS_HPP_
+#define 3YP_INPUT_CONTROLS_HPP_
 
 #include "util/gl.h"
 

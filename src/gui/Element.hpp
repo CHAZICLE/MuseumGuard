@@ -1,5 +1,5 @@
-#ifndef __ELEMENT_H_INCLUDED__
-#define __ELEMENT_H_INCLUDED__
+#ifndef 3YP_GUI_ELEMENT_HPP_
+#define 3YP_GUI_ELEMENT_HPP_
 namespace render {
 class RenderManager;
 } /* namespace render */

@@ -1,5 +1,5 @@
-#ifndef __BOUNDARIES_H_INCLUDED__
-#define __BOUNDARIES_H_INCLUDED__
+#ifndef 3YP_UTIL_BOUNDARIES_HPP_
+#define 3YP_UTIL_BOUNDARIES_HPP_
 
 #include "render/RenderManager.hpp"
 

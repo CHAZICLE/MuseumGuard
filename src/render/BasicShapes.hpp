@@ -1,5 +1,5 @@
-#ifndef __BASICSHAPES_H_INCLUDED__
-#define __BASICSHAPES_H_INCLUDED__
+#ifndef 3YP_RENDER_BASICSHAPES_HPP_
+#define 3YP_RENDER_BASICSHAPES_HPP_
 
 #include <glm/glm.hpp>
 #include "util/gl.h"

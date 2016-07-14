@@ -1,5 +1,5 @@
-#ifndef __RENDERMANAGER_H_INCLUDED__
-#define __RENDERMANAGER_H_INCLUDED__
+#ifndef 3YP_RENDER_RENDERMANAGER_HPP_
+#define 3YP_RENDER_RENDERMANAGER_HPP_
 
 namespace render {
 	namespace shaders {

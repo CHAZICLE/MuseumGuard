@@ -1,5 +1,5 @@
-#ifndef __AIMBOT_H_INCLUDED__
-#define __AIMBOT_H_INCLUDED__
+#ifndef 3YP_AI_AIMBOT_HPP_
+#define 3YP_AI_AIMBOT_HPP_
 
 class AimBot {
 	public:

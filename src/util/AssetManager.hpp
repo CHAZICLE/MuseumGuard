@@ -1,5 +1,5 @@
-#ifndef __ASSETMANAGER_H_INCLUDED__
-#define __ASSETMANAGER_H_INCLUDED__
+#ifndef 3YP_UTIL_ASSETMANAGER_HPP_
+#define 3YP_UTIL_ASSETMANAGER_HPP_
 
 namespace util {
 	class AssetManager;

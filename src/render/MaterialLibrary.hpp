@@ -1,5 +1,5 @@
-#ifndef __MATERIALLIBRARY_H_INCLUDED__
-#define __MATERIALLIBRARY_H_INCLUDED__
+#ifndef 3YP_RENDER_MATERIALLIBRARY_HPP_
+#define 3YP_RENDER_MATERIALLIBRARY_HPP_
 
 namespace render {
 	class MaterialLibrary;
