@@ -1,5 +1,5 @@
-#ifndef __PATHCOMMON_H_INCLUDED__
-#define __PATHCOMMON_H_INCLUDED__
+#ifndef FYP_AI_PATH_PATHCOMMON_H_
+#define FYP_AI_PATH_PATHCOMMON_H_
 
 #include <glm/glm.hpp>
 #include <vector>
@@ -25,9 +25,7 @@ struct PathNode {
 	std::vector<struct PathNodeLink *> links;
 #ifdef ENABLE_DEBUG_PATHRENDER
 	// Debug
-	bool open = false
-		,closed = false
-		,current = false;
+	bool open,closed,current;
 #endif
 };
 

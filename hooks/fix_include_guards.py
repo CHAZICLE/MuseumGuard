@@ -22,7 +22,7 @@ def processHeaderFile(rootDir, folders, e):
         a = fp.readlines();
         if re.search("^#ifndef .*$", a[0]) and re.search("^#define .*$", a[1]):
             print("Fixing", rootDir+collapseFolders(folders)+"/"+e)
-            macro = ("3YP"+collapseFoldersMacro(folders,e)).upper()
+            macro = ("FYP"+collapseFoldersMacro(folders,e)).upper()
             a[0] = "#ifndef "+macro+"\n"
             a[1] = "#define "+macro+"\n"
             #mkdirs("./test", folders)

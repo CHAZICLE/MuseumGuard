@@ -1,5 +1,5 @@
-#ifndef 3YP_UTIL_ASSETMANAGER_HPP_
-#define 3YP_UTIL_ASSETMANAGER_HPP_
+#ifndef FYP_UTIL_ASSETMANAGER_HPP_
+#define FYP_UTIL_ASSETMANAGER_HPP_
 
 namespace util {
 	class AssetManager;

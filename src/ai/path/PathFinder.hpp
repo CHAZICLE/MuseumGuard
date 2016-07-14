@@ -1,5 +1,5 @@
-#ifndef 3YP_AI_PATH_PATHFINDER_HPP_
-#define 3YP_AI_PATH_PATHFINDER_HPP_
+#ifndef FYP_AI_PATH_PATHFINDER_HPP_
+#define FYP_AI_PATH_PATHFINDER_HPP_
 
 #include "PathCommon.h"
 #include <set>

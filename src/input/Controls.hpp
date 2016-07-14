@@ -1,5 +1,5 @@
-#ifndef 3YP_INPUT_CONTROLS_HPP_
-#define 3YP_INPUT_CONTROLS_HPP_
+#ifndef FYP_INPUT_CONTROLS_HPP_
+#define FYP_INPUT_CONTROLS_HPP_
 
 #include "util/gl.h"
 

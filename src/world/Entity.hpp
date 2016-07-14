@@ -1,5 +1,5 @@
-#ifndef 3YP_WORLD_ENTITY_HPP_
-#define 3YP_WORLD_ENTITY_HPP_
+#ifndef FYP_WORLD_ENTITY_HPP_
+#define FYP_WORLD_ENTITY_HPP_
 
 namespace world {
 	class World;

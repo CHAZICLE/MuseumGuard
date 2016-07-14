@@ -1,5 +1,5 @@
-#ifndef 3YP_GUI_ELEMENT_HPP_
-#define 3YP_GUI_ELEMENT_HPP_
+#ifndef FYP_GUI_ELEMENT_HPP_
+#define FYP_GUI_ELEMENT_HPP_
 namespace render {
 class RenderManager;
 } /* namespace render */

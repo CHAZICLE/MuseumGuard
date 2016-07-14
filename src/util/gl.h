@@ -1,5 +1,5 @@
-#ifndef __GL_H_INCLUDED__
-#define __GL_H_INCLUDED__
+#ifndef FYP_UTIL_GL_H_
+#define FYP_UTIL_GL_H_
 
 #ifdef YCM
 	#define GL_GLEXT_PROTOTYPES

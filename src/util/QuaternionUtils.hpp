@@ -1,5 +1,5 @@
-#ifndef 3YP_UTIL_QUATERNIONUTILS_HPP_
-#define 3YP_UTIL_QUATERNIONUTILS_HPP_
+#ifndef FYP_UTIL_QUATERNIONUTILS_HPP_
+#define FYP_UTIL_QUATERNIONUTILS_HPP_
 
 #include <glm/glm.hpp>
 #include "util/gl.h"

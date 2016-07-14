@@ -1,5 +1,5 @@
-#ifndef 3YP_WORLD_ENTITIES_ENEMY_HPP_
-#define 3YP_WORLD_ENTITIES_ENEMY_HPP_
+#ifndef FYP_WORLD_ENTITIES_ENEMY_HPP_
+#define FYP_WORLD_ENTITIES_ENEMY_HPP_
 
 #include "world/Entity.hpp"
 

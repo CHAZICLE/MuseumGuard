@@ -1,5 +1,5 @@
-#ifndef 3YP_WORLD_ENTITIES_TURRET_HPP_
-#define 3YP_WORLD_ENTITIES_TURRET_HPP_
+#ifndef FYP_WORLD_ENTITIES_TURRET_HPP_
+#define FYP_WORLD_ENTITIES_TURRET_HPP_
 
 #include "world/Entity.hpp"
 #include "render/SkeletalModel.hpp"

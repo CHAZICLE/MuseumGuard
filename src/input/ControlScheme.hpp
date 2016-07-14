@@ -1,5 +1,5 @@
-#ifndef 3YP_INPUT_CONTROLSCHEME_HPP_
-#define 3YP_INPUT_CONTROLSCHEME_HPP_
+#ifndef FYP_INPUT_CONTROLSCHEME_HPP_
+#define FYP_INPUT_CONTROLSCHEME_HPP_
 
 namespace util {
 	class DeltaTime;

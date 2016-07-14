@@ -1,5 +1,5 @@
-#ifndef 3YP_UTIL_DELTATIME_HPP_
-#define 3YP_UTIL_DELTATIME_HPP_
+#ifndef FYP_UTIL_DELTATIME_HPP_
+#define FYP_UTIL_DELTATIME_HPP_
 
 // c is u/s
 // u/t = u/s * s/t

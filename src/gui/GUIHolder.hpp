@@ -1,5 +1,5 @@
-#ifndef 3YP_GUI_GUIHOLDER_HPP_
-#define 3YP_GUI_GUIHOLDER_HPP_
+#ifndef FYP_GUI_GUIHOLDER_HPP_
+#define FYP_GUI_GUIHOLDER_HPP_
 
 class GUIHolder;
 class Font;

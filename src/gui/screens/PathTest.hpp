@@ -1,5 +1,5 @@
-#ifndef 3YP_GUI_SCREENS_PATHTEST_HPP_
-#define 3YP_GUI_SCREENS_PATHTEST_HPP_
+#ifndef FYP_GUI_SCREENS_PATHTEST_HPP_
+#define FYP_GUI_SCREENS_PATHTEST_HPP_
 
 #include "ai/path/DebugPathHolder.hpp"
 #include "ai/path/PathFinder.hpp"

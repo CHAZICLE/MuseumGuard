@@ -1,5 +1,5 @@
-#ifndef 3YP_GUI_SCREENMANAGER_HPP_
-#define 3YP_GUI_SCREENMANAGER_HPP_
+#ifndef FYP_GUI_SCREENMANAGER_HPP_
+#define FYP_GUI_SCREENMANAGER_HPP_
 
 class Screen;
 namespace util {

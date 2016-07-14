@@ -1,5 +1,5 @@
-#ifndef 3YP_RENDER_RENDERMANAGER_HPP_
-#define 3YP_RENDER_RENDERMANAGER_HPP_
+#ifndef FYP_RENDER_RENDERMANAGER_HPP_
+#define FYP_RENDER_RENDERMANAGER_HPP_
 
 namespace render {
 	namespace shaders {

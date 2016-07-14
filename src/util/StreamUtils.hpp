@@ -1,5 +1,5 @@
-#ifndef 3YP_UTIL_STREAMUTILS_HPP_
-#define 3YP_UTIL_STREAMUTILS_HPP_
+#ifndef FYP_UTIL_STREAMUTILS_HPP_
+#define FYP_UTIL_STREAMUTILS_HPP_
 
 #include <string>
 #include <istream>

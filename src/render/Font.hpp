@@ -1,5 +1,5 @@
-#ifndef 3YP_RENDER_FONT_HPP_
-#define 3YP_RENDER_FONT_HPP_
+#ifndef FYP_RENDER_FONT_HPP_
+#define FYP_RENDER_FONT_HPP_
 
 namespace render {
 	class Font;

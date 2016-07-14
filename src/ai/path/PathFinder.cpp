@@ -53,7 +53,7 @@ bool PathFinder::tick(int ticks)
 	// Find a node in the open set with the lowest f cost
 	if(!this->openSet.empty())
 	{
-		int min = std::numeric_limits<int>::max();
+		float min = std::numeric_limits<float>::max();
 		for(std::set<StoredPathNode *>::iterator openSetIterator = this->openSet.begin(); openSetIterator != this->openSet.end(); openSetIterator++)
 		{
 			StoredPathNode *s_node = *openSetIterator;
@@ -103,7 +103,7 @@ bool PathFinder::tick(int ticks)
 		// Skip neighbours in closed set
 		if(this->closedSet.find(neighbourNode)!=this->closedSet.end())
 			continue;
-		newNeighbourG = c->g+pnLink->dist/4;
+		newNeighbourG = c->g+static_cast<float>(pnLink->dist)/4;
 		// Add to open set if not already in
 		if(this->openSet.find(neighbourNode)==this->openSet.end())
 		{

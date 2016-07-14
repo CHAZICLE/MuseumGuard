@@ -1,5 +1,5 @@
-#ifndef 3YP_WORLD_WORLD_HPP_
-#define 3YP_WORLD_WORLD_HPP_
+#ifndef FYP_WORLD_WORLD_HPP_
+#define FYP_WORLD_WORLD_HPP_
 
 #include <list>
 #include "render/StaticModel.hpp"
