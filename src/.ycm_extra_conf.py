@@ -67,7 +67,7 @@ flags = [
 '-I','.',
 '-I','../bin/include',
 '-I','~/git/Year3Coursework/FinalYearProject',
-'-I','~/git/Year3Coursework/FinalYearProject/src',
+'-I','~/git/Year3Coursework/FinalYearProject/src/cpp',
 '-I','~/git/Year3Coursework/FinalYearProject/bin/include',
 ]
 
