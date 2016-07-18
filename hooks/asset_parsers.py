@@ -194,7 +194,7 @@ def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
             l.append(tl)
     macros = {}
     for i in range(len(groups)):
-        macros[filename.replace(".", "_")+"_"+groups[i]] = i
+        macros[("ASSET_"+filename.replace(".", "_")+"_GROUP_"+groups[i]).upper()] = i
     if verbose==1:
         print("\t"+str(len(v))+" verticies, "+str(len(l))+" links")
     elif verbose==2:
@@ -327,9 +327,13 @@ def parseMD5Mesh(filepath, filename, source_fp, meta, verbose=0):
             if len(weights)!=numweights:
                 print("Expected to load "+str(numweights)+" weights, but instead loaded "+str(len(weights)))
             meshes.append((shader_id, numverts, verts, numtris, tris, numweights, weights))
+    # Create joint macros
+    macros = {}
+    for i in range(len(joints)):
+        macros[("ASSET_"+filename+"_JOINT_"+joints[i][0]).replace(".", "_").upper()] = i
     if verbose>=1:
         print("\t"+str(numJoints)+" joints, "+str(numMeshes)+" meshes")
-    return MD5MESH_FILEID, None, (numJoints, joints, numMeshes, meshes), None
+    return MD5MESH_FILEID, {"macros":macros}, (numJoints, joints, numMeshes, meshes), None
 
 def parseMD5Anim(filepath, filename, source_fp, meta, verbose=0):
         # args

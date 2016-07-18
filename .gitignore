@@ -1,9 +1,16 @@
 
+# Bins
 Three
+assets.gz
+
+# Misc folders
 bin/*
-depend/*
+tmp/*
+
+# Eclipse
 .cproject
 .project
 .settings
-assets.gz
+
+# Python
 __pycache__
