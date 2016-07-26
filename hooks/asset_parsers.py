@@ -187,6 +187,9 @@ def parseNAVOBJ(filepath, filename, source_fp, meta, verbose=0):
         if group!=None:
             groups.append(group)
         tv = parse1i3f(None, line, "v")
+        if tv==None and line.find("v ")>=0:
+            print(line)
+            sys.exit(1);
         if tv!=None:
             v.append(tv)
         tl = parse2i(None, line, "l")

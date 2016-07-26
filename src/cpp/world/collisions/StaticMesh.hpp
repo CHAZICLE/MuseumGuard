@@ -79,10 +79,10 @@ namespace world {
 				bool collisionResponse(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, glm::vec3 *velocity);
 				bool collisionResponseCellChildren(render::RenderManager &rManager, const util::Boundaries::AABB &aabb, const StaticMeshCell &parent, glm::vec3 *velocity);
 
-				bool collisionResponse(const util::Boundaries::Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity);
-				bool collisionResponseCellChildren(const util::Boundaries::Sphere &sphere, const StaticMeshCell &parent, glm::vec3 *step, glm::vec3 *velocity);
-				bool collisionResponseCellTriangles(const util::Boundaries::Sphere &sphere, const StaticMeshCell &cell, glm::vec3 *step, glm::vec3 *velocity);
-				bool collisionResponseCellTriangleEdge(const util::Boundaries::Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity, const glm::vec3 &V0, const glm::vec3 &V1, const glm::vec3 &P1);
+				bool collisionResponse(const util::Boundaries::Sphere &sphere, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals);
+				bool collisionResponseCellChildren(const util::Boundaries::Sphere &sphere, const StaticMeshCell &parent, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals);
+				bool collisionResponseCellTriangles(const util::Boundaries::Sphere &sphere, const StaticMeshCell &cell, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals);
+				bool collisionResponseCellTriangleEdge(const util::Boundaries::Sphere &sphere, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals, const glm::vec3 &V0, const glm::vec3 &V1);
 				bool collisionResponseCellTriangleVertex(const util::Boundaries::Sphere &sphere, const glm::vec3 &P1, const glm::vec3 &V, float &enter, float &exit);
 		};
 	}

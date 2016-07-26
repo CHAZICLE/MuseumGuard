@@ -62,5 +62,5 @@ bool GamePauseMenu::onControlEvent(Control control, int action)
 			return true;
 		}
 	}
-	return false;
+	return true;
 }

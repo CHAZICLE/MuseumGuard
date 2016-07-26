@@ -48,12 +48,12 @@ void Button::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
 	
 	BasicShapes::renderUnitSquare(vploc);
 
-	// Render debug line
-	rManager.M = translationMatrix;
-	rManager.markMDirty();
+	//// Render debug line
+	//rManager.M = translationMatrix;
+	//rManager.markMDirty();
 
-	glUniform4f(loc, 0.5f, 0.f, 0.f, 1.f);
-	BasicShapes::drawLine(glm::vec3(0,0,0),glm::vec3(10,10,0),vploc);
+	//glUniform4f(loc, 0.5f, 0.f, 0.f, 1.f);
+	//BasicShapes::drawLine(glm::vec3(0,0,0),glm::vec3(10,10,0),vploc);
 
 	// Render text
 	boxMat = glm::mat4(1.0f);

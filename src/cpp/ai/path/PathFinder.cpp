@@ -103,7 +103,7 @@ bool PathFinder::tick(int ticks)
 		// Skip neighbours in closed set
 		if(this->closedSet.find(neighbourNode)!=this->closedSet.end())
 			continue;
-		newNeighbourG = c->g+static_cast<float>(pnLink->dist)/4;
+		newNeighbourG = c->g+static_cast<float>(pnLink->dist);
 		// Add to open set if not already in
 		if(this->openSet.find(neighbourNode)==this->openSet.end())
 		{

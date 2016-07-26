@@ -26,6 +26,7 @@ namespace ai {
 			~PerceptionManager();
 			void setYawBounds(float minYaw, float maxYaw);
 			void tick(util::DeltaTime &deltaTime);
+			world::Entity *getTargetEntity();
 			glm::quat getOrientation();
 	};
 }

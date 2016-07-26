@@ -29,6 +29,8 @@ GameView::~GameView() {
 }
 void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager) {
 	render::RenderManager gameRenderManager;
+	gameRenderManager.setDimensionsPx(manager.getWidthPx(), manager.getHeightPx());
+	gameRenderManager.setDimensionsMM(manager.getWidthMM(), manager.getHeightMM());
 	gameRenderManager.P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 0.1f, 10000.f);
 	gameRenderManager.markPDirty();
 	bool isSurface = this->manager->isScreenSurface(this);

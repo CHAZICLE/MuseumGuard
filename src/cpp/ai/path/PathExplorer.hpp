@@ -9,20 +9,21 @@ namespace ai {
 	namespace path {
 		class PathExplorer {
 			private:
-				bool exploreEdges;
-				int groupWhitelist,groupPOI;
-				PathNode *startNode;
-				PathNodeLink *previousVisitedLink;
-				std::set<int> visited;
-				std::set<int> visitedPOI;
+				int groupWhitelist,poiGroupMask,portalGroupMask;
+				PathNode *lastPortalNode,*lastLastPortalNode;
+				std::set<int> previousVisitedPortalNodes;
+				std::set<int> previousVisitedPOINodes;
 				NavigationGraph *navGraph;
 			public:
 				PathExplorer(NavigationGraph *navigationGraph);
 				~PathExplorer();
 				void setGroupWhitelist(int groupMask);
 				void setGroupPOI(int groupMask);
+				void setGroupPortal(int groupMask);
+				PathNode *getNext_legacy(PathNode *current);
+				float getNodeLinkWeight_legacy(PathNode *node, PathNodeLink *pathNodeLink, int depth);
 				PathNode *getNext(PathNode *current);
-				float getNodeLinkWeight(PathNode *node, PathNodeLink *pathNodeLink, int depth);
+				float getNodeLinkWeight(PathNodeLink *pathNodeLink, PathNode *node, PathNode **selectedPortalNode, int depth, int &portalNodeDepth, std::set<int> previouslySearchedLinks, float weight);
 		};
 	}
 }

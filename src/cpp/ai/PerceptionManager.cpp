@@ -103,6 +103,10 @@ void PerceptionManager::tick(util::DeltaTime &deltaTime)
 		this->currentPitch += dPitch/10;
 	}
 }
+world::Entity *PerceptionManager::getTargetEntity()
+{
+	return this->targetEntity;
+}
 glm::quat PerceptionManager::getOrientation()
 {
 	return glm::quat(glm::vec3(this->currentPitch, 0, this->currentYaw));

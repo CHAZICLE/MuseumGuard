@@ -64,11 +64,8 @@ flags = [
 #'-isystem','/usr/include',
 '-isystem','/usr/include/freetype2',
 '-include','util/SuperDebug.h',
-'-I','.',
+'-I','./cpp',
 '-I','../bin/include',
-'-I','~/git/Year3Coursework/FinalYearProject',
-'-I','~/git/Year3Coursework/FinalYearProject/src/cpp',
-'-I','~/git/Year3Coursework/FinalYearProject/bin/include',
 ]
 
 

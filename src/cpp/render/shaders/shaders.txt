@@ -3,3 +3,4 @@ fuzzyModel:fuzzymodel_vertex.c,fuzzymodel_fragment.c
 modelTexture:modelTexture_vertex.c,modelTexture_fragment.c
 UVTest:UVTest_vertex.c,UVTest_fragment.c
 solidColor:solidColor_vertex.c,solidColor_fragment.c
+billboard:billboard_vertex.c,billboard_fragment.c

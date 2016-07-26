@@ -6,7 +6,7 @@ from wand.image import Image
 from asset_common import writeType
 
 #cmd="convert -format dds -define dds:mipmaps=5 -define dds:compression=dxt1"
-cmd="convert -format dds -define dds:compression=dxt1"
+cmd="convert -format dds -define dds:compression=dxt5"
 
 def convertImage(infile_path, outfile_fp):
     p = subprocess.Popen(cmd+" "+infile_path+" dds:-", shell=True, stdout=subprocess.PIPE)

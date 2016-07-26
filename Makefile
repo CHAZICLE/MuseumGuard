@@ -1,4 +1,4 @@
-SRCDIR=src
+RCDIR=src
 BINDIR=bin
 HOOKSDIR=hooks
 BININCDIR=$(BINDIR)/include
@@ -21,7 +21,7 @@ ASSETS_HOOK_CONVERT_IMAGE = $(HOOKSDIR)/asset_convert_image.py
 ASSETS_HOOK_COMMON = $(HOOKSDIR)/asset_common.py
 ASSETS_HOOK_PARSER = $(HOOKSDIR)/asset_parsers.py
 ASSETS_CONVERT_DEPS = $(ASSETS_HOOK_CONVERT) $(ASSETS_HOOK_CONVERT_IMAGE) $(ASSETS_HOOK_COMMON) $(ASSETS_HOOK_PARSER)
-ASSETS_CONVERT_FLAGS=--global-meta "$(ASSETS_META_FILE)" --verbose 2
+ASSETS_CONVERT_FLAGS=--global-meta "$(ASSETS_META_FILE)" --verbose 0
 
 # MTL Files
 ASSETS_MTL = $(shell find $(RESSRCDIR) -type f -name '*.mtl')

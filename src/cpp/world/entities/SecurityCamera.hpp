@@ -5,6 +5,7 @@
 #include "render/SkeletalModel.hpp"
 #include "render/SkeletalAnimation.hpp"
 #include "ai/PerceptionManager.hpp"
+#include "render/DDSImage.hpp"
 
 namespace world {
 	namespace entities {
@@ -13,9 +14,11 @@ namespace world {
 			private:
 				render::SkeletalModel *model;
 				render::SkeletalAnimation *initAnimation;
-				double animationDuration,animationCurrent;
-				bool initAnimating;
+				double animationDuration,animationCurrent,warningStop;
+				bool initAnimating,warning;
 				ai::PerceptionManager *perception;
+				GLuint billboardVertexArrayId,billboardVertexPositionBufferID;
+				render::DDSImage *warningImage;
 			public:
 				SecurityCamera();
 				virtual ~SecurityCamera();

@@ -97,7 +97,7 @@ World::World()
 	this->remainingTurrets = 3;
 	this->remainingCameras = 5;
 
-	std::ifstream wf("tmp/player.dat");
+	std::ifstream wf("./player.dat");
 	if(wf.is_open())
 	{
 		glm::vec3 a;

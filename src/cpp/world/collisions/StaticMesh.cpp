@@ -344,7 +344,8 @@ bool StaticMesh::collisionResponseCellChildren(render::RenderManager &rManager, 
 	}
 	return intersection;
 }
-bool StaticMesh::collisionResponse(const Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity)
+#define COLLISION_RESPONSE_EPSILON 0.001f
+bool StaticMesh::collisionResponse(const Sphere &sphere, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals)
 {
 	if(!this->rootCell.bounds->checkIntersect(sphere))
 		return false;
@@ -352,7 +353,7 @@ bool StaticMesh::collisionResponse(const Sphere &sphere, glm::vec3 *step, glm::v
 	sp.center += *velocity;
 	if(!this->rootCell.bounds->checkIntersect(sp))
 		return false;
-	return this->collisionResponseCellChildren(sphere, this->rootCell, step, velocity);
+	return this->collisionResponseCellChildren(sphere, this->rootCell, interpolation, velocity, normals);
 }
 extern glm::vec3 debug_point;
 extern glm::vec3 debug_point2;
@@ -371,18 +372,18 @@ inline bool getQuadraticRoots(const float a, const float b, const float c, float
 	}
 	return (t1>=0.0f && t0<=1.0f);
 }
-bool StaticMesh::collisionResponseCellChildren(const Sphere &sphere, const StaticMeshCell &parent, glm::vec3 *step, glm::vec3 *velocity)
+bool StaticMesh::collisionResponseCellChildren(const Sphere &sphere, const StaticMeshCell &parent, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals)
 {
 	bool intersection = false;
 	for(const StaticMeshCell &cell : parent.children)
 	{
 		if(cell.leaf)
 		{
-			this->collisionResponseCellTriangles(sphere, cell, step, velocity);
+			this->collisionResponseCellTriangles(sphere, cell, interpolation, velocity, normals);
 		}
 		else
 		{
-			if(cell.bounds->checkIntersect(sphere) && this->collisionResponseCellChildren(sphere, cell, step, velocity))
+			if(cell.bounds->checkIntersect(sphere) && this->collisionResponseCellChildren(sphere, cell, interpolation, velocity, normals))
 			{
 				//if(velocity==0)
 				//	return true;//Don't need to bother to check everything
@@ -398,7 +399,7 @@ bool StaticMesh::collisionResponseCellChildren(const Sphere &sphere, const Stati
 				v -= s; \
 				v -= (n*glm::dot(v, n)); \
 				s += v;
-bool StaticMesh::collisionResponseCellTriangles(const Sphere &sphere, const StaticMeshCell &cell, glm::vec3 *step, glm::vec3 *velocity)
+bool StaticMesh::collisionResponseCellTriangles(const Sphere &sphere, const StaticMeshCell &cell, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals)
 {
 	for(const StaticMeshTriangle &triangle : cell.triangles)
 	{
@@ -414,6 +415,8 @@ bool StaticMesh::collisionResponseCellTriangles(const Sphere &sphere, const Stat
 		float f = glm::dot(normal, sphere.center-V0);
 		if(f>0)
 			normal = -normal;
+		if(glm::dot(normal, this->getTriangleNormal(triangle))>COLLISION_RESPONSE_EPSILON)
+			continue;
 		glm::vec3 P0 = sphere.center+normal*sphere.radius;
 		// Determine where the ray is hitting the plane
 		float rI_d = glm::dot(normal, *velocity);//Normalized velocity length along the normal
@@ -423,10 +426,10 @@ bool StaticMesh::collisionResponseCellTriangles(const Sphere &sphere, const Stat
 		//// Check if the closest part of the sphere will hit the surface
 		float r = glm::dot(normal, V0-P0)/rI_d;
 		bool hit = false;
-		if(r>=-1.0f && r<=1.0f)//Triangle is behind minimum and hitting this tick
+		if(r>=-1.0f-COLLISION_RESPONSE_EPSILON && r<=1.0f+COLLISION_RESPONSE_EPSILON)//Triangle is behind minimum and hitting this tick
 		{
 			// Is the projected point on the plane within the triangle?
-			glm::vec3 w = (P0+*velocity*r)-V0;
+			glm::vec3 w = (P0+*velocity*(r))-V0;
 			float dotWU = glm::dot(w,u);
 			float dotWV = glm::dot(w,v);
 			float dotUV = glm::dot(u,v);
@@ -437,25 +440,30 @@ bool StaticMesh::collisionResponseCellTriangles(const Sphere &sphere, const Stat
 			float t = (dotUV*dotWU-dotUU*dotWV)/_I_d;
 			if(s>=0 && t>=0 && s+t<=1)//If within triangle
 			{
-				PROCESS_VELOCITY(*step, *velocity, normal, r);
+				if(r<*interpolation)
+				{
+					*interpolation = r;
+				}
+				//if(std::fabs(r-*interpolation)<COLLISION_RESPONSE_EPSILON)
+				normals->push_back(normal);
 				hit = true;
 			}
 		}
 		if(!hit)
 		{
-			if(this->collisionResponseCellTriangleEdge(sphere, step, velocity, V0, V1, *velocity)) continue;
-			if(this->collisionResponseCellTriangleEdge(sphere, step, velocity, V0, V2, *velocity)) continue;
-			if(this->collisionResponseCellTriangleEdge(sphere, step, velocity, V1, V2, *velocity)) continue;
+			if(this->collisionResponseCellTriangleEdge(sphere, interpolation, velocity, normals, V0, V1)) continue;
+			if(this->collisionResponseCellTriangleEdge(sphere, interpolation, velocity, normals, V0, V2)) continue;
+			if(this->collisionResponseCellTriangleEdge(sphere, interpolation, velocity, normals, V1, V2)) continue;
 		}
 	}
 	return false;
 }
-bool StaticMesh::collisionResponseCellTriangleEdge(const Sphere &sphere, glm::vec3 *step, glm::vec3 *velocity, const glm::vec3 &V0, const glm::vec3 &V1, const glm::vec3 &P1)
+bool StaticMesh::collisionResponseCellTriangleEdge(const Sphere &sphere, float *interpolation, glm::vec3 *velocity, std::vector<glm::vec3> *normals, const glm::vec3 &V0, const glm::vec3 &V1)
 {
 	glm::vec3 AB = V1-V0;//d
 	glm::vec3 AO = sphere.center-V0;//P
 	glm::vec3 AOxAB = glm::cross(AO, AB);//pxd
-	glm::vec3 VxAB = glm::cross(P1, AB);//vxd
+	glm::vec3 VxAB = glm::cross(*velocity, AB);//vxd
 	float r2 = sphere.radius*sphere.radius;
 	float d2 = glm::dot(AB, AB);
 	float v2 = glm::dot(VxAB, VxAB);
@@ -483,23 +491,33 @@ bool StaticMesh::collisionResponseCellTriangleEdge(const Sphere &sphere, glm::ve
 	{
 		return false;
 	}
-	glm::vec3 newSphereCenter = sphere.center+P1*enter;
+	glm::vec3 newSphereCenter = sphere.center+*velocity*enter;
 	float f = glm::dot(newSphereCenter-V0,AB)/glm::dot(AB,AB);
-	if(f>=0 && f<=1)
+	if(f>=0.f-COLLISION_RESPONSE_EPSILON && f<=1.f+COLLISION_RESPONSE_EPSILON)
 	{
 		glm::vec3 edgeHitPoint = V0+AB*f;
 		glm::vec3 normal = glm::normalize(newSphereCenter-edgeHitPoint);
-		PROCESS_VELOCITY(*step, *velocity, normal, enter);
+		if(enter<*interpolation)
+		{
+			*interpolation = enter;
+		}
+		//if(std::fabs(enter-*interpolation)<COLLISION_RESPONSE_EPSILON)
+		normals->push_back(normal);
 		return true;
 	}
 	else if(f<0)
 	{
-		if(!this->collisionResponseCellTriangleVertex(sphere, P1, V0, enter, exit))
+		if(!this->collisionResponseCellTriangleVertex(sphere, *velocity, V0, enter, exit))
 			return false;
 		if(enter<0.f)
 			enter = 0.f;
 		glm::vec3 normal = glm::normalize((sphere.center+*velocity*enter)-V0);
-		PROCESS_VELOCITY(*step, *velocity, normal, enter);
+		if(enter<=*interpolation)
+		{
+			*interpolation = enter;
+		}
+		//if(std::fabs(enter-*interpolation)<COLLISION_RESPONSE_EPSILON)
+		normals->push_back(normal);
 		return true;
 	}
 	return false;

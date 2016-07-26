@@ -7,6 +7,8 @@
 #include "util/gl.h"
 
 #include "render/SkeletalAnimation.hpp"
+#include "render/BasicShapes.hpp"
+#include "render/DDSImage.hpp"
 
 #include "world/entities/Enemy.hpp"
 
@@ -25,11 +27,25 @@ SecurityCamera::SecurityCamera() : super()
 	this->perception = new PerceptionManager(this, {&typeid(Enemy)}, this->model->bindPoseSkeleton[ASSET_SECURITY_CAMERA_MD5MESH_JOINT_CAMERASTALK].pos);
 	this->perception->setYawBounds(-M_PI/2, M_PI/2);
 	this->initAnimation = (SkeletalAnimation *)util::AssetManager::getAssetManager()->getAsset(ASSET_SECURITY_CAMERA_MD5ANIM);
+	this->warningImage = (render::DDSImage *)util::AssetManager::getAssetManager()->getAsset(ASSET_ATTENTION_PNG);
 	this->animationDuration = this->initAnimation->getAnimationDuration();
 	this->animationCurrent = 0;
 	this->initAnimating = true;
 	this->selector = false;
 	this->bounds = &this->initAnimation->getFrameBounds(-1);
+
+//	// Setup billboard
+//	glGenVertexArrays(1, &this->billboardVertexArrayId);
+//	glBindVertexArray(this->billboardVertexArrayId);
+//	glGenBuffers(1, &this->billboardVertexPositionBufferID);
+//	glBindBuffer(GL_ARRAY_BUFFER, this->billboardVertexPositionBufferID);
+//	static const GLfloat g_vertex_buffer_data[] = {
+//		1.f, 1.f,
+//		-1.f, 1.f,
+//		-1.f, -1.f,
+//		1.f, -1.f,
+//	};
+//	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
 }
 SecurityCamera::~SecurityCamera()
 {
@@ -58,6 +74,15 @@ void SecurityCamera::tick(util::DeltaTime &deltaTime)
 	else
 	{
 		this->perception->tick(deltaTime);
+		if(this->perception->getTargetEntity()!=0)
+		{
+			this->warningStop = deltaTime.getTime()+3;
+			this->warning = true;
+		}
+		else
+		{
+			this->warning = deltaTime.getTime()<this->warningStop;
+		}
 	}
 }
 void SecurityCamera::render(RenderManager &rManager)
@@ -91,9 +116,43 @@ void SecurityCamera::render(RenderManager &rManager)
 		skel[ASSET_SECURITY_CAMERA_MD5MESH_JOINT_CAMERASTALK].ori = this->perception->getOrientation();
 		this->model->render(rManager, skel);
 		//this->initAnimation->renderBounds(rManager, this->animationCurrent);
+		
+		
+		// Render billboard icon
+		if(this->warning)
+		{
+			rManager.disableDepth();
+			rManager.enableTransparency();
+			
+			render::shaders::ShaderProgram *prog = rManager.useShader(SHADER_billboard);
+			glm::vec3 billpoc = this->getPosition()+this->getOrientation()*(skel[ASSET_SECURITY_CAMERA_MD5MESH_JOINT_MOTIONSENSOR].pos+skel[ASSET_SECURITY_CAMERA_MD5MESH_JOINT_MOTIONSENSOR].ori*glm::vec3(0.f, 0.04f, 0.0f));
+			glUniform3fv(prog->getShaderLocation(true, SHADER_billboard_billboard_center), 1, &billpoc[0]);
+
+			glActiveTexture(GL_TEXTURE0);
+			this->warningImage->bindTexture();
+			glUniform1i(prog->getShaderLocation(true, SHADERVAR_material_map_Kd), 0);
+
+			float sizeMM = 10.f;
+			glm::vec2 scaler = glm::vec2(sizeMM/rManager.getWidthMM(), sizeMM/rManager.getHeightMM());
+			glUniform2fv(prog->getShaderLocation(true, SHADER_billboard_screen_scaler), 1, &scaler[0]);
+
+			rManager.disableCullFace();
+
+			render::BasicShapes::renderUnitSquare(prog->getShaderLocation(false, SHADERVAR_vertex_position));
+			rManager.enableCullFace();
+
+			//glBindVertexArray(this->billboardVertexArrayId);
+			//glBindBuffer(GL_ARRAY_BUFFER, this->billboardVertexPositionBufferID);
+			//prog->setVertexAttributePointer(SHADERVAR_vertex_position, 2, GL_FLOAT, GL_FALSE, 0, 0);
+			//glDrawArrays(GL_QUADS, 0, 4);
+
+			rManager.disableTransparency();
+			rManager.enableDepth();
+		}
 	}
 	//this->getBounds()->render(rManager, glm::vec4(1.f, 1.f, 0.f, 1.f), false);
 	rManager.popMatrixM();
+
 }
 
 //controllable by player

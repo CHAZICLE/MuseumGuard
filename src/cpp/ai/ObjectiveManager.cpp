@@ -22,6 +22,7 @@ ObjectiveManager::ObjectiveManager(World *pWorld, Enemy *pEnemy, NavigationGraph
 
 	this->pathExplorer->setGroupWhitelist(1<<ASSET_WORLD_NAV_OBJ_GROUP_EXPLORE);
 	this->pathExplorer->setGroupPOI(1<<ASSET_WORLD_NAV_OBJ_GROUP_ARTEFACT);
+	this->pathExplorer->setGroupPortal(1<<ASSET_WORLD_NAV_OBJ_GROUP_PORTAL);
 
 	this->entranceNode = 0;
 	this->artefactCollectionStartTime = 0.f;
@@ -75,14 +76,14 @@ void ObjectiveManager::tick(DeltaTime &deltaTime)
 				this->changeState(deltaTime, OBJECTIVE_LOCATE_ARTEFACT);
 			return;
 		case OBJECTIVE_LOCATE_ARTEFACT: // Locate the exhibit
-			if(glm::distance2(this->enemy->getPosition(), this->artefactNode->position)<=3*3)
+			if(glm::distance2(this->enemy->getPosition(), this->artefactNode->position)<=2*2)
 			{
 				this->changeState(deltaTime, OBJECTIVE_COLLECT_ATREFACT);
 			}
-			if(this->targetNode==0 || glm::distance2(this->enemy->getPosition(), this->targetNode->position)<=this->targetRadius*this->targetRadius)
+			else if(this->targetNode==0 || glm::distance2(this->enemy->getPosition(), this->targetNode->position)<=this->targetRadius*this->targetRadius)
 			{
 				currentNode = this->navigationGraph->getNearestPathNode(this->enemy->getPosition(), 1<<ASSET_WORLD_NAV_OBJ_GROUP_HIGHDETAIL);
-				this->targetNode = this->pathExplorer->getNext(this->navigationGraph->getNearestPathNode(this->enemy->getPosition(), 1<<ASSET_WORLD_NAV_OBJ_GROUP_EXPLORE));
+				this->targetNode = this->pathExplorer->getNext(this->navigationGraph->getNearestPathNode(this->enemy->getPosition(), 1<<ASSET_WORLD_NAV_OBJ_GROUP_LOWDETAIL));
 				// Find adjacent exit node
 				PathNode *p;
 				for(auto *l : this->targetNode->links)
@@ -95,7 +96,6 @@ void ObjectiveManager::tick(DeltaTime &deltaTime)
 				}
 				this->targetNode = this->navigationGraph->getNearestPathNode(this->targetNode->position, 1<<ASSET_WORLD_NAV_OBJ_GROUP_HIGHDETAIL);
 				this->pathFinder->start(currentNode, this->targetNode);
-				PRINT_DEBUG("Changing target node:" << currentNode << ", " << this->targetNode);
 			}
 			this->perceptionCheck();
 			return;

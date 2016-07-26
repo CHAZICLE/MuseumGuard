@@ -110,7 +110,6 @@ void PlayerGameControls::tick2(render::RenderManager *rManager, util::DeltaTime 
 	//std::cout << glm::degrees(orientationEuler.x) << ", " << glm::degrees(orientationEuler.y) << ", " << glm::degrees(orientationEuler.z) << std::endl;
 	this->velocity += movement;
 	this->velocity *= 0.85;
-	glm::vec3 step = this->velocity;
 	glm::vec3 a = this->controlEntity->getPosition();
 
 	playerBounds->center[0] = a.x;
@@ -118,9 +117,19 @@ void PlayerGameControls::tick2(render::RenderManager *rManager, util::DeltaTime 
 	playerBounds->center[2] = a.z;
 
 
-	this->world->collisionResponse(*playerBounds, &step, &velocity);
-		//std::cout << "INTERSECT" << glfwGetTime() << std::endl;
+	float f = 1.f;
+	std::vector<glm::vec3> normals;
+	this->world->collisionResponse(*playerBounds, &f, &velocity, &normals);
+	glm::vec3 step = velocity*(f-0.001f);
 
+	glm::vec3 v = velocity*(1.f-f);
+	for(auto &n : normals)
+	{
+		v -= (n*glm::dot(v, n));
+		velocity -= (n*glm::dot(velocity, n));
+	}
+	step += v;
+	
 	this->controlEntity->translate(step);
 	this->controlEntity->setOrientation(orientation);
 }

@@ -10,11 +10,13 @@
 #define PATHNODE_FLAG_COVER 4
 #define PATHNODE_FLAG_EXHIBIT 8
 
+struct PathNode;
+
 struct PathNodeLink {
 	int id;
-	struct PathNode *a,*b;
+	PathNode *a,*b;
 	double dist;
-	struct PathNode *getOther(PathNode *p)
+	PathNode *getOther(PathNode *p)
 	{
 		return p==a ? b : a;
 	}
@@ -28,7 +30,7 @@ struct PathNode {
 	int id;
 	glm::vec3 position;
 	int flags;
-	std::vector<struct PathNodeLink *> links;
+	std::vector<PathNodeLink *> links;
 #ifdef ENABLE_DEBUG_PATHRENDER
 	// Debug
 	bool open,closed,current;

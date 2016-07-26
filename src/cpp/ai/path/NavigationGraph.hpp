@@ -17,6 +17,7 @@ namespace ai {
 			public:
 				int numGroups;
 				int numNodes;
+				int numNodeLinks;
 				int *groupCounts;
 				int *groupMasks;
 				PathNode *nodes;
@@ -32,9 +33,8 @@ namespace ai {
 				int getPathNodeGroupMask(int id);
 			private:
 				// Debug
-				GLuint vaid,vpbid,vcbid;
-				GLfloat *vpd;
-				GLfloat *vcd;
+				GLuint vertexArrayId,vertexPositionBufferId,vertexColorBufferID,indexBufferID,indexColorBufferID;
+				GLfloat *vertexColorData,*linkColorData;
 		};
 }
 }
