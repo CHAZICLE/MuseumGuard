@@ -18,22 +18,26 @@ using namespace world;
 using namespace screens;
 
 GameView::GameView() {
-	this->world = new World();
+	this->world = new World(this);
+	this->statusFont = new render::Font("cour.ttf", 22);
 	this->wasSurface = true;
 	this->pauseStartTime = 0;
 	this->pauseOffsetTime = 0;
+	this->gameCompletionState = -1;
 }
 
 GameView::~GameView() {
 	delete this->world;
 }
+void GameView::onGameOver(int type)
+{
+	this->gameCompletionState = type;
+}
 void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager) {
-	render::RenderManager gameRenderManager;
-	gameRenderManager.setDimensionsPx(manager.getWidthPx(), manager.getHeightPx());
-	gameRenderManager.setDimensionsMM(manager.getWidthMM(), manager.getHeightMM());
-	gameRenderManager.P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 0.1f, 10000.f);
-	gameRenderManager.markPDirty();
+	// Updating the world
 	bool isSurface = this->manager->isScreenSurface(this);
+	if(this->gameCompletionState>=0)
+		isSurface = false;
 	if(wasSurface!=isSurface)
 	{
 		wasSurface = isSurface;
@@ -45,7 +49,22 @@ void GameView::render(util::DeltaTime &deltaTime, render::RenderManager &manager
 	util::DeltaTime dt2 = deltaTime;
 	dt2.setOffsetTime(-pauseOffsetTime);
 	this->world->tick(dt2, isSurface);
-	this->world->render(gameRenderManager, isSurface);
+	// Render the 3D world
+	render::RenderManager gameRenderManager;
+	gameRenderManager.setDimensionsPx(manager.getWidthPx(), manager.getHeightPx());
+	gameRenderManager.setDimensionsMM(manager.getWidthMM(), manager.getHeightMM());
+	gameRenderManager.P = glm::perspective(70.f, (float)(this->manager->getWidth()/this->manager->getHeight()), 0.1f, 10000.f);
+	gameRenderManager.markPDirty();
+	this->world->render3D(gameRenderManager, isSurface);
+	// Render the 2D elements
+	this->world->render2D(manager, isSurface);
+
+	if(this->gameCompletionState>=0)
+	{
+		manager.M = glm::translate(glm::mat4(1.0f), glm::vec3(manager.getWidthMM()/2-this->statusFont->getTextWidth("GAME OVER\0", manager)/4, manager.getHeightMM()/2-22/2, 0));
+		manager.markMDirty();
+		this->statusFont->printf("GAME OVER", manager);
+	}
 }
 bool GameView::onControlEvent(Control control, int action)
 {
@@ -54,12 +73,12 @@ bool GameView::onControlEvent(Control control, int action)
 		this->manager->openScreen(new GamePauseMenu());
 		return true;
 	}
-	this->world->onDebugControl(control, action);
+	if(this->gameCompletionState<0)
+		this->world->onDebugControl(control, action);
 	return true;
 }
 void GameView::onScreenResize() {
 }
-
 bool GameView::supportsCursor() {
 	return false;
 }

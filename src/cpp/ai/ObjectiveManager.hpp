@@ -15,9 +15,12 @@
 #include "ai/path/PathExecuter.hpp"
 #include "ai/path/PathFinder.hpp"
 #include "ai/path/PathExplorer.hpp"
+#include "ai/AimBot.hpp"
 #include "world/entities/Enemy.hpp"
 #include "util/DeltaTime.hpp"
+#include "world/entities/Turret.hpp"
 #include <set>
+#include <unordered_set>
 
 namespace ai {
 	class ObjectiveManager {
@@ -27,20 +30,25 @@ namespace ai {
 			PathNode *entranceNode,*artefactNode;
 			world::World *world;
 			world::entities::Enemy *enemy;
+			world::entities::Turret *targetTurret;
 			ai::path::PathExecuter *pathExecuter;
 			ai::path::PathExplorer *pathExplorer;
 			ai::path::PathFinder *pathFinder;
 			ai::path::NavigationGraph *navigationGraph;
+			ai::PerceptionManager *perception;
+			ai::AimBot *aimBot;
+			glm::vec3 lastKnownPlayerPosition;
 			PathNode *targetNode;
 			float targetRadius;
+			bool collectedArtefact;
 			std::set<int> visitedExitNodes;
+			std::unordered_set<world::entities::Turret *> knownTurrets;
 		public:
 			ObjectiveManager(world::World *world, world::entities::Enemy *enemy, ai::path::NavigationGraph *navigationGraph);
 			~ObjectiveManager();
-			void changeState(util::DeltaTime &deltaTime, int i);
 			void tick(util::DeltaTime &deltaTime);
-			void perceptionCheck();
 			void render(render::RenderManager &rManager);
+			void perceptionCheck(util::DeltaTime &deltaTime);
 	};
 }
 

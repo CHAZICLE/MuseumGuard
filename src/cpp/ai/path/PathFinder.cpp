@@ -1,3 +1,5 @@
+#include <glm/gtx/norm.hpp>
+
 #include "PathFinder.hpp"
 
 using namespace ai::path;
@@ -103,7 +105,7 @@ bool PathFinder::tick(int ticks)
 		// Skip neighbours in closed set
 		if(this->closedSet.find(neighbourNode)!=this->closedSet.end())
 			continue;
-		newNeighbourG = c->g+static_cast<float>(pnLink->dist);
+		newNeighbourG = c->g+static_cast<float>(pnLink->dist)/10+calculateDangerOffset(otherNode);
 		// Add to open set if not already in
 		if(this->openSet.find(neighbourNode)==this->openSet.end())
 		{
@@ -124,6 +126,18 @@ bool PathFinder::tick(int ticks)
 		neighbourNode->f = neighbourNode->g+neighbourNode->h;
 	}
 	return false;
+}
+float PathFinder::calculateDangerOffset(PathNode *pathNode)
+{
+	float f;
+	for(auto dp : this->dangerPoints)
+	{
+		if(glm::distance2(pathNode->position, dp)<dangerRange*dangerRange)
+		{
+			f += ((this->dangerRange-glm::distance(pathNode->position, dp))/this->dangerRange)*this->dangerCost;
+		}
+	}
+	return f;
 }
 std::vector<int> PathFinder::getPath()
 {

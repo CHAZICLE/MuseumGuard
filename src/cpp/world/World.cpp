@@ -55,9 +55,9 @@ glm::vec3 debug_point;
 glm::vec3 debug_point2,debug_point3;
 //dbend
 
-
-World::World()
+World::World(screens::GameView *gameView)
 {
+	this->gameView = gameView;
 	this->world_interactive_model = (render::StaticModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_WORLD_INTERACTIVE_OBJ);
 	this->world_aesthetic_model = 0;
 	this->world_skybox = (render::StaticModel *)util::AssetManager::getAssetManager()->getAsset(ASSET_SKYBOX_OBJ);
@@ -293,7 +293,7 @@ void World::tick(util::DeltaTime &deltaTime, bool surface)
 	}
 }
 double d = 0;
-void World::render(render::RenderManager &rManager, bool isSurface)
+void World::render3D(render::RenderManager &rManager, bool isSurface)
 {
 	// Setup rendering
 	rManager.enableCullFace();
@@ -432,6 +432,10 @@ void World::render(render::RenderManager &rManager, bool isSurface)
 		*/
 	}
 }
+void World::render2D(render::RenderManager &rManager, bool isSurface)
+{
+	
+}
 std::list<world::Entity *> *World::getEntities()
 {
 	return &this->entities;
@@ -474,6 +478,7 @@ void World::onDebugControl(Control control, int action)
 	// Debug config
 	if(action==CONTROL_KEYACTION_RELEASE)
 	{
+		if(control==GLFW_KEY_F4) this->gameOver(GAME_OVER_ENEMY_DESTROYED);
 		if(control==GLFW_KEY_F5) debug_renderEntityMarkers = !debug_renderEntityMarkers;
 		if(control==GLFW_KEY_F6) debug_renderEntityBounds = !debug_renderEntityBounds;
 		if(control==GLFW_KEY_F7) debug_renderWireframe++;
@@ -580,4 +585,9 @@ void World::onDebugControl(Control control, int action)
 void World::onRayHit(glm::vec3 rayOrigin, float distance, glm::vec3 normal)
 {
 	
+}
+void World::gameOver(int type)
+{
+	PRINT_DEBUG("GAME OVER:" << type);
+	this->gameView->onGameOver(type);
 }

@@ -16,8 +16,8 @@ namespace ai {
 	class PerceptionManager {
 		protected:
 			//current = the current orientation, target = the target orientation, min/max = boundaries; all in model space
-			float currentYaw,currentPitch,targetYaw,targetPitch,maxYaw,minYaw;
-			world::Entity *targetEntity;
+			float currentYaw,currentPitch,targetYaw,targetPitch,maxYaw,minYaw,targetDistance;
+			world::Entity *targetEntity,*perceivedEntity;
 			glm::vec3 offset_modelSpace;
 			world::Entity *controlEntity;
 			std::set<const std::type_info *> searchTypes;
@@ -26,7 +26,11 @@ namespace ai {
 			~PerceptionManager();
 			void setYawBounds(float minYaw, float maxYaw);
 			void tick(util::DeltaTime &deltaTime);
+			world::Entity *getOriginEntity();
 			world::Entity *getTargetEntity();
+			world::Entity *getPerceivedEntity();
+			glm::vec3 getEyePosition();
+			float getTargetDistance();
 			glm::quat getOrientation();
 	};
 }

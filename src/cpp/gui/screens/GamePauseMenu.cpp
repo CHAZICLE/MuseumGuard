@@ -21,7 +21,7 @@ GamePauseMenu::GamePauseMenu() : Screen()
 {
 	this->resumeButton = new Button("Resume");
 	this->pathTestButton = new Button("???");
-	this->exitButton = new Button("Quit");
+	this->exitButton = new Button("Quit RESUME resume");
 
 	this->resumeButton->setY(20);
 	this->pathTestButton->setY(10);

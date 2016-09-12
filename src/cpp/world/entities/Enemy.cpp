@@ -20,12 +20,12 @@ Enemy::Enemy(World *world) : super()
 {
 	this->animTime = 0;
 	this->objectiveManager = new ObjectiveManager(world, this, world->world_navigation_graph);
+	this->setBulletHealth(1.f, 10);
 }
 Enemy::~Enemy()
 {
-	
+	delete this->objectiveManager;
 }
-
 void Enemy::tick(util::DeltaTime &deltaTime)
 {
 	this->animTime = deltaTime.getTime();
@@ -61,4 +61,8 @@ void Enemy::render(render::RenderManager &rManager)
 }
 void Enemy::setPath(std::vector<int> path)
 {
+}
+void Enemy::die(double time, glm::vec3 direction, int type)
+{
+	this->getWorld().gameOver(GAME_OVER_ENEMY_DESTROYED);
 }

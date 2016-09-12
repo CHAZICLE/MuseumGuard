@@ -4,6 +4,7 @@
 #include "gui/Screen.hpp"
 #include "input/Controls.hpp"
 #include <glm/detail/type_mat.hpp>
+#include "render/Font.hpp"
 
 namespace world {
 	class World;
@@ -20,11 +21,14 @@ namespace screens {
 	class GameView: public Screen {
 	private:
 		world::World *world;
+		render::Font *statusFont;
 		double pauseStartTime,pauseOffsetTime;
 		bool wasSurface;
+		int gameCompletionState;
 	public:
 		GameView();
 		virtual ~GameView();
+		void onGameOver(int type);
 		virtual void render(util::DeltaTime &deltaTime, render::RenderManager &manager);
 		bool onControlEvent(Control control, int action);
 		virtual void onScreenResize();

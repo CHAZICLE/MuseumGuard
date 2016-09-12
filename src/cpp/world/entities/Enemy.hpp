@@ -20,6 +20,7 @@ namespace world {
 				virtual ~Enemy();
 				virtual void tick(util::DeltaTime &deltaTime);
 				virtual void render(render::RenderManager &rManager);
+				virtual void die(double time, glm::vec3 direction, int type);
 				void setPath(std::vector<int> path);
 		};
 	}

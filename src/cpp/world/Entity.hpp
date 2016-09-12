@@ -19,7 +19,13 @@ namespace world {
 			World *world;
 			double spawnTime;
 		protected:
+			int healthCycleIndex;
+			int healthCycleBullets;
+			double healthCycleDuration;
+			double *lastDamageTime;
 			util::Boundaries::AABB *bounds;
+
+			void setBulletHealth(double healthCycleDuration, int healthCycleBullets);
 		public:
 			bool doRender;
 
@@ -28,6 +34,8 @@ namespace world {
 			virtual void addedToWorld(world::World *world, double spawnTime);
 			world::World &getWorld();
 			double getSpawnTime();
+			virtual void attack(double time, glm::vec3 direction, int type);
+			virtual void die(double time, glm::vec3 direction, int type);
 
 			// Position and rotation functions
 			glm::vec3 getPosition();

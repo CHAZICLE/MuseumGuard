@@ -18,10 +18,17 @@
 
 #include "ai/path/NavigationGraph.hpp"
 
+#include "gui/screens/GameView.hpp"
+
 #define SELECTOR_OFF 0
 #define SELECTOR_SECURITY_CAMERA 1
 #define SELECTOR_TURRET 2
 #define SELECTOR_REMOVE 3
+
+#define GAME_OVER_ENEMY_DESTROYED 0
+#define GAME_OVER_PLAYER_DESTROYED 1
+#define GAME_OVER_ENEMY_ESCAPED_W_ARTEFACT 2
+#define GAME_OVER_ENEMY_ESCAPES_WO_ARTEFACT 3
 
 namespace world {
 	class World {
@@ -50,17 +57,20 @@ namespace world {
 		double vertAngle, horizAngle, lastX, lastY;
 		float selectorYaw;
 		glm::vec3 viewDirection, viewUp;
+		screens::GameView *gameView;
 	public:
 		ai::path::NavigationGraph *world_navigation_graph;
-		World();
+		World(screens::GameView *gameView);
 		~World();
 		void add(Entity *ent, glm::vec3 location);
 		void tick(util::DeltaTime &deltaTime, bool surface);
-		void render(render::RenderManager &manager, bool isSurface);
+		void render3D(render::RenderManager &manager, bool isSurface);
+		void render2D(render::RenderManager &manager, bool isSurface);
 		std::list<world::Entity *> *getEntities();
 		util::Boundaries::RaycastResult rayCast(util::Boundaries::Raycast &raycast, world::Entity **entity);
 		void onDebugControl(Control control, int action);
 		void onRayHit(glm::vec3 rayOrigin, float distance, glm::vec3 normal);
+		void gameOver(int type);
 		int remainingTurrets;
 		int remainingCameras;
 	};

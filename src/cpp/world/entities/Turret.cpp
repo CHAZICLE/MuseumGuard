@@ -28,6 +28,7 @@ Turret::Turret() : super()
 	this->selector = false;
 	this->bounds = &this->initAnimation->getFrameBounds(-1);
 	this->perception = new PerceptionManager((Entity *)this, {&typeid(Enemy)}, this->model->bindPoseSkeleton[ASSET_TURRET_MD5MESH_JOINT_CAMERASTALK].pos);
+	this->aimBot = new AimBot(this->perception);
 }
 Turret::~Turret()
 {
@@ -55,6 +56,7 @@ void Turret::tick(util::DeltaTime &deltaTime)
 	else
 	{
 		this->perception->tick(deltaTime);
+		this->aimBot->tick(deltaTime);
 	}
 }
 void Turret::render(RenderManager &rManager)
@@ -87,13 +89,11 @@ void Turret::render(RenderManager &rManager)
 		Skeleton skel = this->model->bindPoseSkeleton;
 		skel[ASSET_TURRET_MD5MESH_JOINT_CAMERASTALK].ori = this->perception->getOrientation();//glm::quat(glm::vec3(this->currentPitch, 0, this->currentYaw));//, glm::vec3(0, 0, 1))*glm::angleAxis(this->pitch, glm::vec3(1,0,0));
 		this->model->render(rManager, skel);
+		this->aimBot->render(rManager);
 		//this->initAnimation->renderBounds(rManager, this->animationCurrent);
 	}
 	rManager.popMatrixM();
 }
-
-//controllable by player
-//	update quat
-//controllable by scripts
-//	lookAt(vector)
-//	keepLookingAt(Entity*)
+void Turret::die(double time, glm::vec3 direction, int type)
+{
+}

@@ -20,6 +20,9 @@ PerceptionManager::PerceptionManager(Entity *controlEntity, std::initializer_lis
 	this->searchTypes.insert(searchTypes.begin(), searchTypes.end());
 	this->minYaw = -M_PI;
 	this->maxYaw = M_PI;
+
+	this->targetEntity = 0;
+	this->perceivedEntity = 0;
 }
 PerceptionManager::~PerceptionManager()
 {
@@ -38,7 +41,7 @@ void PerceptionManager::tick(util::DeltaTime &deltaTime)
 	ray.origin = targetOrigin;
 	glm::vec3 targetDirection;
 	this->targetEntity = 0;
-	debug_point2 = ray.origin;
+	this->perceivedEntity = 0;
 	Entity *e2;
 	for(Entity *e : *this->controlEntity->getWorld().getEntities())
 	{
@@ -62,8 +65,8 @@ void PerceptionManager::tick(util::DeltaTime &deltaTime)
 				debug_point3 = ray.origin+ray.direction*result.distance;
 				if(e2==e)
 				{
-					PRINT_DEBUG("RAY HIT");
 					targetDirection = (((min+max)*0.5f)-ray.origin)*this->controlEntity->getOrientation();
+					targetDistance = result.distance;
 					this->targetEntity = e;
 					break;//Stop checking this ent, we can already see it
 				}
@@ -82,11 +85,14 @@ void PerceptionManager::tick(util::DeltaTime &deltaTime)
 			this->targetPitch = -0.4f;
 	}
 #define TURRET_YAW_RESOLUTION 0.05f
+#define TURRET_PITCH_RESOLUTION 0.001
 	float targetYawRelative = this->targetYaw-this->currentYaw;//Relative to current
 	if(targetYawRelative>M_PI)
 		targetYawRelative -= M_PI*2.f;
 	if(targetYawRelative<-M_PI)
 		targetYawRelative += M_PI*2.f;
+	float targetPitchRelative = this->targetPitch-this->currentPitch;
+	bool perceive = true;
 	if(std::fabs(targetYawRelative)>TURRET_YAW_RESOLUTION)
 	{
 		this->currentYaw += targetYawRelative>0 ? TURRET_YAW_RESOLUTION : -TURRET_YAW_RESOLUTION;
@@ -94,18 +100,37 @@ void PerceptionManager::tick(util::DeltaTime &deltaTime)
 			this->currentYaw -= M_PI*2.f;
 		if(this->currentYaw<-M_PI)
 			this->currentYaw += M_PI*2.f;
+		perceive = false;
 	}
-	if(std::fabs(this->currentPitch-this->targetPitch)>0.001f)
+	if(std::fabs(targetPitchRelative)>TURRET_PITCH_RESOLUTION)
 	{
-		//float dYaw = this->targetYaw-this->currentYaw;
-		float dPitch = this->targetPitch-this->currentPitch;
-		//this->currentYaw += dYaw/10;
-		this->currentPitch += dPitch/10;
+		//float dPitch = this->targetPitch-this->currentPitch;
+		//this->currentPitch += dPitch/10;
+		this->currentPitch += targetPitchRelative>0 ? TURRET_PITCH_RESOLUTION : -TURRET_PITCH_RESOLUTION;
+		perceive = false;
 	}
+	if(perceive)
+		this->perceivedEntity = this->targetEntity;
+}
+world::Entity *PerceptionManager::getOriginEntity()
+{
+	return this->controlEntity;
 }
 world::Entity *PerceptionManager::getTargetEntity()
 {
 	return this->targetEntity;
+}
+world::Entity *PerceptionManager::getPerceivedEntity()
+{
+	return this->perceivedEntity;
+}
+glm::vec3 PerceptionManager::getEyePosition()
+{
+	return this->controlEntity->getPosition()+(this->controlEntity->getOrientation()*this->offset_modelSpace);
+}
+float PerceptionManager::getTargetDistance()
+{
+	return this->targetDistance;
 }
 glm::quat PerceptionManager::getOrientation()
 {

@@ -1,4 +1,4 @@
-RCDIR=src
+SRCDIR=src
 BINDIR=bin
 HOOKSDIR=hooks
 BININCDIR=$(BINDIR)/include

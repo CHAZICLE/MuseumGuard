@@ -5,6 +5,7 @@
 #include <set>
 #include <map>
 #include <mutex>
+#include <unordered_set>
 
 namespace ai {
 	namespace path {
@@ -18,10 +19,13 @@ namespace ai {
 			private:
 				StoredPathNode *startPathNode,*endPathNode,*c;
 			public:
+				std::unordered_set<glm::vec3> dangerPoints;
+				float dangerRange,dangerCost;
 				int iterations;
 				std::map<int, StoredPathNode *> storedPathNodes;
 				std::set<StoredPathNode *> openSet;
 				std::set<StoredPathNode *> closedSet;
+				float calculateDangerOffset(PathNode *pathNode);
 				PathFinder();
 				~PathFinder();
 				void start(PathNode *a, PathNode *b);

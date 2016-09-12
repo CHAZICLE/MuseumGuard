@@ -4,18 +4,15 @@
 
 using namespace render;
 
-FT_Library Font::library = 0;
-shaders::ShaderProgram *Font::shader = 0;
-GLint Font::vertexPositionAttribute = 0;
-GLint Font::vertexTextureAttribute = 0;
-GLint Font::uniformTextColor = 0;
-GLint Font::uniformTexture = 0;
+//FT_Library this->library = 0;
 Font::Font(std::string fontfamily, float heightMM)
 {
-	if(Font::library==0)
+	if(true)//library==0)
 	{
-		if(FT_Init_FreeType(&Font::library))
+		PRINT_DEBUG("RELOAD LIBRARY");
+		if(FT_Init_FreeType(&library))
 		{
+			PRINT_DEBUG("FATAL ERROR");
 			return;
 		}
 		Font::shader = shaders::ShaderProgram::getShader(SHADER_font);
@@ -23,29 +20,30 @@ Font::Font(std::string fontfamily, float heightMM)
 		Font::vertexTextureAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_texture);
 		Font::uniformTextColor = Font::shader->getShaderLocation(true, SHADER_font_textColor);
 		Font::uniformTexture = Font::shader->getShaderLocation(true, SHADERVAR_material_map_Kd);
+
+		glGenVertexArrays(1, &this->fontFaceVertexArrayObjectID);
+		glGenTextures(128, this->fontFaceTextures);
+		glGenBuffers(1, &this->fontFaceTextureCoordBufferID);
+		glGenBuffers(1, &this->fontFaceTextureUVBufferID);
 	}
 	this->face = new FT_Face;
 	FT_Byte fontData[] = {
 		#include "cour.h"
 	};
-	if(FT_New_Memory_Face(Font::library, fontData, sizeof(fontData), 0, this->face))
+	if(FT_New_Memory_Face(this->library, fontData, sizeof(fontData), 0, this->face))
 	{
 		std::cerr << "Failed to load font face" << std::endl;
 		std::exit(1);
-		return;
 	}
 	this->setHeight(heightMM);
 	this->setColor(0.5f, 0.f, 1.0f, 1.f);
-	glGenVertexArrays(1, &this->fontFaceVertexArrayObjectID);
-	glGenTextures(128, this->fontFaceTextures);
-	glGenBuffers(1, &this->fontFaceTextureCoordBufferID);
-	glGenBuffers(1, &this->fontFaceTextureUVBufferID);
 	for(int i=0;i<128;i++)
-		this->metrics[i] = {0,0,0,0,0,0,0,false};
+		this->metrics[i] = {};
 }
 Font::~Font()
 {
-	FT_Done_FreeType(Font::library);
+	PRINT_DEBUG("DESTORY FT");
+	FT_Done_FreeType(this->library);
 }
 float Font::getTextWidth(std::string text, render::RenderManager &rManager)
 {
@@ -133,6 +131,11 @@ void Font::setColor(float r, float g, float b, float a)
 }
 struct GlyphMetrics *Font::getGlyphMetrics(char c, int calculatedPixelSize)
 {
+	if(c<=0 || c>=128)
+	{
+		PRINT_DEBUG("Invalid char:" << c);
+		return 0;
+	}
 	struct GlyphMetrics *glyph = &this->metrics[(int)c];
 	// Ensure glyph is up to date
 	if(glyph->currentPixelSize==calculatedPixelSize)
@@ -144,10 +147,11 @@ struct GlyphMetrics *Font::getGlyphMetrics(char c, int calculatedPixelSize)
 		std::cerr << "Failed to set pixel sizes for font" << std::endl;
 		std::exit(1);
 	}
-	if(FT_Load_Char(*this->face, c, FT_LOAD_RENDER))
+	int err = FT_Load_Char(*this->face, c, FT_LOAD_RENDER);
+	if(err)
 	{
-		std::cerr << "Failed to load character" << c << std::endl;
-		std::exit(1);
+		std::cerr << "[ERR" << err << "] Failed to load character " << c << std::endl;
+		//std::exit(1);
 	}
 	FT_GlyphSlot g = (*this->face)->glyph;
 	// Load the texture

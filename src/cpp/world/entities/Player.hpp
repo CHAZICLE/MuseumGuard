@@ -10,6 +10,7 @@ namespace world {
 			public:
 				Player();
 				~Player();
+				virtual void die(double time, glm::vec3 direction, int type);
 		};
 	}
 }

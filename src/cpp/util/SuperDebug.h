@@ -16,10 +16,9 @@ inline bool DEBUG_KEY(int key)
 }
 
 #define THREE_IOSTREAM_HEADER "[" << __FILE__ << ":" << __LINE__ << " " << __func__ << "()] "
-
 #define PRINT_CONTROL(message, control, action) PRINT_DEBUG(message << " (Control:" << control << ", Action:" << action << ")")
 
-#define PRINT_DEBUG(msg) *debugfile << THREE_IOSTREAM_HEADER << msg << std::endl;
+#define PRINT_DEBUG(msg) std::cout << THREE_IOSTREAM_HEADER << msg << std::endl;
 
 inline std::ostream &operator<<(std::ostream &ost, const glm::vec3 &a)
 {
