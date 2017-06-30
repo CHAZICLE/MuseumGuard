@@ -31,14 +31,15 @@ namespace render {
 			void setColor(float r, float g, float b, float a);
 		private:
 			shaders::ShaderProgram *shader;
-			FT_Library library;
+			static bool libraryInit;
+			static FT_Library library;
 			GLint vertexPositionAttribute,vertexTextureAttribute,uniformTextColor,uniformTexture;
 
 			FT_Face *face;
-			struct GlyphMetrics metrics[128];
+			struct GlyphMetrics metrics[256];
 			float heightMM;
 			int heightPX;
-			GLuint fontFaceVertexArrayObjectID, fontFaceTextures[128], fontFaceTextureCoordBufferID, fontFaceTextureUVBufferID;
+			GLuint fontFaceVertexArrayObjectID, fontFaceTextures[256], fontFaceTextureCoordBufferID, fontFaceTextureUVBufferID;
 			float r,g,b,a;
 			struct GlyphMetrics *getGlyphMetrics(char c, int calculatedPixelSize);
 			struct GlyphMetrics *getGlyphMetrics_NoTexture(char c, int calculatedPixelSize);

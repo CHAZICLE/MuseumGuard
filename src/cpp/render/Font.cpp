@@ -4,46 +4,46 @@
 
 using namespace render;
 
-//FT_Library this->library = 0;
+FT_Library Font::library;
+bool Font::libraryInit = false;
+static FT_Byte courier_font[] = {
+	#include "cour.h"
+};
 Font::Font(std::string fontfamily, float heightMM)
 {
-	if(true)//library==0)
+	if(!Font::libraryInit)
 	{
-		PRINT_DEBUG("RELOAD LIBRARY");
+		Font::libraryInit = true;
 		if(FT_Init_FreeType(&library))
 		{
-			PRINT_DEBUG("FATAL ERROR");
+			PRINT_DEBUG("Missing FT library");
 			return;
 		}
-		Font::shader = shaders::ShaderProgram::getShader(SHADER_font);
-		Font::vertexPositionAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_position);
-		Font::vertexTextureAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_texture);
-		Font::uniformTextColor = Font::shader->getShaderLocation(true, SHADER_font_textColor);
-		Font::uniformTexture = Font::shader->getShaderLocation(true, SHADERVAR_material_map_Kd);
-
-		glGenVertexArrays(1, &this->fontFaceVertexArrayObjectID);
-		glGenTextures(128, this->fontFaceTextures);
-		glGenBuffers(1, &this->fontFaceTextureCoordBufferID);
-		glGenBuffers(1, &this->fontFaceTextureUVBufferID);
 	}
+	this->shader = shaders::ShaderProgram::getShader(SHADER_font);
+	this->vertexPositionAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_position);
+	this->vertexTextureAttribute = Font::shader->getShaderLocation(false, SHADERVAR_vertex_texture);
+	this->uniformTextColor = Font::shader->getShaderLocation(true, SHADER_font_textColor);
+	this->uniformTexture = Font::shader->getShaderLocation(true, SHADERVAR_material_map_Kd);
+
+	glGenVertexArrays(1, &this->fontFaceVertexArrayObjectID);
+	glGenTextures(256, this->fontFaceTextures);
+	glGenBuffers(1, &this->fontFaceTextureCoordBufferID);
+	glGenBuffers(1, &this->fontFaceTextureUVBufferID);
 	this->face = new FT_Face;
-	FT_Byte fontData[] = {
-		#include "cour.h"
-	};
-	if(FT_New_Memory_Face(this->library, fontData, sizeof(fontData), 0, this->face))
+	if(FT_New_Memory_Face(this->library, courier_font, sizeof(courier_font), 0, this->face))
 	{
 		std::cerr << "Failed to load font face" << std::endl;
 		std::exit(1);
 	}
 	this->setHeight(heightMM);
 	this->setColor(0.5f, 0.f, 1.0f, 1.f);
-	for(int i=0;i<128;i++)
+	for(int i=0;i<256;i++)
 		this->metrics[i] = {};
 }
 Font::~Font()
 {
-	PRINT_DEBUG("DESTORY FT");
-	FT_Done_FreeType(this->library);
+	//FT_Done_FreeType(this->library);
 }
 float Font::getTextWidth(std::string text, render::RenderManager &rManager)
 {
@@ -62,12 +62,14 @@ void Font::printf(std::string text, render::RenderManager &rManager)
 {
 	// Prime Shader Program
 	rManager.useShader(SHADER_font);
+
 	glUniform4f(Font::uniformTextColor, this->r, this->g, this->b, this->a);
 	glUniform1i(Font::uniformTexture, 0);
 
+
 	// Set up vertex array/buffer objects
 	glBindVertexArray(this->fontFaceVertexArrayObjectID);
-	
+
 	float calculatedPixelSize = this->heightMM*rManager.getHeightPx()/rManager.getHeightMM();
 	float x=0,y=0,vx=1,vy=1,vw=10,vh=10,sx=rManager.getWidthMM()/rManager.getWidthPx(),sy=rManager.getHeightMM()/rManager.getHeightPx();
 	rManager.enableTransparency();
@@ -75,6 +77,7 @@ void Font::printf(std::string text, render::RenderManager &rManager)
 	for(unsigned long i=0;i<text.length(); i++)
 	{
 		char c = text[i];
+
 		glActiveTexture(GL_TEXTURE0);
 		glBindTexture(GL_TEXTURE_2D, this->fontFaceTextures[(int)c]);
 		// (Re)Load the texture
@@ -131,11 +134,6 @@ void Font::setColor(float r, float g, float b, float a)
 }
 struct GlyphMetrics *Font::getGlyphMetrics(char c, int calculatedPixelSize)
 {
-	if(c<=0 || c>=128)
-	{
-		PRINT_DEBUG("Invalid char:" << c);
-		return 0;
-	}
 	struct GlyphMetrics *glyph = &this->metrics[(int)c];
 	// Ensure glyph is up to date
 	if(glyph->currentPixelSize==calculatedPixelSize)
@@ -150,7 +148,7 @@ struct GlyphMetrics *Font::getGlyphMetrics(char c, int calculatedPixelSize)
 	int err = FT_Load_Char(*this->face, c, FT_LOAD_RENDER);
 	if(err)
 	{
-		std::cerr << "[ERR" << err << "] Failed to load character " << c << std::endl;
+		std::cerr << "[ERR" << err << "] Failed to load character '" << c << "'" << std::endl;
 		//std::exit(1);
 	}
 	FT_GlyphSlot g = (*this->face)->glyph;

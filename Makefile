@@ -3,7 +3,7 @@ BINDIR=bin
 HOOKSDIR=hooks
 BININCDIR=$(BINDIR)/include
 
-all: assets.gz .SHADERS Three
+all: assets.gz .SHADERS MuseumGuard
 
 ### Assets
 
@@ -61,9 +61,9 @@ CPPBINDIR=$(BINDIR)/object/cpp
 CPPDEPDIR=$(BINDIR)/depend/cpp
 
 CXX=g++
-CXXFLAGS=-g -fPIE -Wall -ansi -std=c++11 -I$(CPPSRCDIR) -I$(BININCDIR) -I/usr/include/freetype2 -include util/SuperDebug.h
+CXXFLAGS=-g -fPIE -Wall -Wextra -Wno-unused-parameter -ansi -std=c++11 -I$(CPPSRCDIR) -I$(BININCDIR) -I/usr/include/freetype2 -include util/SuperDebug.h
 LDFLAGS=-std=c++11 -lglfw -lGL -lGLU -lGLEW -lfreetype -lpng -lboost_system -lboost_iostreams -lSOIL -pthread
-CPPBIN=Three
+CPPBIN=MuseumGuard
 SUPERGLOBAL=$(CPPSRCDIR)/util/SuperDebug.h
 
 CPPSRCS = $(shell find $(CPPSRCDIR) -type f -name '*.cpp')

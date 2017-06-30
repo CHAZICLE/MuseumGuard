@@ -21,7 +21,7 @@ GamePauseMenu::GamePauseMenu() : Screen()
 {
 	this->resumeButton = new Button("Resume");
 	this->pathTestButton = new Button("???");
-	this->exitButton = new Button("Quit RESUME resume");
+	this->exitButton = new Button("Quit");
 
 	this->resumeButton->setY(20);
 	this->pathTestButton->setY(10);
@@ -30,12 +30,28 @@ GamePauseMenu::GamePauseMenu() : Screen()
 	this->addElement(this->resumeButton);
 	this->addElement(this->pathTestButton);
 	this->addElement(this->exitButton);
+
+	this->font = new render::Font("cour.ttf", 22);
 }
 GamePauseMenu::~GamePauseMenu()
 {
 	delete this->resumeButton;
 	delete this->pathTestButton;
 	delete this->exitButton;
+}
+void GamePauseMenu::render(util::DeltaTime &deltaTime, render::RenderManager &rManager)
+{
+	super::render(deltaTime, rManager);
+
+	glm::mat4 boxMat = glm::mat4(1.0f);
+	double s = (1+std::sin(deltaTime.getTime()*4))/20;
+	boxMat = glm::translate(boxMat, glm::vec3(rManager.getWidthMM()/2, rManager.getHeightMM()/2, 0));
+	boxMat = glm::scale(boxMat, glm::vec3(1+s, 1+s, 0));
+	//boxMat = glm::translate(boxMat, glm::vec3(this->font->getTextWidth("Paused", rManager)/4, 22/2, 0));
+	boxMat = glm::translate(boxMat, glm::vec3(-this->font->getTextWidth("Paused", rManager)/4, 0, 0));
+	rManager.M = boxMat;
+	rManager.markMDirty();
+	this->font->printf("Paused", rManager);
 }
 bool GamePauseMenu::onControlEvent(Control control, int action)
 {

@@ -18,18 +18,18 @@ using namespace render;
 NavigationGraph::NavigationGraph(int assetId, std::istream &fp) : Asset(assetId)
 {
 	setName(readString(fp));
-	this->numGroups = readInt(fp);
+	this->numGroups = static_cast<unsigned int>(readInt(fp));
 	this->groupCounts = new int[this->numGroups];
 	std::fill(this->groupCounts, this->groupCounts+this->numGroups, 0);
-	this->numNodes = readInt(fp);
+	this->numNodes = static_cast<unsigned int>(readInt(fp));
 	this->groupMasks = new int[this->numNodes];
 	this->nodes = new PathNode[this->numNodes];
-	for(int i=0;i<this->numNodes;i++)
+	for(unsigned int i=0;i<this->numNodes;i++)
 	{
 		PathNode &n = this->nodes[i];
-		n.id = i;
+		n.id = static_cast<int>(i);
 		this->groupMasks[i] = readInt(fp);
-		for(int j=0;j<this->numGroups;j++)
+		for(unsigned int j=0;j<this->numGroups;j++)
 		{
 			if((1<<j)&this->groupMasks[i])
 				this->groupCounts[j]++;
@@ -38,24 +38,22 @@ NavigationGraph::NavigationGraph(int assetId, std::istream &fp) : Asset(assetId)
 		n.position.y = readFloat(fp);
 		n.position.z = readFloat(fp);
 	}
-	for(int j=0;j<this->numGroups;j++)
-		PRINT_DEBUG("ng:" << j << ":" << this->groupCounts[j]);
 	// Create node links
-	numNodeLinks = readInt(fp);
+	numNodeLinks = static_cast<unsigned int>(readInt(fp));
 	unsigned int tmp;
-	for(int i=0;i<numNodeLinks;i++)
+	for(unsigned int i=0;i<numNodeLinks;i++)
 	{
 		PathNodeLink *pnLink = new PathNodeLink;
-		tmp = readInt(fp);
-		if(tmp<0 || tmp>=this->numNodes)
+		tmp = static_cast<unsigned int>(readInt(fp));
+		if(tmp>=this->numNodes)
 			util::Globals::fatalError("Node link a outside range "+std::to_string(tmp)+" vs "+std::to_string(this->numNodes));
 		pnLink->a = &this->nodes[tmp];
-		tmp = readInt(fp);
-		if(tmp<0 || tmp>=this->numNodes)
+		tmp = static_cast<unsigned int>(readInt(fp));
+		if(tmp>=this->numNodes)
 			util::Globals::fatalError("Node link b outside range");
-		pnLink->id = i;
+		pnLink->id = static_cast<int>(i);
 		pnLink->b = &this->nodes[tmp];
-		pnLink->dist = glm::distance(pnLink->a->position, pnLink->b->position);
+		pnLink->dist = static_cast<double>(glm::distance(pnLink->a->position, pnLink->b->position));
 		pnLink->a->links.push_back(pnLink);
 		pnLink->b->links.push_back(pnLink);
 	}
@@ -255,7 +253,7 @@ PathNode *NavigationGraph::getRandomNode(int group)
 {
 	int r = std::rand()%this->groupCounts[group];
 	int c = 0;
-	for(int i=0;i<this->numNodes;i++)
+	for(unsigned int i=0;i<this->numNodes;i++)
 	{
 		if(this->groupMasks[i]&(1<<group))
 		{
@@ -270,7 +268,7 @@ PathNode *NavigationGraph::getNearestPathNode(glm::vec3 position, int mask)
 {
 	PathNode *finalPathNode = 0;
 	float min = std::numeric_limits<float>::max();
-	for(int i=0;i<this->numNodes;i++)
+	for(unsigned int i=0;i<this->numNodes;i++)
 	{
 		PathNode *n = &this->nodes[i];
 		if(this->groupMasks[i]&mask)
@@ -289,7 +287,7 @@ PathNode *NavigationGraph::getNearestPathNode(glm::vec3 position)
 {
 	PathNode *finalPathNode = 0;
 	float min = std::numeric_limits<float>::max();
-	for(int i=0;i<this->numNodes;i++)
+	for(unsigned int i=0;i<this->numNodes;i++)
 	{
 		PathNode *n = &this->nodes[i];
 		float f = glm::length2(n->position-position);
@@ -305,7 +303,7 @@ PathNode *NavigationGraph::getNearestPathNodeFromPool(glm::vec3 position, std::s
 {
 	PathNode *finalPathNode = 0;
 	float min = std::numeric_limits<float>::max();
-	for(int i=0;i<this->numNodes;i++)
+	for(unsigned int i=0;i<this->numNodes;i++)
 	{
 		PathNode *n = &this->nodes[i];
 		if(pool.find(n->id)!=pool.end())

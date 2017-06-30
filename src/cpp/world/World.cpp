@@ -472,8 +472,8 @@ util::Boundaries::RaycastResult World::rayCast(util::Boundaries::Raycast &raycas
 }
 void World::onDebugControl(Control control, int action)
 {
-	if(action!=CONTROL_KEYACTION_REPEAT)
-		PRINT_CONTROL("A", control, action);
+	//if(action!=CONTROL_KEYACTION_REPEAT)
+	//	PRINT_CONTROL("A", control, action);
 
 	// Debug config
 	if(action==CONTROL_KEYACTION_RELEASE)
@@ -497,7 +497,7 @@ void World::onDebugControl(Control control, int action)
 			debug_renderWireframe = 0;
 		if(control==GLFW_KEY_O)
 		{
-			for(int i=0;i<this->world_navigation_graph->numNodes;i++)
+			for(unsigned int i=0;i<this->world_navigation_graph->numNodes;i++)
 			{
 				PathNode *n = &this->world_navigation_graph->nodes[i];
 				if(aabb.checkInside(n->position))
@@ -525,7 +525,7 @@ void World::onDebugControl(Control control, int action)
 			PRINT_DEBUG("Clearing navgraph");
 			a = 0;
 			b = 0;
-			for(int i=0;i<this->world_navigation_graph->numNodes;i++)
+			for(unsigned int i=0;i<this->world_navigation_graph->numNodes;i++)
 			{
 				PathNode *n = &this->world_navigation_graph->nodes[i];
 				n->current = false;

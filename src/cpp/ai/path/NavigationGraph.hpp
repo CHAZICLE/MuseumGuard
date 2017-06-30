@@ -15,9 +15,9 @@ namespace ai {
 	namespace path {
 		class NavigationGraph : public util::Asset {
 			public:
-				int numGroups;
-				int numNodes;
-				int numNodeLinks;
+				unsigned int numGroups;
+				unsigned int numNodes;
+				unsigned int numNodeLinks;
 				int *groupCounts;
 				int *groupMasks;
 				PathNode *nodes;

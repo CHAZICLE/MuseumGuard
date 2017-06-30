@@ -2,6 +2,7 @@
 #define FYP_AI_PATH_PATHCOMMON_H_
 
 #include <glm/glm.hpp>
+#include <glm/gtx/hash.hpp>
 #include <vector>
 #include "util/DebugFlags.hpp"
 

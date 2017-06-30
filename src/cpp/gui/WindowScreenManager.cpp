@@ -13,6 +13,7 @@
 
 //TODO: remove this
 #include "render/shaders/ShaderUtils.hpp"
+#include "render/Font.hpp"
 
 
 using util::AssetManager;
@@ -22,6 +23,8 @@ using util::AssetManager;
 using namespace render;
 
 GLFWwindow *superdebug_window = 0;
+
+static render::Font *debugRenderFont;
 
 WindowScreenManager *WindowScreenManager::eventHandler = 0;
 WindowScreenManager::WindowScreenManager() : ScreenManager()
@@ -45,6 +48,8 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->unsupportedCursorInit = true;
 	this->skipNextEvent = false;
 	this->didSupportCursor = false;
+
+	Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [INIT] Starting");
 
 	WindowScreenManager::eventHandler = this;
 	glfwSetErrorCallback(WindowScreenManager::onError);
@@ -99,6 +104,9 @@ WindowScreenManager::WindowScreenManager() : ScreenManager()
 	this->openRootScreen(new MainMenu());
 
 	util::AssetManager::getAssetManager()->init();
+
+	debugRenderFont = new render::Font("cour.ttf", 8);
+	Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [INIT] Started");
 }
 WindowScreenManager::~WindowScreenManager()
 {
@@ -106,6 +114,8 @@ WindowScreenManager::~WindowScreenManager()
 }
 void WindowScreenManager::run()
 {
+	Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [RUN] Running");
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	render::RenderManager renderManager;
 	util::DeltaTime deltaTime(true, 60);
 	AssetManager *am = AssetManager::getAssetManager();
@@ -116,7 +126,7 @@ void WindowScreenManager::run()
 		if(am!=0 && am->postload())
 		{
 			am = 0;
-			std::cout << "Postload " << loop << std::endl;
+			Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [RUN] Assets Loaded");
 		}
 
 		// Get screen dimensions
@@ -148,14 +158,20 @@ void WindowScreenManager::run()
 		
 		// Render
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 		this->render(deltaTime, renderManager);
 		
+		glm::mat4 boxMat = glm::mat4(1.0f);
+		renderManager.M = boxMat;
+		renderManager.markMDirty();
+		debugRenderFont->printf("FPS: "+std::to_string(static_cast<int>(std::round(deltaTime.getFramerate()))), renderManager);
+
 		// Update frame buffer
 		glfwSwapBuffers(this->window);
 		glfwPollEvents();
 		loop++;
 	}
-	std::cout << "CLEAN EXIT" << std::endl;
+	Console::println(CONSOLE_TAG_MAIN, "WindowScreenManager: [RUN] Window Closed");
 }
 void WindowScreenManager::close()
 {

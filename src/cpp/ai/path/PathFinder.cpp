@@ -20,10 +20,8 @@ void PathFinder::start(PathNode *a, PathNode *b)
 {
 	this->iterations = 0;
 	// Remember the algorithm works backwards
-	PRINT_DEBUG("a");
 	this->startPathNode = this->getStoredNode(b);
 	this->endPathNode = this->getStoredNode(a);
-	PRINT_DEBUG("b");
 
 	this->startPathNode->f = glm::distance(this->startPathNode->node->position, this->endPathNode->node->position);
 	this->endPathNode->f = 0;
